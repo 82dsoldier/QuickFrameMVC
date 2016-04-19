@@ -1,0 +1,42 @@
+{
+  "version": "0.0.1-alpha1",
+  "description": "QuickFrame MVC Base Class Library",
+  "authors": [ "Drew Burchett" ],
+  "tags": [ "" ],
+  "projectUrl": "https://github.com/82dsoldier/QuickFrameMVC",
+  "licenseUrl": "https://github.com/82dsoldier/QuickFrameMVC/blob/master/LICENSE",
+  "frameworks": {
+    "net451": {
+      "frameworkAssemblies": {
+        "System.ComponentModel.Composition": "4.0.0.0",
+        "System.Web.Extensions": "4.0.0.0"
+      },
+      "dependencies": {
+        "Microsoft.CSharp": "4.0.1-beta-23516",
+        "System.Collections": "4.0.11-beta-23516",
+        "System.Linq": "4.0.1-beta-23516",
+        "System.Runtime": "4.0.21-beta-23516",
+        "System.Threading": "4.0.11-beta-23516",
+        "Autofac": "3.5.2",
+        "Expressmapper": "1.8.1",
+        "Microsoft.AspNet.WebPages": "1.0.20105.408",
+        "Microsoft.Extensions.COnfiguration": "1.0.0-rc1-final",
+        "Microsoft.AspNet.Hosting": "1.0.0-rc1-final",
+        "Microsoft.AspNet.Mvc": "6.0.0-rc1-final",
+        "Microsoft.AspNet.Session": "1.0.0-rc1-final",
+        "Autofac.Extensions.DependencyInjection": "4.0.0-rc1-177",
+        "Autofac.Framework.DependencyInjection": "4.0.0-beta8-157",
+        "Microsoft.AspNet.Server.WebListener": "1.0.0-rc1-final",
+        "Microsoft.Extensions.Configuration.FileProviderExtensions": "1.0.0-rc1-final",
+        "Microsoft.AspNet.FileProviders.Embedded": "1.0.0-rc2-15922",
+        "Microsoft.AspNet.FileProviders.Composite": "1.0.0-rc2-15922"
+      }
+    }
+  },
+  "dependencies": {
+    "Microsoft.AspNet.Diagnostics": "1.0.0-rc1-final",
+    "Microsoft.AspNet.IISPlatformHandler": "1.0.0-rc1-final",
+    "Microsoft.AspNet.StaticFiles": "1.0.0-rc1-final",
+    "System.Linq.Queryable": "4.0.1-rc2-23805"
+  }
+}
