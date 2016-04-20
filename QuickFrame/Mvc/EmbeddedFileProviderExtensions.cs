@@ -1,20 +1,19 @@
 ﻿using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Mvc.Razor;
-using Microsoft.Extensions.OptionsModel;
 using Microsoft.AspNet.FileProviders;
+using Microsoft.AspNet.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.OptionsModel;
 using Microsoft.Extensions.PlatformAbstractions;
+using QuickFrame.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Reflection;
-using QuickFrame.Interfaces;
 
-namespace QuickFrame.Mvc
-{
-    public static class EmbeddedFileProviderExtensions
-    {
+namespace QuickFrame.Mvc {
+
+	public static class EmbeddedFileProviderExtensions {
+
 		public static IApplicationBuilder UseEmbeddedFileProviders(this IApplicationBuilder app, ILibraryManager libraryManager, IAssemblyLoadContextAccessor assemblyLoadContextAccessor) {
 			IOptions<RazorViewEngineOptions> razorViewEngineOptions =
 				app.ApplicationServices.GetService<IOptions<RazorViewEngineOptions>>();

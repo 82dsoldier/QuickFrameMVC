@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace QuickFrame.Data {
+
 	public class DataServiceCore<TDataType, TContext, TEntity>
 		: IDataServiceCore<TDataType, TEntity>
 		where TContext : DbContext
@@ -50,19 +51,24 @@ namespace QuickFrame.Data {
 		}
 
 		public virtual Task<TEntity> GetAsync(int id) => Task.Run(() => Get(id));
+
 		public virtual TResult Get<TResult>(int id) where TResult : IDataTransferObjectCore<TDataType, TEntity, TResult> {
 			using (var contextFactory = ComponentContainer.Component<TContext>()) {
 				return Mapper.Map<TEntity, TResult>(contextFactory.Component.Set<TEntity>().FirstOrDefault(obj => obj.Id.Equals(id)));
 			}
 		}
+
 		public virtual Task<TResult> GetAsync<TResult>(int id)
 			where TResult : IDataTransferObjectCore<TDataType, TEntity, TResult> => Task.Run(() => Get<TResult>(id));
+
 		public virtual int GetCount(bool includeDeleted = false) {
 			using (var contextFactory = ComponentContainer.Component<TContext>()) {
 				return includeDeleted ? contextFactory.Component.Set<TEntity>().Count() : contextFactory.Component.Set<TEntity>().Where(t => t.IsDeleted == false).Count();
 			}
 		}
+
 		public virtual Task<int> GetCountAsync(bool includeDeleted = false) => Task.Run(() => GetCount(includeDeleted));
+
 		public virtual IEnumerable<TEntity> GetList(int start = 0, int count = 0, string columnName = "Name", SortOrder sortOrder = SortOrder.Ascending, bool includeDeleted = false) {
 			using (var contextFactory = ComponentContainer.Component<TContext>()) {
 				var query = sortOrder == SortOrder.Ascending ? contextFactory.Component.Set<TEntity>().OrderBy(columnName) : contextFactory.Component.Set<TEntity>().OrderByDescending(columnName);
@@ -89,6 +95,7 @@ namespace QuickFrame.Data {
 		public virtual Task<IEnumerable<TResult>> GetListAsync<TResult>(int start = 0, int count = 0, string columnName = "Name", SortOrder sortOrder = SortOrder.Ascending, bool includeDeleted = false)
 			where TResult : IDataTransferObjectCore<TDataType, TEntity, TResult>
 			=> Task.Run(() => GetList<TResult>(start, count, columnName, sortOrder, includeDeleted));
+
 		public virtual void Save(TEntity model) {
 			using (var contextFactory = ComponentContainer.Component<TContext>()) {
 				var dbSet = contextFactory.Component.Set<TEntity>();
@@ -115,25 +122,23 @@ namespace QuickFrame.Data {
 		: DataServiceCore<int, TContext, TEntity>
 		where TContext : DbContext
 		where TEntity : class, IDataModelInt {
-
 	}
+
 	public class DataServiceLong<TContext, TEntity>
 	: DataServiceCore<long, TContext, TEntity>
 	where TContext : DbContext
 	where TEntity : class, IDataModelLong {
-
 	}
+
 	public class DataServiceGuid<TContext, TEntity>
 	: DataServiceCore<Guid, TContext, TEntity>
 	where TContext : DbContext
 	where TEntity : class, IDataModelGuid {
-
 	}
 
 	public class DataService<TContext, TEntity>
 	: DataServiceCore<int, TContext, TEntity>
 	where TContext : DbContext
 	where TEntity : class, IDataModelInt {
-
 	}
 }

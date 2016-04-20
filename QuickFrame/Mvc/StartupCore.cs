@@ -1,12 +1,9 @@
 ﻿using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.FileProviders;
 using Microsoft.AspNet.Hosting;
 using Microsoft.AspNet.Http.Features;
-using Microsoft.AspNet.Mvc.Razor;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.OptionsModel;
 using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.Net.Http.Server;
 using Newtonsoft.Json;
@@ -14,18 +11,14 @@ using Newtonsoft.Json.Serialization;
 using QuickFrame.Configuration;
 using QuickFrame.Di;
 using QuickFrame.Mapping;
-using QuickFrame.Mvc;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
 using System.Web.WebPages.Html;
 
-namespace QuickFrame.Mvc
-{
+namespace QuickFrame.Mvc {
+
 	public class StartupCore {
 		protected IConfigurationRoot Configuration;
+
 		public StartupCore(IHostingEnvironment env) {
 			var builder = new ConfigurationBuilder()
 				.AddJsonFile("appsettings.json")
@@ -68,7 +61,6 @@ namespace QuickFrame.Mvc
 		}
 
 		public virtual void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, ILibraryManager libraryManager, IAssemblyLoadContextAccessor assemblyLoadContextAccessor) {
-
 			var listener = app.ServerFeatures.Get<WebListener>();
 			if (listener != null)
 				listener.AuthenticationManager.AuthenticationSchemes = AuthenticationSchemes.NTLM;

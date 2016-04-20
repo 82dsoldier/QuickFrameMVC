@@ -1,16 +1,14 @@
 ﻿using Autofac;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 
-namespace QuickFrame.Di
-{
+namespace QuickFrame.Di {
+
 	public static class ComponentContainer {
-		static IContainer _container;
-		static ContainerBuilder _containerBuilder;
+		private static IContainer _container;
+		private static ContainerBuilder _containerBuilder;
 
 		public static ContainerBuilder Builder {
 			get {
@@ -52,6 +50,7 @@ namespace QuickFrame.Di
 		protected TObject CurrentObject;
 		protected ILifetimeScope CurrentScope;
 		public TObject Current => (TObject)CurrentObject;
+
 		public ComponentFactory(IContainer container) {
 			CurrentScope = container.BeginLifetimeScope();
 

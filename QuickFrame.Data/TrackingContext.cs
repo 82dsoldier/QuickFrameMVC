@@ -9,16 +9,16 @@ using System.Data.Entity;
 using System.Data.Entity.Core.Metadata.Edm;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
-using System.Threading.Tasks;
 
-namespace QuickFrame.Data
-{
+namespace QuickFrame.Data {
+
 	/// <summary>
 	/// A DbContext that allows logging of all database transactions run through entity framework.
 	/// </summary>
 	/// <seealso cref="System.Data.Entity.DbContext" />
 	public class TrackingContext : DbContext {
 		private readonly IHttpContextAccessor _contextAccessor;
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="TrackingContext"/> class.
 		/// </summary>
@@ -36,8 +36,8 @@ namespace QuickFrame.Data
 
 		public TrackingContext(string nameOrConnectionString)
 			: base(nameOrConnectionString) {
-
 		}
+
 		/// <summary>
 		/// Gets or sets a value indicating whether to track all database transactions.
 		/// </summary>
@@ -45,6 +45,7 @@ namespace QuickFrame.Data
 		///   <c>true</c> if database changes are to be tracked; otherwise, <c>false</c>.
 		/// </value>
 		public bool TrackChanges { get; set; } = false;
+
 		public DbSet<AuditLog> AuditLogs { get; set; }
 
 		/// <summary>
@@ -66,6 +67,7 @@ namespace QuickFrame.Data
 				AuditLogs.Add(log);
 			return base.SaveChanges();
 		}
+
 		/// <summary>
 		/// Generates the audit log records that will be added to the database.
 		/// </summary>

@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace QuickFrame.Mapping
-{
+namespace QuickFrame.Mapping {
+
 	[AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
-    public class ExpressMapAttribute : Attribute
-    {
-    }
+	public class ExpressMapAttribute : Attribute {
+	}
 }

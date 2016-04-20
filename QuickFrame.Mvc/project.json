@@ -1,6 +1,6 @@
 {
   "version": "0.0.1-alpha-1",
-  "description": "QuickFrame.Data Class Library",
+  "description": "QuickFrame.Mvc Class Library",
   "authors": [ "Drew Burchett" ],
   "tags": [ "" ],
   "projectUrl": "https://github.com/82dsoldier/QuickFrameMVC",
@@ -13,14 +13,15 @@
         "System.Linq": "4.0.1-beta-23516",
         "System.Runtime": "4.0.21-beta-23516",
         "System.Threading": "4.0.11-beta-23516"
-      },
-      "frameworkAssemblies": {
-        "System.Data": "4.0.0.0"
       }
     }
   },
   "dependencies": {
-    "EntityFramework": "6.1.3",
-    "QuickFrame": "0.0.1-alpha-1"
-  }
+    "Microsoft.AspNet.FileProviders.Composite": "1.0.0-rc2-15922",
+    "Microsoft.AspNet.Http": "1.0.0-rc1-final",
+    "Microsoft.AspNet.Mvc.TagHelpers": "6.0.0-rc1-final",
+    "QuickFrame": "0.0.1-alpha-1",
+    "QuickFrame.Data": "0.0.1-alpha-1"
+  },
+  "resource": [ "Views/**" ]
 }

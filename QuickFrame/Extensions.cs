@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+﻿using System.Text.RegularExpressions;
 using System.Web.Script.Serialization;
 
-namespace QuickFrame
-{
+namespace QuickFrame {
+
 	/// <summary>
 	/// A static class containing general extensions
 	/// </summary>
 	public static class Extensions {
 		private static readonly Regex DomainMatch = new Regex("^(?:.*\\\\)?([^@]*)(?:@.*)?");
+
 		/// <summary>
 		/// Converts an existing string to a JSON formatted string
 		/// </summary>
@@ -30,6 +27,7 @@ namespace QuickFrame
 			var m = DomainMatch.Match(val);
 			return m.Groups[1].Value;
 		}
+
 		/// <summary>
 		/// Determines whether the specified string is numeric.
 		/// </summary>

@@ -1,20 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace QuickFrame.Data.Exceptions
-{
+namespace QuickFrame.Data.Exceptions {
+
 	/// <summary>
 	/// An exception thrown when a record is requested that no longer exists in the database
 	/// </summary>
 	/// <seealso cref="System.Exception" />
 	public class RecordDoesNotExistException : Exception {
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RecordDoesNotExistException"/> class.
 		/// </summary>
 		public RecordDoesNotExistException() {
 		}
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RecordDoesNotExistException"/> class.
 		/// </summary>
@@ -22,6 +21,7 @@ namespace QuickFrame.Data.Exceptions
 		public RecordDoesNotExistException(string message)
 			: base(message) {
 		}
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RecordDoesNotExistException"/> class.
 		/// </summary>

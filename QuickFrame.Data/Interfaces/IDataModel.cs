@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace QuickFrame.Data.Interfaces
-{
+namespace QuickFrame.Data.Interfaces {
+
 	/// <summary>
 	/// Interface to be implemented by any data entity providing an Id field and an IsDeleted boolean flag.
 	/// </summary>
@@ -14,6 +11,7 @@ namespace QuickFrame.Data.Interfaces
 	/// in the generic data manipulation classses provided by the IDataService interface.
 	/// </remarks>
 	public interface IDataModelCore<TDataType> {
+
 		/// <summary>
 		/// Gets or sets the unique identifier for the model.
 		/// </summary>
@@ -21,6 +19,7 @@ namespace QuickFrame.Data.Interfaces
 		/// The identifier.
 		/// </value>
 		TDataType Id { get; set; }
+
 		/// <summary>
 		/// Gets or sets a value indicating whether this instance is deleted.
 		/// </summary>
@@ -31,17 +30,14 @@ namespace QuickFrame.Data.Interfaces
 	}
 
 	public interface IDataModelInt : IDataModelCore<int> {
-
 	}
 
 	public interface IDataModelLong : IDataModelCore<long> {
-
 	}
 
 	public interface IDataModelGuid : IDataModelCore<Guid> {
-
 	}
-	public interface IDataModel : IDataModelInt {
 
+	public interface IDataModel : IDataModelInt {
 	}
 }

@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿namespace QuickFrame.Configuration {
 
-namespace QuickFrame.Configuration
-{
 	/// <summary>
 	/// The options from the appsettings.json file that provide database information to the controllers
 	/// </summary>
 	public class DataOptions {
+
 		/// <summary>
 		/// Gets or sets the connection string.
 		/// </summary>

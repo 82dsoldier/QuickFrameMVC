@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
-using System.Threading.Tasks;
 
-namespace QuickFrame
-{
+namespace QuickFrame {
+
 	/// <summary>
 	/// Extensions made for use with Entity Framwork to provide specialized Linq queries.
 	/// </summary>
 	public static class EntityExtensions {
+
 		/// <summary>
 		/// Orders a query by the specified property.
 		/// </summary>
@@ -26,6 +24,7 @@ namespace QuickFrame
 			var methodCall = Expression.Call(typeof(Queryable), "OrderBy", argTypes, source.Expression, lambda);
 			return source.Provider.CreateQuery<TSource>(methodCall);
 		}
+
 		/// <summary>
 		/// Orders a query by the specified property.
 		/// </summary>
@@ -41,6 +40,7 @@ namespace QuickFrame
 			var methodCall = Expression.Call(typeof(Queryable), "OrderByDescending", argTypes, source.Expression, lambda);
 			return source.Provider.CreateQuery<TSource>(methodCall);
 		}
+
 		/// <summary>
 		/// Adds a String.Contains clause to a query.
 		/// </summary>
@@ -57,6 +57,7 @@ namespace QuickFrame
 			var resultExpression = Expression.Call(propertyExp, method, constantVal);
 			return query.Provider.CreateQuery<T>(resultExpression);
 		}
+
 		/// <summary>
 		/// Adds a Where clause to the specified query.
 		/// </summary>
