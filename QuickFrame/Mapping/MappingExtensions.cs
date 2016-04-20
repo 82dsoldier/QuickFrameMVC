@@ -26,7 +26,7 @@ namespace QuickFrame.Mapping
 
 				if (assembly != null)
 					foreach (var obj in assembly.GetTypes().Where(t => t.GetCustomAttribute<ExpressMapAttribute>() != null))
-						MapRegistration.Register(obj)
+						MapRegistration.Register(obj);
 			}
 
 			return services;

@@ -10,6 +10,9 @@ using Autofac.Extensions.DependencyInjection;
 
 namespace QuickFrame.Di
 {
+	/// <summary>
+	/// Provides the method for automatic registration of exported classes
+	/// </summary>
     public static class AutofacExtensions
     {
 		public static IServiceCollection AddAutofac(this IServiceCollection services) {
