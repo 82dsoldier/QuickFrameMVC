@@ -67,7 +67,7 @@ namespace QuickFrame.Data.Interfaces {
 	}
 
 	public interface IDataService<TEntity>
-	: IDataServiceCore<int, TEntity>
+	: IDataServiceInt<TEntity>
 	where TEntity : IDataModelInt {
 	}
 }

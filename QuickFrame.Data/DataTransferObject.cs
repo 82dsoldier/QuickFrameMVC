@@ -16,17 +16,20 @@ namespace QuickFrame.Data {
 	}
 
 	public class DataTransferObjectInt<TSrc, TDest>
-		: DataTransferObjectCore<int, TSrc, TDest>
+		: DataTransferObjectCore<int, TSrc, TDest>, 
+		IDataTransferObjectInt<TSrc, TDest>
 		where TSrc : IDataModelInt {
 	}
 
 	public class DataTransferObjectLong<TSrc, TDest>
-	: DataTransferObjectCore<long, TSrc, TDest>
+	: DataTransferObjectCore<long, TSrc, TDest>,
+		IDataTransferObjectLong<TSrc, TDest>
 	where TSrc : IDataModelLong {
 	}
 
 	public class DataTransferObjectGuid<TSrc, TDest>
-	: DataTransferObjectCore<Guid, TSrc, TDest>
+	: DataTransferObjectCore<Guid, TSrc, TDest>,
+		IDataTransferObjectGuid<TSrc, TDest>
 	where TSrc : IDataModelGuid {
 	}
 

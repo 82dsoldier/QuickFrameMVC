@@ -1,6 +1,6 @@
 {
   "version": "0.0.1-alpha-1",
-  "description": "QuickFrame.Security Class Library",
+  "description": "QuickFrame.Security.AccountControl Class Library",
   "authors": [ "Drew Burchett" ],
   "tags": [ "" ],
   "projectUrl": "https://github.com/82dsoldier/QuickFrameMVC",
@@ -13,11 +13,15 @@
         "System.Linq": "4.0.1-beta-23516",
         "System.Runtime": "4.0.21-beta-23516",
         "System.Threading": "4.0.11-beta-23516"
+      },
+      "frameworkAssemblies": {
+        "System.DirectoryServices": "4.0.0.0",
+        "System.DirectoryServices.AccountManagement": "4.0.0.0"
       }
     }
   },
   "dependencies": {
-    "QuickFrame": "0.0.1-alpha-1",
-    "QuickFrame.Data": "0.0.1-alpha-1"
+    "QuickFrame.Mvc": "0.0.1-alpha-1",
+    "QuickFrame.Security": "1.0.0-*"
   }
 }
