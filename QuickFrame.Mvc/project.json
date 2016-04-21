@@ -21,7 +21,8 @@
     "Microsoft.AspNet.Http": "1.0.0-rc1-final",
     "Microsoft.AspNet.Mvc.TagHelpers": "6.0.0-rc1-final",
     "QuickFrame": "0.0.1-alpha-1",
-    "QuickFrame.Data": "0.0.1-alpha-1"
+    "QuickFrame.Data": "0.0.1-alpha-1",
+    "QuickFrame.Security": "1.0.0-*"
   },
   "resource": [ "Views/**" ]
 }

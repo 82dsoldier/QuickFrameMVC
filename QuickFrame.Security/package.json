@@ -1,0 +1,18 @@
+{
+  "name": "QuickFrameMVCSecurity",
+  "title": "QuickFrame MVC Security",
+  "id": "QuickFrameMVCSecurity",
+  "description": "Security Module for the QuickFrame MVC framework",
+  "author": "Drew Burchett",
+  "license": "GPL-3.0",
+  "version": "0.0.1-alpha-1",
+  "icon": "icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/82dsoldier/QuickFrameMVC.git"
+  },
+  "homepage": "https://github.com/82dsoldier/QuickFrameMVC",
+  "bugs": {
+    "url": "https://github.com/82dsoldier/QuickFrameMVC/issues"
+  }
+}

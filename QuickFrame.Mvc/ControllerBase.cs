@@ -3,8 +3,8 @@ using QuickFrame.Data.Interfaces;
 using System;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Security.Claims;
+using static QuickFrame.Security.AuthorizationExtensions;
 
 namespace QuickFrame.Mvc {
 
@@ -27,7 +27,7 @@ namespace QuickFrame.Mvc {
 
 		protected virtual IActionResult IndexBase<TResult>
 			(int page = 1, int itemsPerPage = 25, string sortColumn = "Name", SortOrder sortOrder = SortOrder.Ascending)
-			where TResult : IDataTransferObjectCore<TDataType, TEntity, TResult> => Authorize(User, () => {
+			where TResult : IDataTransferObjectCore<TDataType, TEntity, TResult> => this.Authorize(User, () => {
 				ViewData["totalItems"] = _dataService.GetCount();
 				return View("Index", _dataService.GetList<TResult>(itemsPerPage * (page - 1), itemsPerPage, sortColumn, sortOrder).ToList());
 			});
@@ -69,9 +69,7 @@ namespace QuickFrame.Mvc {
 			where TModel : IDataTransferObjectCore<TDataType, TEntity, TModel>
 			=> Authorize(User, () => View(_dataService.Get<TModel>(id)));
 
-		protected IActionResult Authorize(ClaimsPrincipal User, Func<IActionResult> func, [CallerMemberName]string callerName = "") {
-			return func();
-		}
+		protected virtual IActionResult Authorize(ClaimsPrincipal user, Func<IActionResult> func) => AuthorizeExecution(user, func);
 
 		public ControllerCore(IDataServiceCore<TDataType, TEntity> dataService) {
 			_dataService = dataService;
