@@ -16,7 +16,7 @@ namespace QuickFrame.Security
     public static class AuthorizationExtensions
     {
 		public static IActionResult AuthorizeExecution(ClaimsPrincipal User, Func<IActionResult> func, [CallerMemberName]string callerName = "") {
-			return func();
+
 			var deniedList = new List<string>();
 			var allowedList = new List<string>();
 

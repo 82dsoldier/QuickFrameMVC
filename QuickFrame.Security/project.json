@@ -17,6 +17,7 @@
     }
   },
   "dependencies": {
+    "Microsoft.Extensions.Primitives": "1.0.0-rc1-final",
     "QuickFrame": "0.0.1-alpha-1",
     "QuickFrame.Data": "0.0.1-alpha-1"
   }
