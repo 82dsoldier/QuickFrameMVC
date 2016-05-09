@@ -16,7 +16,7 @@ namespace QuickFrame.Data {
 	}
 
 	public class DataTransferObjectInt<TSrc, TDest>
-		: DataTransferObjectCore<int, TSrc, TDest>, 
+		: DataTransferObjectCore<int, TSrc, TDest>,
 		IDataTransferObjectInt<TSrc, TDest>
 		where TSrc : IDataModelInt {
 	}
@@ -36,5 +36,37 @@ namespace QuickFrame.Data {
 	public class DataTransferObject<TSrc, TDest>
 	: DataTransferObjectInt<TSrc, TDest>
 	where TSrc : IDataModelInt {
+	}
+
+	public class ConcurrentDataTransferObjectCore<TDataType, TSrc, TDest>
+	: DataTransferObjectCore<TDataType, TSrc, TDest>,
+	IConcurrentDataTransferObjectCore<TDataType, TSrc, TDest>
+	where TSrc : IConcurrentDataModelCore<TDataType> {
+		public byte[] RowVersion { get; set; }
+	}
+
+	public class ConcurrentDataTransferObjectInt<TSrc, TDest>
+		: DataTransferObjectInt<TSrc, TDest>,
+		IConcurrentDataTransferObjectInt<TSrc, TDest>
+		where TSrc : IConcurrentDataModelInt {
+		public byte[] RowVersion { get; set; }
+	}
+	public class ConcurrentDataTransferObjectLong<TSrc, TDest>
+		: DataTransferObjectLong<TSrc, TDest>,
+		IConcurrentDataTransferObjectLong<TSrc, TDest>
+		where TSrc : IConcurrentDataModelLong {
+		public byte[] RowVersion { get; set; }
+	}
+	public class ConcurrentDataTransferObjectGuid<TSrc, TDest>
+		: DataTransferObjectGuid<TSrc, TDest>,
+		IConcurrentDataTransferObjectGuid<TSrc, TDest>
+		where TSrc : IConcurrentDataModelGuid {
+		public byte[] RowVersion { get; set; }
+	}
+	public class ConcurrentDataTransferObject<TSrc, TDest>
+		: DataTransferObjectInt<TSrc, TDest>,
+		IConcurrentDataTransferObjectInt<TSrc, TDest>
+		where TSrc : IConcurrentDataModelInt {
+		public byte[] RowVersion { get; set; }
 	}
 }

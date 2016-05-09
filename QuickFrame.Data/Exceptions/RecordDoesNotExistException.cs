@@ -5,7 +5,7 @@ namespace QuickFrame.Data.Exceptions {
 	/// <summary>
 	/// An exception thrown when a record is requested that no longer exists in the database
 	/// </summary>
-	/// <seealso cref="System.Exception" />
+	/// <seealso cref="System.Exception"/>
 	public class RecordDoesNotExistException : Exception {
 
 		/// <summary>
@@ -26,7 +26,10 @@ namespace QuickFrame.Data.Exceptions {
 		/// Initializes a new instance of the <see cref="RecordDoesNotExistException"/> class.
 		/// </summary>
 		/// <param name="message">The error message that explains the reason for the exception.</param>
-		/// <param name="innerException">The exception that is the cause of the current exception, or a null reference (Nothing in Visual Basic) if no inner exception is specified.</param>
+		/// <param name="innerException">
+		/// The exception that is the cause of the current exception, or a null reference (Nothing in
+		/// Visual Basic) if no inner exception is specified.
+		/// </param>
 		public RecordDoesNotExistException(string message, Exception innerException)
 			: base(message, innerException) {
 		}

@@ -15,7 +15,7 @@ namespace QuickFrame.Data {
 	/// <summary>
 	/// A DbContext that allows logging of all database transactions run through entity framework.
 	/// </summary>
-	/// <seealso cref="System.Data.Entity.DbContext" />
+	/// <seealso cref="System.Data.Entity.DbContext"/>
 	public class TrackingContext : DbContext {
 		private readonly IHttpContextAccessor _contextAccessor;
 
@@ -23,7 +23,10 @@ namespace QuickFrame.Data {
 		/// Initializes a new instance of the <see cref="TrackingContext"/> class.
 		/// </summary>
 		/// <param name="nameOrConnectionString">Either the database name or a connection string.</param>
-		/// <param name="contextAccessor">The <see cref="IHttpContextAccessor" /> allowing access to the current HttpContext and the current user information.</param>
+		/// <param name="contextAccessor">
+		/// The <see cref="IHttpContextAccessor"/> allowing access to the current HttpContext and the
+		/// current user information.
+		/// </param>
 		public TrackingContext(string nameOrConnectionString, IHttpContextAccessor contextAccessor)
 			: base(nameOrConnectionString) {
 			_contextAccessor = contextAccessor;
@@ -41,9 +44,7 @@ namespace QuickFrame.Data {
 		/// <summary>
 		/// Gets or sets a value indicating whether to track all database transactions.
 		/// </summary>
-		/// <value>
-		///   <c>true</c> if database changes are to be tracked; otherwise, <c>false</c>.
-		/// </value>
+		/// <value><c>true</c> if database changes are to be tracked; otherwise, <c>false</c>.</value>
 		public bool TrackChanges { get; set; } = false;
 
 		public DbSet<AuditLog> AuditLogs { get; set; }
@@ -52,8 +53,8 @@ namespace QuickFrame.Data {
 		/// Saves all changes made in this context to the underlying database.
 		/// </summary>
 		/// <returns>
-		/// The number of state entries written to the underlying database. This can include
-		/// state entries for entities and/or relationships. Relationship state entries are created for
+		/// The number of state entries written to the underlying database. This can include state
+		/// entries for entities and/or relationships. Relationship state entries are created for
 		/// many-to-many relationships and relationships where there is no foreign key property
 		/// included in the entity class (often referred to as independent associations).
 		/// </returns>

@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNet.Builder;
+using Microsoft.AspNet.FileProviders;
 using Microsoft.AspNet.Hosting;
 using Microsoft.AspNet.Http.Features;
+using Microsoft.AspNet.Mvc.Razor;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.OptionsModel;
 using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.Net.Http.Server;
 using Newtonsoft.Json;
@@ -28,6 +31,7 @@ namespace QuickFrame.Mvc {
 		}
 
 		public virtual IServiceProvider ConfigureServices(IServiceCollection services) {
+			services.AddEmbeddedFileProviders();
 			services.AddMvc();
 			services.AddOptions();
 			services.AddSession();
@@ -57,6 +61,7 @@ namespace QuickFrame.Mvc {
 			services.AddMapping();
 			services.AddAutofac();
 
+
 			return ComponentContainer.ServiceProvider;
 		}
 
@@ -70,7 +75,6 @@ namespace QuickFrame.Mvc {
 			else
 				app.UseExceptionHandler("/Home/Error");
 
-			app.UseEmbeddedFileProviders(libraryManager, assemblyLoadContextAccessor);
 
 			app.UseIISPlatformHandler();
 
@@ -78,7 +82,12 @@ namespace QuickFrame.Mvc {
 
 			app.UseSession();
 
-			app.UseMvc(routes => { routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}"); });
+			//app.UseEmbeddedFileProviders(assemblyLoadContextAccessor, libraryManager);
+
+			app.UseMvc(routes => {
+				routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
+				routes.MapRoute("defaultArea", "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+			});
 		}
 	}
 }

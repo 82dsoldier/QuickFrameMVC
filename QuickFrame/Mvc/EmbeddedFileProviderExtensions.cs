@@ -14,13 +14,35 @@ namespace QuickFrame.Mvc {
 
 	public static class EmbeddedFileProviderExtensions {
 
-		public static IApplicationBuilder UseEmbeddedFileProviders(this IApplicationBuilder app, ILibraryManager libraryManager, IAssemblyLoadContextAccessor assemblyLoadContextAccessor) {
+		public static IServiceCollection AddEmbeddedFileProviders(this IServiceCollection services) {
+			var assemblyLoadContextAccessor = services.FirstOrDefault(s => s.ServiceType == typeof(IAssemblyLoadContextAccessor)).ImplementationInstance as IAssemblyLoadContextAccessor;
+			var libraryManager = services.FirstOrDefault(s => s.ServiceType == typeof(ILibraryManager)).ImplementationInstance as ILibraryManager;
+
+			List<IFileProvider> providerList = GetFileProviderList(assemblyLoadContextAccessor, libraryManager).ToList();
+
+			services.Configure<RazorViewEngineOptions>(options => {
+				providerList.Add(options.FileProvider);
+				options.FileProvider = new CompositeFileProvider(providerList.ToArray());
+			});
+
+			return services;
+		}
+
+		public static IApplicationBuilder UseEmbeddedFileProviders(this IApplicationBuilder app, IAssemblyLoadContextAccessor assemblyLoadContextAccessor, ILibraryManager libraryManager) {
+
+			List<IFileProvider> providerList = GetFileProviderList(assemblyLoadContextAccessor, libraryManager).ToList();
+
 			IOptions<RazorViewEngineOptions> razorViewEngineOptions =
 				app.ApplicationServices.GetService<IOptions<RazorViewEngineOptions>>();
 
-			List<IFileProvider> providerList = new List<IFileProvider>() {
-				razorViewEngineOptions.Value.FileProvider
-			};
+			providerList.Add(razorViewEngineOptions.Value.FileProvider);
+
+			razorViewEngineOptions.Value.FileProvider = new CompositeFileProvider(providerList);
+
+			return app;
+		}
+
+		private static IEnumerable<IFileProvider> GetFileProviderList(IAssemblyLoadContextAccessor assemblyLoadContextAccessor, ILibraryManager libraryManager) {
 
 			var loadContext = assemblyLoadContextAccessor.Default;
 
@@ -36,14 +58,10 @@ namespace QuickFrame.Mvc {
 					var providerContainer = assembly.GetTypes().FirstOrDefault(t => typeof(IEmbeddedFileProviderContainer).IsAssignableFrom(t) && !t.IsInterface);
 					if (providerContainer != null) {
 						var container = Activator.CreateInstance(providerContainer);
-						providerList.Add((container as IEmbeddedFileProviderContainer).FileProvider);
+						yield return (container as IEmbeddedFileProviderContainer).FileProvider;
 					}
 				}
 			}
-
-			razorViewEngineOptions.Value.FileProvider = new CompositeFileProvider(providerList);
-
-			return app;
 		}
 	}
 }

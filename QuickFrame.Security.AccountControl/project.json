@@ -22,6 +22,6 @@
   },
   "dependencies": {
     "QuickFrame.Mvc": "0.0.1-alpha-1",
-    "QuickFrame.Security": "1.0.0-*"
+    "QuickFrame.Security": "0.0.1-alpha-1"
   }
 }

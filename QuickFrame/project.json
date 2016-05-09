@@ -1,5 +1,5 @@
 {
-  "version": "0.0.1-alpha-1",
+  "version": "0.0.1-beta-1",
   "description": "QuickFrame MVC Base Class Library",
   "authors": [ "Drew Burchett" ],
   "tags": [ "" ],
@@ -17,8 +17,8 @@
         "System.Linq": "4.0.1-beta-23516",
         "System.Runtime": "4.0.21-beta-23516",
         "System.Threading": "4.0.11-beta-23516",
-        "Autofac": "3.5.2",
-        "Expressmapper": "1.8.1",
+        "Autofac": "4.0.0-rc1-177",
+        "Expressmapper": "1.8.0",
         "Microsoft.AspNet.WebPages": "1.0.20105.408",
         "Microsoft.Extensions.COnfiguration": "1.0.0-rc1-final",
         "Microsoft.AspNet.Hosting": "1.0.0-rc1-final",
@@ -37,6 +37,7 @@
     "Microsoft.AspNet.Diagnostics": "1.0.0-rc1-final",
     "Microsoft.AspNet.IISPlatformHandler": "1.0.0-rc1-final",
     "Microsoft.AspNet.StaticFiles": "1.0.0-rc1-final",
+    "Microsoft.Framework.DependencyInjection.Interfaces": "1.0.0-beta4",
     "System.Linq.Queryable": "4.0.1-rc2-23805"
   }
 }

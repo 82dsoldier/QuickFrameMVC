@@ -16,17 +16,17 @@ namespace QuickFrame.Data.Interfaces {
 
 		void CreateAsync<TModel>(TModel model) where TModel : IDataTransferObjectCore<TDataType, TEntity, TModel>;
 
-		void Delete(int id);
+		void Delete(TDataType id);
 
-		void DeleteAsync(int id);
+		void DeleteAsync(TDataType id);
 
-		TEntity Get(int id);
+		TEntity Get(TDataType id);
 
-		Task<TEntity> GetAsync(int id);
+		Task<TEntity> GetAsync(TDataType id);
 
-		TResult Get<TResult>(int id) where TResult : IDataTransferObjectCore<TDataType, TEntity, TResult>;
+		TResult Get<TResult>(TDataType id) where TResult : IDataTransferObjectCore<TDataType, TEntity, TResult>;
 
-		Task<TResult> GetAsync<TResult>(int id) where TResult : IDataTransferObjectCore<TDataType, TEntity, TResult>;
+		Task<TResult> GetAsync<TResult>(TDataType id) where TResult : IDataTransferObjectCore<TDataType, TEntity, TResult>;
 
 		int GetCount(bool includeDeleted = false);
 

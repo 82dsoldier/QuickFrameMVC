@@ -1,5 +1,5 @@
 {
-  "version": "0.0.1-alpha-1",
+  "version": "0.0.1-beta-1",
   "description": "QuickFrame.Mvc Class Library",
   "authors": [ "Drew Burchett" ],
   "tags": [ "" ],
@@ -20,9 +20,9 @@
     "Microsoft.AspNet.FileProviders.Composite": "1.0.0-rc2-15922",
     "Microsoft.AspNet.Http": "1.0.0-rc1-final",
     "Microsoft.AspNet.Mvc.TagHelpers": "6.0.0-rc1-final",
-    "QuickFrame": "0.0.1-alpha-1",
-    "QuickFrame.Data": "0.0.1-alpha-1",
-    "QuickFrame.Security": "1.0.0-*"
+    "QuickFrame": "0.0.1-alpha-3",
+    "QuickFrame.Data": "0.0.1-alpha-2",
+    "QuickFrame.Security": "0.0.1-beta-1"
   },
   "resource": [ "Views/**" ]
 }

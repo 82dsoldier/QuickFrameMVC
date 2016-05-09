@@ -10,7 +10,7 @@ namespace QuickFrame.Mvc {
 			get {
 				return new EmbeddedFileProvider(
 					typeof(EmbeddedFileProviderContainer).GetTypeInfo().Assembly,
-					"DcCommon.Mvc");
+					"QuickFrame.Mvc");
 			}
 		}
 	}

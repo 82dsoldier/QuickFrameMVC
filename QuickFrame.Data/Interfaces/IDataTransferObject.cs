@@ -28,4 +28,29 @@ namespace QuickFrame.Data.Interfaces {
 	: IDataTransferObjectCore<int, TSrc, TDest>
 	where TSrc : IDataModelInt {
 	}
+	public interface IConcurrentDataTransferObjectCore<TDataType, TSrc, TDest>
+		: IConcurrentDataModelCore<TDataType>
+		where TSrc : IConcurrentDataModelCore<TDataType> {
+
+	}
+	public interface IConcurrentDataTransferObjectInt<TSrc, TDest>
+		: IConcurrentDataModelCore<int>
+		where TSrc : IConcurrentDataModelInt {
+
+	}
+	public interface IConcurrentDataTransferObjectLong<TSrc, TDest>
+		: IConcurrentDataModelCore<long>
+		where TSrc : IConcurrentDataModelLong {
+
+	}
+	public interface IConcurrentDataTransferObjectGuid<TSrc, TDest>
+		: IConcurrentDataModelCore<Guid>
+		where TSrc : IConcurrentDataModelGuid {
+
+	}
+	public interface IConcurrentDataTransferObject<TSrc, TDest>
+		: IConcurrentDataTransferObjectInt<TSrc, TDest>
+		where TSrc : IConcurrentDataModelInt {
+
+	}
 }

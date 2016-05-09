@@ -7,7 +7,7 @@ using System.Security.Claims;
 using static QuickFrame.Security.AuthorizationExtensions;
 
 namespace QuickFrame.Mvc {
-
+	 
 	public class ControllerCore<TDataType, TEntity, TIndex, TEdit>
 		: Controller
 		where TEntity : IDataModelCore<TDataType>
@@ -15,6 +15,8 @@ namespace QuickFrame.Mvc {
 		where TEdit : IDataTransferObjectCore<TDataType, TEntity, TEdit> {
 		protected readonly IDataServiceCore<TDataType, TEntity> _dataService;
 
+		[HttpGet]
+		public virtual IActionResult Get() => Authorize(User, () => new ObjectResult(_dataService.GetList<TIndex>()));
 		[HttpGet]
 		public IActionResult Index(int page = 1, int itemsPerPage = 25, string sortColumn = "Name", SortOrder sortOrder = SortOrder.Ascending)
 			=> IndexBase<TIndex>(page, itemsPerPage, sortColumn, sortOrder);
@@ -50,7 +52,7 @@ namespace QuickFrame.Mvc {
 				return View(modelName, model);
 			});
 
-		protected virtual IActionResult EditBase<TModel>(int id, bool closeOnSubmit = false, string modelName = "CreateOrEdit")
+		protected virtual IActionResult EditBase<TModel>(TDataType id, bool closeOnSubmit = false, string modelName = "CreateOrEdit")
 			where TModel : IDataTransferObjectCore<TDataType, TEntity, TModel> => Authorize(User, () => {
 				TempData["CloseOnSubmit"] = closeOnSubmit;
 				return View(modelName, _dataService.Get<TModel>(id));
@@ -65,7 +67,7 @@ namespace QuickFrame.Mvc {
 				return View(modelName, model);
 			});
 
-		protected virtual IActionResult DetailsBase<TModel>(int id)
+		protected virtual IActionResult DetailsBase<TModel>(TDataType id)
 			where TModel : IDataTransferObjectCore<TDataType, TEntity, TModel>
 			=> Authorize(User, () => View(_dataService.Get<TModel>(id)));
 
