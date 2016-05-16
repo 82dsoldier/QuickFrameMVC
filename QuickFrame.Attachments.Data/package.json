@@ -1,8 +1,8 @@
 {
-  "name": "QuickFrameMVCData",
-  "title": "QuickFrame MVC Data",
-  "id": "QuickFrameMVCData",
-  "description": "Data Module for the QuickFrame MVC framework",
+  "name": "QuickFrame.Attachments.Data",
+  "title": "QuickFrame Attachments Data Layer",
+  "id": "QuickFrameAttachmentsData",
+  "description": "Base Module for the QuickFrame MVC framework",
   "author": "Drew Burchett",
   "license": "GPL-3.0",
   "version": "1.0.0-beta-1",

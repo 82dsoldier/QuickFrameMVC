@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "QuickFrame", "QuickFrame\QuickFrame.xproj", "{9412B80B-6E6E-4920-B7B5-9FCEF50D6CB3}"
 EndProject
@@ -12,6 +12,13 @@ EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "QuickFrame.Security", "QuickFrame.Security\QuickFrame.Security.xproj", "{9B214CA4-24D5-41A2-9D50-9B38489D8484}"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "QuickFrame.Security.AccountControl", "QuickFrame.Security.AccountControl\QuickFrame.Security.AccountControl.xproj", "{4AD12226-2625-4597-A309-5E4B74DD6EF1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{AE7F3107-022E-42CA-B0D6-39F4C5DA036C}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "QuickFrame.Attachments.Data", "QuickFrame.Attachments.Data\QuickFrame.Attachments.Data.xproj", "{0B93252C-029B-43C5-931B-BA1F3837FC64}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +46,10 @@ Global
 		{4AD12226-2625-4597-A309-5E4B74DD6EF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4AD12226-2625-4597-A309-5E4B74DD6EF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4AD12226-2625-4597-A309-5E4B74DD6EF1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B93252C-029B-43C5-931B-BA1F3837FC64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B93252C-029B-43C5-931B-BA1F3837FC64}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B93252C-029B-43C5-931B-BA1F3837FC64}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B93252C-029B-43C5-931B-BA1F3837FC64}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

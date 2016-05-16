@@ -1,5 +1,6 @@
 ﻿using ExpressMapper;
 using QuickFrame.Data;
+using QuickFrame.Data.Interfaces;
 using QuickFrame.Di;
 using QuickFrame.Security.Data.Dtos;
 using QuickFrame.Security.Data.Interfaces;
