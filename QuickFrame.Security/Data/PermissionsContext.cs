@@ -26,7 +26,7 @@ namespace QuickFrame.Security.Data {
 		/// string for the base class.
 		/// </remarks>
 		public PermissionsContext(IOptions<DataOptions> configOptions, IHttpContextAccessor contextAccessor)
-			: base(configOptions.Value.ConnectionString, contextAccessor) {
+			: base(configOptions.Value.ConnectionString.Security, contextAccessor) {
 		}
 
 		/// <summary>

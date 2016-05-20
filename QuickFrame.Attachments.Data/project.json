@@ -1,11 +1,10 @@
 {
-  "version": "1.0.0-beta-1",
+  "version": "1.0.0-alpha-1",
   "description": "QuickFrame.Attachments.Data Class Library",
   "authors": [ "Drew Burchett" ],
   "tags": [ "" ],
   "projectUrl": "https://github.com/82dsoldier/QuickFrameMVC",
   "licenseUrl": "https://github.com/82dsoldier/QuickFrameMVC/blob/master/LICENSE",
-
   "frameworks": {
     "net451": {
       "dependencies": {
@@ -17,5 +16,9 @@
         "System.Threading": "4.0.11-beta-23516"
       }
     }
+  },
+  "resource": [ "Views/**" ],
+  "dependencies": {
+    "QuickFrame.Mvc": "1.0.0-beta-1"
   }
 }

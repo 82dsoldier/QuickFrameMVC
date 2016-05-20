@@ -5,7 +5,7 @@
   "description": "Base Module for the QuickFrame MVC framework",
   "author": "Drew Burchett",
   "license": "GPL-3.0",
-  "version": "1.0.0-beta-1",
+  "version": "1.0.0-alpha-1",
   "icon": "icon.png",
   "repository": {
     "type": "git",

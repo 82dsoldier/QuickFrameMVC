@@ -1,0 +1,106 @@
+﻿@model FileHeaderRuleEditDto
+
+@{ 
+    Layout = "_PopupLayout";
+}
+<form qf-form qf-antiforgery="true">
+    <input asp-for="Id" type="hidden" />
+    <div asp-validation-summary="ValidationSummary.All" class="text-danger"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-6">
+                <label asp-for="Name"></label>
+                <a href="#" class="fa fa-question" style="margin-left:15px;" data-toggle="popover" title="Rule Name" data-content="The name of the rule.  Maximum 64 characters."></a>
+                <div>
+                    <input asp-for="Name" class="form-control" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <label asp-for="Description"></label>
+                <a href="#" class="fa fa-question" style="margin-left:15px;" data-toggle="popover" title="Rule Description" data-content="The description of the rule.  Maximum 1024 characters."></a>
+                <div>
+                    <textarea asp-for="Description" class="form-control" ></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6">
+                <label asp-for="Offset"></label>
+                <a href="#" class="fa fa-question" style="margin-left:15px;" data-toggle="popover" title="Offset" data-content="The number of bytes to skip before checking for the specified pattern."></a>
+                <div>
+                    <input type="text" asp-for="Offset" />
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <label asp-for="Location"></label>
+                <a href="#" class="fa fa-question" style="margin-left:15px;" data-toggle="popover" title="Location" data-content="Specifies if the pattern starts at the beginning or the end of the file."></a>
+                <div>
+                    <input type="radio" asp-for="Location" value="0"/>
+                    <label>Beginning</label><br />
+                    <input type="radio" asp-for="Location" value="1" />
+                    <label>End</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <label asp-for="FileHeader"></label>
+                <a href="#" class="fa fa-question" style="margin-left:15px;" data-toggle="popover" title="File Header" data-content="The content to test against.  Describe the header content using comma delimited hexidecimal characters (ie: 0x4D, 0x5A)."></a>
+                <div>
+                    <textarea asp-for="FileHeader" class="form-control"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6">
+                <label for="MimeTypeId">Mime Type</label>
+                <a href="#" class="fa fa-question" style="margin-left:15px;" data-toggle="popover" title="Mime Type" data-content="If the file must match the file header and a specified mime type, specify the type here.  Can be left blank if no mime type is to be used."></a>
+                <div>
+                    <select asp-for="MimeTypeId"
+                            dc-dropdown-box
+                            dc-data-url="@Url.Action("Get", "MimeTypes")"
+                            dc-initial-val="@Model.MimeTypeId"
+                            data-placeholder="Please select a mime type"
+                            class="form-control"></select>
+                </div>
+            </div>
+           <div class="col-sm-6">
+               <br />
+               <div>
+                   <input type="checkbox" asp-for="MustMatchMimeType" />
+                   <label asp-for="MustMatchMimeType"></label>
+                    <a href="#" class="fa fa-question" style="margin-left:15px;" data-toggle="popover" title="Must Match Mime Type" data-content="If this box is checked, the file must match the header and the mime type to be considered a match."></a>
+               </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6">
+                <label asp-for="FileExtension"></label>
+                <a href="#" class="fa fa-question" style="margin-left:15px;" data-toggle="popover" title="File Extension" data-content="If the file must match the file header and a specified file extension, specify the extension here.  Can be left blank if no extension is to be used."></a>
+                <div>
+                    <input asp-for="FileExtension" class="form-control"/>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <br />
+                <div>
+                    <input type="checkbox" asp-for="MustMatchExtension" />
+                    <label asp-for="MustMatchExtension"></label>
+                    <a href="#" class="fa fa-question" style="margin-left:15px;" data-toggle="popover" title="Must Match Extension" data-content="If this box is checked, the file must match the header and the extension to be considered a match."></a>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6">
+                <div>
+                    <input type="checkbox" asp-for="IsAllowed" />
+                    <label asp-for="IsAllowed"></label>
+                    <a href="#" class="fa fa-question" style="margin-left:15px;" data-toggle="popover" title="Is Allowed" data-content="If this box is checked, a match to the rule will be allowed to upload.  If left blank, a match to the rule will be rejected."></a>
+                </div>
+            </div>
+        </div>
+        <input type="submit" value="Submit" />
+    </div>
+</form>

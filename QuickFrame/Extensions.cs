@@ -1,4 +1,6 @@
-﻿using System.Text.RegularExpressions;
+﻿using Microsoft.Extensions.Configuration;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Web.Script.Serialization;
 
 namespace QuickFrame {
@@ -36,6 +38,19 @@ namespace QuickFrame {
 		public static bool IsNumeric(this string val) {
 			int number;
 			return int.TryParse(val, out number);
+		}
+
+		public static IEnumerable<KeyValuePair<string,string>> AsEnumerable(this IConfiguration configuration) {
+			var stack = new Stack<IConfiguration>();
+			stack.Push(configuration);
+			while(stack.Count > 0) {
+				var config = stack.Pop();
+				var section = config as IConfigurationSection;
+				if (section != null)
+					yield return new KeyValuePair<string, string>(section.Path, section.Value);
+				foreach (var child in config.GetChildren())
+					stack.Push(child);
+			}
 		}
 	}
 }

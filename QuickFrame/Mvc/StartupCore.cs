@@ -15,7 +15,9 @@ using QuickFrame.Configuration;
 using QuickFrame.Di;
 using QuickFrame.Mapping;
 using System;
+using System.Collections.Generic;
 using System.Web.WebPages.Html;
+using static QuickFrame.Extensions;
 
 namespace QuickFrame.Mvc {
 
@@ -44,7 +46,7 @@ namespace QuickFrame.Mvc {
 			});
 
 			services.Configure<DataOptions>(dataConfig => {
-				dataConfig.ConnectionString = Configuration["Data:DefaultConnection:ConnectionString"];
+				dataConfig.Load(Configuration);
 			});
 
 			services.Configure<ViewOptions>(viewOptions => {

@@ -33,7 +33,7 @@ namespace QuickFrame.Data {
 		}
 
 		public TrackingContext(IOptions<DataOptions> configOptions, IHttpContextAccessor contextAccessor)
-			: base(configOptions.Value.ConnectionString) {
+			: base(configOptions.Value.ConnectionString.Default) {
 			_contextAccessor = contextAccessor;
 		}
 

@@ -1,11 +1,15 @@
 ﻿using QuickFrame.Data.Interfaces;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace QuickFrame.Data {
 
 	public class DataModelCore<TDataType>
 		: IDataModelCore<TDataType> {
+		[Key]
+		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+		[Required]
 		public TDataType Id { get; set; }
 
 		public bool IsDeleted { get; set; }
@@ -23,10 +27,9 @@ namespace QuickFrame.Data {
 		public bool IsDeleted { get; set; }
 	}
 
-	public class DataModelGuid
-	: IDataModelGuid {
-		public Guid Id { get; set; }
-		public bool IsDeleted { get; set; }
+	public class DataModelGuid : DataModelCore<Guid>, IDataModelGuid {
+		//public Guid Id { get; set; }
+		//public bool IsDeleted { get; set; }
 	}
 
 	public class DataModel
