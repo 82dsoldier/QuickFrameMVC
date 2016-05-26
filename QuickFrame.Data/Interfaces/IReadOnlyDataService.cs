@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Linq;
 using System.Threading.Tasks;
 
-namespace QuickFrame.Data.Interfaces
-{
-    public interface IReadOnlyDataService<TDataType, TEntity> {
+namespace QuickFrame.Data.Interfaces {
+
+	public interface IReadOnlyDataService<TDataType, TEntity> {
+
 		TEntity Get(TDataType id);
 
 		Task<TEntity> GetAsync(TDataType id);

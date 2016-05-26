@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using QuickFrame.Di;
 using QuickFrame.Security.Attributes;
 using QuickFrame.Security.Data.Interfaces;
@@ -9,7 +9,6 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace QuickFrame.Security
 {
@@ -60,10 +59,10 @@ namespace QuickFrame.Security
 			}
 
 			if (deniedList.Any(role => roleList.Any(r => r == role)))
-				return new HttpUnauthorizedResult();
+				return new UnauthorizedResult();
 
 			if (!allowedList.Any(role => roleList.Any(r => r == role)))
-				return new HttpUnauthorizedResult();
+				return new UnauthorizedResult();
 
 			return func();
 #endif

@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNet.Mvc.ViewFeatures;
-using Microsoft.AspNet.Razor.TagHelpers;
+﻿using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace QuickFrame.Mvc.Tags {
 

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.FileProviders;
+﻿using Microsoft.Extensions.FileProviders;
 
 namespace QuickFrame.Interfaces {
 

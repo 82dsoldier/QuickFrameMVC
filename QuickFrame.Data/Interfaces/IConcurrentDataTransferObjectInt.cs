@@ -1,12 +1,7 @@
-using System;
-
-namespace QuickFrame.Data.Interfaces
-{
+namespace QuickFrame.Data.Interfaces {
 
 	public interface IConcurrentDataTransferObjectInt<TSrc, TDest>
-		: IConcurrentDataModelCore<int>
+		: IConcurrentDataTransferObjectCore<int, TSrc, TDest>
 		where TSrc : IConcurrentDataModelInt {
-
 	}
-
 }

@@ -1,23 +1,17 @@
-﻿using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.FileProviders;
-using Microsoft.AspNet.Hosting;
-using Microsoft.AspNet.Http.Features;
-using Microsoft.AspNet.Mvc.Razor;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.OptionsModel;
-using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.Net.Http.Server;
+using Microsoft.VisualStudio.Web.CodeGeneration.DotNet;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using QuickFrame.Configuration;
 using QuickFrame.Di;
 using QuickFrame.Mapping;
 using System;
-using System.Collections.Generic;
-using System.Web.WebPages.Html;
-using static QuickFrame.Extensions;
 
 namespace QuickFrame.Mvc {
 
@@ -26,9 +20,16 @@ namespace QuickFrame.Mvc {
 
 		public StartupCore(IHostingEnvironment env) {
 			var builder = new ConfigurationBuilder()
-				.AddJsonFile("appsettings.json")
-				.AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-				.AddEnvironmentVariables();
+				.SetBasePath(env.ContentRootPath)
+				.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+				.AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
+
+			if(env.IsDevelopment()) {
+				// For more details on using the user secret store see http://go.microsoft.com/fwlink/?LinkID=532709
+				builder.AddUserSecrets();
+			}
+
+			builder.AddEnvironmentVariables();
 			Configuration = builder.Build();
 		}
 
@@ -37,7 +38,6 @@ namespace QuickFrame.Mvc {
 			services.AddMvc();
 			services.AddOptions();
 			services.AddSession();
-			services.AddCaching();
 			services.AddMvc().AddJsonOptions(options => {
 				options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
 
@@ -51,7 +51,7 @@ namespace QuickFrame.Mvc {
 
 			services.Configure<ViewOptions>(viewOptions => {
 				viewOptions.PerPageDefault = Configuration["ViewOptions:PerPageDefault"];
-				foreach (var child in Configuration.GetSection("ViewOptions:PerPageList").GetChildren()) {
+				foreach(var child in Configuration.GetSection("ViewOptions:PerPageList").GetChildren()) {
 					viewOptions.PerPageList.Add(new SelectListItem {
 						Value = child.Key,
 						Text = child.Value,
@@ -63,28 +63,22 @@ namespace QuickFrame.Mvc {
 			services.AddMapping();
 			services.AddAutofac();
 
-
 			return ComponentContainer.ServiceProvider;
 		}
 
-		public virtual void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, ILibraryManager libraryManager, IAssemblyLoadContextAccessor assemblyLoadContextAccessor) {
+		public virtual void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, ILibraryManager libraryManager) {
 			var listener = app.ServerFeatures.Get<WebListener>();
-			if (listener != null)
+			if(listener != null)
 				listener.AuthenticationManager.AuthenticationSchemes = AuthenticationSchemes.NTLM;
 
-			if (env.IsDevelopment())
+			if(env.IsDevelopment())
 				app.UseDeveloperExceptionPage();
 			else
 				app.UseExceptionHandler("/Home/Error");
 
-
-			app.UseIISPlatformHandler();
-
 			app.UseStaticFiles();
 
 			app.UseSession();
-
-			//app.UseEmbeddedFileProviders(assemblyLoadContextAccessor, libraryManager);
 
 			app.UseMvc(routes => {
 				routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");

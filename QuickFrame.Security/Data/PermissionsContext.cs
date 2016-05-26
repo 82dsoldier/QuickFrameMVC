@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNet.Http;
-using Microsoft.Extensions.OptionsModel;
+using Microsoft.Extensions.Options;
 using QuickFrame.Configuration;
 using QuickFrame.Data;
 using QuickFrame.Security.Data.Models;
-using System.ComponentModel.Composition;
+using System.Composition;
 using System.Data.Entity;
 
 namespace QuickFrame.Security.Data {

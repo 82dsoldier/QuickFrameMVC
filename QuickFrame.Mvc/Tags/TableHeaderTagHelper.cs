@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNet.Http;
-using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Mvc.Controllers;
-using Microsoft.AspNet.Mvc.ModelBinding;
-using Microsoft.AspNet.Mvc.Rendering;
-using Microsoft.AspNet.Mvc.ViewFeatures;
-using Microsoft.AspNet.Razor.TagHelpers;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.OptionsModel;
+using Microsoft.Extensions.Options;
 using QuickFrame.Configuration;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -101,25 +101,26 @@ namespace QuickFrame.Mvc.Tags {
 		/// <param name="context">Contains information associated with the current HTML tag.</param>
 		/// <param name="output">A stateful HTML element used to generate an HTML tag.</param>
 		public override void Process(TagHelperContext context, TagHelperOutput output) {
-			if (string.IsNullOrEmpty(DisplayFor)) return;
+			if(string.IsNullOrEmpty(DisplayFor))
+				return;
 
 			var modelMetadata = ViewContext.ViewData.ModelMetadata;
 
 			var props = GetProperties(modelMetadata);
 			var columnName = string.Empty;
 
-			if (!DisplayFor.Contains(".")) {
+			if(!DisplayFor.Contains(".")) {
 				var chosen = props.SingleOrDefault(p => p.PropertyName == DisplayFor);
-				if (chosen != null) {
+				if(chosen != null) {
 					output.Content.SetContent(chosen.GetDisplayName());
 					columnName = chosen.PropertyName;
 				}
 			} else {
 				ModelMetadata chosen = null;
 				var displayNames = DisplayFor.Split('.');
-				foreach (var displayName in displayNames) {
+				foreach(var displayName in displayNames) {
 					chosen = props.SingleOrDefault(p => p.PropertyName == displayName);
-					if (chosen == null) {
+					if(chosen == null) {
 						return;
 					}
 					props = GetProperties(chosen);
@@ -128,18 +129,18 @@ namespace QuickFrame.Mvc.Tags {
 				columnName = chosen.PropertyName;
 			}
 
-			if (Sort) {
+			if(Sort) {
 				var urlHelper = ContextAccessor.HttpContext.RequestServices.GetRequiredService<IUrlHelper>();
 
 				var itemsPerPage = 0;
 				int.TryParse(ContextAccessor.HttpContext.Request.Query["itemsPerPage"], out itemsPerPage);
 
-				if (itemsPerPage == 0)
+				if(itemsPerPage == 0)
 					int.TryParse(ViewOptions.PerPageDefault, out itemsPerPage);
 
 				var currentPage = 1;
 				int.TryParse(ContextAccessor.HttpContext.Request.Query["page"], out currentPage);
-				if (currentPage == 0)
+				if(currentPage == 0)
 					currentPage = 1;
 
 				var controller = (ViewContext.ActionDescriptor as ControllerActionDescriptor)?.ControllerName;
@@ -148,26 +149,28 @@ namespace QuickFrame.Mvc.Tags {
 
 				var ul = new FluentTagBuilder("ul")
 					.AddCssClass("sort-spinner")
-					.Append(new FluentTagBuilder("li")
-						.Append(Generator.GenerateActionLink(string.Empty,
-					action,
-					controller,
-					string.Empty,
-					string.Empty,
-					string.Empty,
-					new { page = currentPage, itemsPerPage, sortColumn = columnName },
-					new { @class = "fa fa-sort-asc" })))
-					.Append(new FluentTagBuilder("li")
-						.Append(Generator.GenerateActionLink(string.Empty,
-							action,
-							controller,
-							string.Empty,
-							string.Empty,
-							string.Empty,
-							new { page = currentPage, itemsPerPage, sortColumn = columnName, sortOrder = SortOrder.Descending },
-							new { @class = "fa fa-sort-desc" })));
+					.AppendHtml(new FluentTagBuilder("li")
+						.AppendHtml(Generator.GenerateActionLink(ViewContext,
+						string.Empty,
+						action,
+						controller,
+						string.Empty,
+						string.Empty,
+						string.Empty,
+						new { page = currentPage, itemsPerPage, sortColumn = columnName },
+						new { @class = "fa fa-sort-asc" })))
+					.AppendHtml(new FluentTagBuilder("li")
+						.AppendHtml(Generator.GenerateActionLink(ViewContext,
+						string.Empty,
+						action,
+						controller,
+						string.Empty,
+						string.Empty,
+						string.Empty,
+						new { page = currentPage, itemsPerPage, sortColumn = columnName, sortOrder = SortOrder.Descending },
+						new { @class = "fa fa-sort-desc" })));
 
-				output.Content.Append(ul);
+				output.Content.AppendHtml(ul);
 			}
 		}
 
@@ -179,8 +182,8 @@ namespace QuickFrame.Mvc.Tags {
 		private List<ModelMetadata> GetProperties(ModelMetadata parent) {
 			var props = new List<ModelMetadata>();
 			var elementTypes = parent.ModelType.GetGenericArguments();
-			if (elementTypes.Any()) {
-				foreach (var elementType in elementTypes) {
+			if(elementTypes.Any()) {
+				foreach(var elementType in elementTypes) {
 					props.AddRange(MetadataProvider.GetMetadataForProperties(elementType));
 				}
 			} else {

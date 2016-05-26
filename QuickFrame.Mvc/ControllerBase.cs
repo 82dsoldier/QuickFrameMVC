@@ -1,12 +1,7 @@
-﻿using Microsoft.AspNet.Mvc;
-using QuickFrame.Data.Interfaces;
-using System;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Security.Claims;
-using static QuickFrame.Security.AuthorizationExtensions;
+﻿using QuickFrame.Data.Interfaces;
 
 namespace QuickFrame.Mvc {
+
 	public class ControllerBase<TEntity, TIndex, TEdit>
 	: ControllerInt<TEntity, TIndex, TEdit>
 	where TEntity : IDataModelInt

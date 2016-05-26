@@ -1,7 +1,7 @@
-﻿using QuickFrame.Data;
+﻿using QuickFrame.Data.Services;
 using QuickFrame.Security.Data.Interfaces;
 using QuickFrame.Security.Data.Models;
-using System.ComponentModel.Composition;
+using System.Composition;
 
 namespace QuickFrame.Security.Data.Services {
 

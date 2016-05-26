@@ -1,15 +1,13 @@
-﻿using Microsoft.AspNet.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using QuickFrame.Data.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using static QuickFrame.Security.AuthorizationExtensions;
 
-namespace QuickFrame.Mvc
-{
+namespace QuickFrame.Mvc {
+
 	public class ControllerCore<TDataType, TEntity, TIndex, TEdit>
 		 : Controller
 		 where TEntity : IDataModelCore<TDataType>
@@ -25,6 +23,7 @@ namespace QuickFrame.Mvc
 
 		[HttpGet]
 		public IActionResult Details(TDataType id) => DetailsBase<TEdit>(id);
+
 		[HttpGet]
 		public IActionResult Edit(TDataType id, bool closeOnSubmit = false) => EditBase<TEdit>(id, closeOnSubmit);
 
@@ -46,7 +45,7 @@ namespace QuickFrame.Mvc
 
 		protected virtual IActionResult CreateBase<TModel>(TModel model, string modelName = "CreateOrEdit")
 			where TModel : IDataTransferObjectCore<TDataType, TEntity, TModel> => Authorize(User, () => {
-				if (ModelState.IsValid) {
+				if(ModelState.IsValid) {
 					ViewData["CloseOnSubmit"] = TempData["CloseOnSubmit"];
 					_dataService.Create(model);
 					ModelState.Clear();
@@ -68,7 +67,7 @@ namespace QuickFrame.Mvc
 
 		protected virtual IActionResult EditBase<TModel>(TModel model, string modelName = "CreateOrEdit")
 			where TModel : IDataTransferObjectCore<TDataType, TEntity, TModel> => Authorize(User, () => {
-				if (ModelState.IsValid) {
+				if(ModelState.IsValid) {
 					_dataService.Save(model);
 				}
 
@@ -76,6 +75,7 @@ namespace QuickFrame.Mvc
 			});
 
 		protected virtual IActionResult GetBase() => Authorize(User, () => new ObjectResult(_dataService.GetList<TIndex>()));
+
 		protected virtual IActionResult IndexBase<TResult>
 			(int page = 1, int itemsPerPage = 25, string sortColumn = "Name", SortOrder sortOrder = SortOrder.Ascending)
 			where TResult : IDataTransferObjectCore<TDataType, TEntity, TResult> => this.Authorize(User, () => {

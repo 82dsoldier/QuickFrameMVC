@@ -1,6 +1,6 @@
 ﻿using Autofac;
 using System;
-using System.ComponentModel.Composition;
+using System.Composition;
 using System.Linq;
 using System.Reflection;
 
@@ -10,17 +10,21 @@ namespace QuickFrame.Di {
 		private static IContainer _container;
 		private static ContainerBuilder _containerBuilder;
 
-		public static ContainerBuilder Builder {
-			get {
-				if (_containerBuilder == null)
+		public static ContainerBuilder Builder
+		{
+			get
+			{
+				if(_containerBuilder == null)
 					_containerBuilder = new ContainerBuilder();
 				return _containerBuilder;
 			}
 		}
 
-		public static IServiceProvider ServiceProvider {
-			get {
-				if (_container == null)
+		public static IServiceProvider ServiceProvider
+		{
+			get
+			{
+				if(_container == null)
 					_container = _containerBuilder.Build();
 				return _container.Resolve<IServiceProvider>();
 			}
@@ -29,17 +33,18 @@ namespace QuickFrame.Di {
 		public static ComponentFactory<TObject> Component<TObject>() => new ComponentFactory<TObject>(_container);
 
 		public static void RegisterAssembly(Assembly assembly) {
-			if (assembly == null) return;
+			if(assembly == null)
+				return;
 
-			foreach (var obj in assembly.GetTypes().Where(t => t.GetCustomAttribute<ExportAttribute>() != null)) {
-				ExportAttribute att = obj.GetCustomAttribute<ExportAttribute>();
-				if (att.ContractType != null) {
-					if (att.ContractType == obj)
+			foreach(var obj in assembly.GetTypes().Where(t => t.GetTypeInfo().GetCustomAttribute<ExportAttribute>() != null)) {
+				ExportAttribute att = obj.GetTypeInfo().GetCustomAttribute<ExportAttribute>();
+				if(att.ContractType != null) {
+					if(att.ContractType == obj)
 						Builder.RegisterType(obj).InstancePerLifetimeScope();
 					else
 						Builder.RegisterType(obj).As(att.ContractType);
 				} else {
-					foreach (var intf in obj.GetInterfaces())
+					foreach(var intf in obj.GetInterfaces())
 						Builder.RegisterType(obj).As(intf);
 				}
 			}

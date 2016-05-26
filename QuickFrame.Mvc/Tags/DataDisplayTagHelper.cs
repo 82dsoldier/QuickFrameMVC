@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNet.Mvc.ModelBinding;
-using Microsoft.AspNet.Mvc.Rendering;
-using Microsoft.AspNet.Mvc.TagHelpers;
-using Microsoft.AspNet.Mvc.ViewFeatures;
-using Microsoft.AspNet.Mvc.ViewFeatures.Internal;
-using Microsoft.AspNet.Razor.TagHelpers;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.TagHelpers;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
+using Microsoft.AspNetCore.Razor.TagHelpers;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -133,25 +133,25 @@ namespace QuickFrame.Mvc.Tags {
 		/// </exception>
 		/// <exception cref="System.InvalidOperationException"></exception>
 		public override void Process(TagHelperContext context, TagHelperOutput output) {
-			if (context == null)
+			if(context == null)
 				throw new ArgumentNullException(nameof(context));
 
-			if (output == null)
+			if(output == null)
 				throw new ArgumentNullException(nameof(output));
 
-			if (ForAttribute == null)
+			if(ForAttribute == null)
 				return;
 
-			if (InputTypeName != null)
+			if(InputTypeName != null)
 				output.CopyHtmlAttribute("type", context);
 
-			if (Value != null)
+			if(Value != null)
 				output.CopyHtmlAttribute(nameof(Value), context);
 
 			var metadata = ForAttribute.Metadata;
 			var modelExplorer = ForAttribute.ModelExplorer;
 
-			if (metadata == null) {
+			if(metadata == null) {
 				throw new InvalidOperationException(
 					string.Format("The {2} was unable to provide metadata about '{1}' expression value '{3}' for {0}.",
 						"<input>",
@@ -162,7 +162,7 @@ namespace QuickFrame.Mvc.Tags {
 
 			string inputType;
 			string inputTypeHint;
-			if (string.IsNullOrEmpty(InputTypeName)) {
+			if(string.IsNullOrEmpty(InputTypeName)) {
 				inputType = GetInputType(modelExplorer, out inputTypeHint);
 			} else {
 				inputType = InputTypeName.ToLowerInvariant();
@@ -171,7 +171,7 @@ namespace QuickFrame.Mvc.Tags {
 
 			var format = string.IsNullOrEmpty(Format) ? GetFormat(modelExplorer, inputTypeHint, inputType) : Format;
 
-			if (format == "checkbox") {
+			if(format == "checkbox") {
 				GenerateCheckBox(modelExplorer, output);
 			} else {
 				var val = string.IsNullOrEmpty(Value) ? ForAttribute.Model : Value;
@@ -190,37 +190,37 @@ namespace QuickFrame.Mvc.Tags {
 		private void GenerateCheckBox(ModelExplorer modelExplorer, TagHelperOutput output) {
 			var htmlAttributes = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 
-			for (var i = 0; i < output.Attributes.Count; i++) {
+			for(var i = 0; i < output.Attributes.Count; i++) {
 				var attribute = output.Attributes[i];
-				if (!htmlAttributes.ContainsKey(attribute.Name)) {
+				if(!htmlAttributes.ContainsKey(attribute.Name)) {
 					htmlAttributes.Add(attribute.Name, attribute.Value);
 				}
 			}
 
-			if (!htmlAttributes.ContainsKey("disabled"))
+			if(!htmlAttributes.ContainsKey("disabled"))
 				htmlAttributes.Add("disabled", "disabled");
 
 			var checkBoxTag = Generator.GenerateCheckBox(
 				ViewContext,
 				modelExplorer,
 				ForAttribute.Name, null, htmlAttributes);
-			if (checkBoxTag != null) {
+			if(checkBoxTag != null) {
 				output.Attributes.Clear();
 				output.TagName = null;
 
 				var renderingMode =
 					output.TagMode == TagMode.SelfClosing ? TagRenderMode.SelfClosing : TagRenderMode.StartTag;
 				checkBoxTag.TagRenderMode = renderingMode;
-				output.Content.Append(checkBoxTag);
+				output.Content.AppendHtml(checkBoxTag);
 
 				var hiddenForCheckboxTag = Generator.GenerateHiddenForCheckbox(ViewContext, modelExplorer, ForAttribute.Name);
-				if (hiddenForCheckboxTag != null) {
+				if(hiddenForCheckboxTag != null) {
 					hiddenForCheckboxTag.TagRenderMode = renderingMode;
 
-					if (ViewContext.FormContext.CanRenderAtEndOfForm) {
+					if(ViewContext.FormContext.CanRenderAtEndOfForm) {
 						ViewContext.FormContext.EndOfFormContent.Add(hiddenForCheckboxTag);
 					} else {
-						output.Content.Append(hiddenForCheckboxTag);
+						output.Content.AppendHtml(hiddenForCheckboxTag);
 					}
 				}
 			}
@@ -233,9 +233,9 @@ namespace QuickFrame.Mvc.Tags {
 		/// <param name="inputTypeHint">The input type hint.</param>
 		/// <returns></returns>
 		private string GetInputType(ModelExplorer modelExplorer, out string inputTypeHint) {
-			foreach (var hint in GetInputTypeHints(modelExplorer)) {
+			foreach(var hint in GetInputTypeHints(modelExplorer)) {
 				string inputType;
-				if (DefaultInputTypes.TryGetValue(hint, out inputType)) {
+				if(DefaultInputTypes.TryGetValue(hint, out inputType)) {
 					inputTypeHint = hint;
 					return inputType;
 				}
@@ -251,20 +251,20 @@ namespace QuickFrame.Mvc.Tags {
 		/// <param name="modelExplorer">The model explorer.</param>
 		/// <returns></returns>
 		private static IEnumerable<string> GetInputTypeHints(ModelExplorer modelExplorer) {
-			if (!string.IsNullOrEmpty(modelExplorer.Metadata.TemplateHint)) {
+			if(!string.IsNullOrEmpty(modelExplorer.Metadata.TemplateHint)) {
 				yield return modelExplorer.Metadata.TemplateHint;
 			}
 
-			if (!string.IsNullOrEmpty(modelExplorer.Metadata.DataTypeName)) {
+			if(!string.IsNullOrEmpty(modelExplorer.Metadata.DataTypeName)) {
 				yield return modelExplorer.Metadata.DataTypeName;
 			}
 
 			var fieldType = modelExplorer.ModelType;
-			if (typeof(bool?) != fieldType) {
+			if(typeof(bool?) != fieldType) {
 				fieldType = modelExplorer.Metadata.UnderlyingOrModelType;
 			}
 
-			foreach (var typeName in TemplateRenderer.GetTypeNames(modelExplorer.Metadata, fieldType)) {
+			foreach(var typeName in TemplateRenderer.GetTypeNames(modelExplorer.Metadata, fieldType)) {
 				yield return typeName;
 			}
 		}
@@ -279,11 +279,11 @@ namespace QuickFrame.Mvc.Tags {
 		private string GetFormat(ModelExplorer modelExplorer, string inputTypeHint, string inputType) {
 			string format;
 			string rfc3339Format;
-			if (string.Equals("decimal", inputTypeHint, StringComparison.OrdinalIgnoreCase) &&
+			if(string.Equals("decimal", inputTypeHint, StringComparison.OrdinalIgnoreCase) &&
 				string.Equals("text", inputType, StringComparison.Ordinal) &&
 				string.IsNullOrEmpty(modelExplorer.Metadata.EditFormatString)) {
 				format = "{0:0.00}";
-			} else if (Rfc3339Formats.TryGetValue(inputType, out rfc3339Format) &&
+			} else if(Rfc3339Formats.TryGetValue(inputType, out rfc3339Format) &&
 					   ViewContext.Html5DateRenderingMode == Html5DateRenderingMode.Rfc3339 &&
 					   !modelExplorer.Metadata.HasNonDefaultEditFormat &&
 					   (typeof(DateTime) == modelExplorer.ModelType || typeof(DateTimeOffset) == modelExplorer.ModelType)) {

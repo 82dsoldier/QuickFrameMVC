@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using static QuickFrame.Extensions;
 
 namespace QuickFrame.Configuration {
 
@@ -18,7 +17,9 @@ namespace QuickFrame.Configuration {
 		/// The connection string.
 		/// </value>
 		public ConnectionStringData ConnectionString { get; set; } = new ConnectionStringData();
+
 		public bool UseFilestream { get; set; } = false;
+
 		public void Load(IConfigurationRoot config) {
 			foreach(var configSection in config.AsEnumerable()) {
 				if(configSection.Key.StartsWith("Data:", StringComparison.CurrentCultureIgnoreCase) && !String.IsNullOrEmpty(configSection.Value)) {
@@ -37,39 +38,48 @@ namespace QuickFrame.Configuration {
 
 	public class ConnectionStringData {
 		private Dictionary<string, string> _connectionStringList;
-		public string Default {
-			get {
-				if (_connectionStringList == null)
+
+		public string Default
+		{
+			get
+			{
+				if(_connectionStringList == null)
 					return null;
-				if (_connectionStringList.Count == 0)
+				if(_connectionStringList.Count == 0)
 					return null;
-				if (_connectionStringList.ContainsKey("ConnectionString"))
+				if(_connectionStringList.ContainsKey("ConnectionString"))
 					return _connectionStringList["ConnectionString"];
-				if (_connectionStringList.ContainsKey("DefaultConnectionString"))
+				if(_connectionStringList.ContainsKey("DefaultConnectionString"))
 					return _connectionStringList["DefaultConnectionString"];
 				return _connectionStringList.First().Value;
 			}
 		}
 
-		public string Security {
-			get {
-				if (_connectionStringList == null)
+		public string Security
+		{
+			get
+			{
+				if(_connectionStringList == null)
 					return null;
-				if (_connectionStringList.Count == 0)
+				if(_connectionStringList.Count == 0)
 					return null;
-				if (_connectionStringList.ContainsKey("Security"))
+				if(_connectionStringList.ContainsKey("Security"))
 					return _connectionStringList["Security"];
 				return Default;
 			}
 		}
-		public string this[string index] {
-			get {
-				if (_connectionStringList == null)
+
+		public string this[string index]
+		{
+			get
+			{
+				if(_connectionStringList == null)
 					return null;
 				return _connectionStringList.ContainsKey(index) ? _connectionStringList[index] : null;
 			}
-			set {
-				if (_connectionStringList == null)
+			set
+			{
+				if(_connectionStringList == null)
 					_connectionStringList = new Dictionary<string, string>();
 				_connectionStringList.Add(index, value);
 			}

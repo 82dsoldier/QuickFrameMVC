@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNet.Http;
-using Microsoft.Extensions.OptionsModel;
+using Microsoft.Extensions.Options;
 using QuickFrame.Configuration;
 using QuickFrame.Data.Models;
 using System;
@@ -59,8 +59,9 @@ namespace QuickFrame.Data {
 		/// included in the entity class (often referred to as independent associations).
 		/// </returns>
 		public override int SaveChanges() {
-			if (!TrackChanges) return base.SaveChanges();
-			foreach (
+			if(!TrackChanges)
+				return base.SaveChanges();
+			foreach(
 				var log in
 					ChangeTracker.Entries()
 						.Where(p => p.State == EntityState.Added || p.State == EntityState.Deleted || p.State == EntityState.Modified)
@@ -89,8 +90,8 @@ namespace QuickFrame.Data {
 				.First(mp => mp.Name == "KeyMembers")
 				.Value)?.ToList()[0]?.Name;
 
-			if (entity.State == EntityState.Modified) {
-				foreach (var propertyName in entity.CurrentValues.PropertyNames.Where(propertyName => !Equals(entity.OriginalValues.GetValue<object>(propertyName), entity.CurrentValues.GetValue<object>(propertyName)))) {
+			if(entity.State == EntityState.Modified) {
+				foreach(var propertyName in entity.CurrentValues.PropertyNames.Where(propertyName => !Equals(entity.OriginalValues.GetValue<object>(propertyName), entity.CurrentValues.GetValue<object>(propertyName)))) {
 					yield return new AuditLog {
 						UserId = userId,
 						EventDate = changeTime,

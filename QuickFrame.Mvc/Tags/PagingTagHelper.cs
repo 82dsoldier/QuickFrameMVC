@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNet.Http;
-using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Mvc.Controllers;
-using Microsoft.AspNet.Mvc.Rendering;
-using Microsoft.AspNet.Mvc.ViewFeatures;
-using Microsoft.AspNet.Razor.TagHelpers;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.OptionsModel;
+using Microsoft.Extensions.Options;
 using QuickFrame.Configuration;
 using System;
 using System.Collections.Generic;
@@ -113,10 +113,10 @@ namespace QuickFrame.Mvc.Tags {
 
 			var itemsPerPage = 0;
 
-			if (ItemsPerPage != null)
+			if(ItemsPerPage != null)
 				int.TryParse(ItemsPerPage.ToString(), out itemsPerPage);
 
-			if (itemsPerPage == 0)
+			if(itemsPerPage == 0)
 				int.TryParse(ViewOptions.PerPageDefault, out itemsPerPage);
 
 			var currentPage = 1;
@@ -127,20 +127,20 @@ namespace QuickFrame.Mvc.Tags {
 
 			int.TryParse(TotalItems?.ToString(), out totalItems);
 
-			if (totalItems > itemsPerPage) {
+			if(totalItems > itemsPerPage) {
 				//TODO:  Check for zero itemsPerPage.  Shouldn't ever happen unless the appsettings.json is screwed up
 				var totalPages = (totalItems + (itemsPerPage - 1)) / itemsPerPage;
 
-				if (string.IsNullOrEmpty(Controller))
+				if(string.IsNullOrEmpty(Controller))
 					Controller = (ViewContext.ActionDescriptor as ControllerActionDescriptor)?.ControllerName;
 
-				if (string.IsNullOrEmpty(Action))
+				if(string.IsNullOrEmpty(Action))
 					Action = "Index";
 
 				var pageList = new List<string>();
 				pageList.Add("«");
 				pageList.Add("‹");
-				switch (totalPages) {
+				switch(totalPages) {
 					case 2:
 						pageList.Add("1");
 						pageList.Add("2");
@@ -149,17 +149,17 @@ namespace QuickFrame.Mvc.Tags {
 					case 3:
 					case 4:
 					case 5:
-						for (var i = 1; i < totalPages; i++)
+						for(var i = 1; i < totalPages; i++)
 							pageList.Add(i.ToString());
 						break;
 
 					default:
-						if (currentPage < 4) {
-							for (var i = 1; i < 6; i++)
+						if(currentPage < 4) {
+							for(var i = 1; i < 6; i++)
 								pageList.Add(i.ToString());
 						} else {
 							var endPage = currentPage + 2 < totalPages ? currentPage + 3 : totalPages + 1;
-							for (var i = endPage - 5; i < endPage; i++)
+							for(var i = endPage - 5; i < endPage; i++)
 								pageList.Add(i.ToString());
 						}
 						break;
@@ -171,21 +171,22 @@ namespace QuickFrame.Mvc.Tags {
 					.AddCssClass("pagination pagination-sm")
 					.MergeAttribute("style", "display:inline;");
 
-				foreach (var page in pageList) {
+				foreach(var page in pageList) {
 					object routeValues = null;
-					if (page.IsNumeric())
+					if(page.IsNumeric())
 						routeValues = new { page, itemsPerPage };
-					else if (page == "«")
+					else if(page == "«")
 						routeValues = new { page = 1, itemsPerPage };
-					else if (page == "‹")
+					else if(page == "‹")
 						routeValues = new { page = currentPage - 1 > 0 ? currentPage - 1 : 1, itemsPerPage };
-					else if (page == "›")
+					else if(page == "›")
 						routeValues = new { page = currentPage + 1 <= totalPages ? currentPage + 1 : totalPages, itemsPerPage };
-					else if (page == "»")
+					else if(page == "»")
 						routeValues = new { page = totalPages, itemsPerPage };
 
 					var li = new FluentTagBuilder("li")
-						.Append(Generator.GenerateActionLink(page,
+						.AppendHtml(Generator.GenerateActionLink(ViewContext,
+							page,
 							Action,
 							Controller,
 							string.Empty,
@@ -193,11 +194,11 @@ namespace QuickFrame.Mvc.Tags {
 							string.Empty,
 							routeValues, null));
 
-					if (page.IsNumeric()) {
-						if (Convert.ToInt32(page) == currentPage)
+					if(page.IsNumeric()) {
+						if(Convert.ToInt32(page) == currentPage)
 							li.AddCssClass("active");
 					}
-					list.Append(li);
+					list.AppendHtml(li);
 				}
 
 				var perPageSelect = new FluentTagBuilder("select")
@@ -207,19 +208,19 @@ namespace QuickFrame.Mvc.Tags {
 					.AddCssClass("itemCountDropdown form-control")
 					.MergeAttribute("onchange", "javascript:window.location.href = $('.itemCountDropdown option:selected').attr('tag')");
 
-				foreach (var item in ViewOptions.PerPageList) {
+				foreach(var item in ViewOptions.PerPageList) {
 					item.Selected = item.Value == itemsPerPage.ToString();
 					var option = new FluentTagBuilder("option")
 						.MergeAttribute("value", item.Value)
-						.AppendHtml(item.Text)
+						.Append(item.Text)
 						.MergeAttribute("tag", urlHelper.Action(Action, Controller, new { page = 1, itemsPerPage = item.Value }));
 
-					if (item.Selected)
+					if(item.Selected)
 						option.MergeAttribute("selected", "selected");
-					perPageSelect.Append(option);
+					perPageSelect.AppendHtml(option);
 				}
-				output.PostElement.Append(perPageSelect);
-				output.PostElement.Append(list);
+				output.PostElement.AppendHtml(perPageSelect);
+				output.PostElement.AppendHtml(list);
 			}
 		}
 	}

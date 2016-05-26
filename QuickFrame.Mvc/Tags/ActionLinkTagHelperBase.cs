@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNet.Mvc.Rendering;
-using Microsoft.AspNet.Mvc.ViewFeatures;
-using Microsoft.AspNet.Razor.TagHelpers;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Razor.TagHelpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,16 +29,16 @@ namespace QuickFrame.Mvc.Tags {
 		public ViewContext ViewContext { get; set; }
 
 		public override void Process(TagHelperContext context, TagHelperOutput output) {
-			if (String.IsNullOrEmpty(Controller))
+			if(String.IsNullOrEmpty(Controller))
 				Controller = ViewContext.RouteData.Values["controller"].ToString();
 
-			if (String.IsNullOrEmpty(Action))
+			if(String.IsNullOrEmpty(Action))
 				Action = ViewContext.RouteData.Values["action"].ToString();
 
 			var width = "";
 			var height = "";
 
-			if (WindowSize != FancyBoxSize.None) {
+			if(WindowSize != FancyBoxSize.None) {
 				width = FancyBoxSizes[WindowSize].Width;
 				height = FancyBoxSizes[WindowSize].Height;
 			}
@@ -48,7 +48,8 @@ namespace QuickFrame.Mvc.Tags {
 				kvp => (object)kvp.Value,
 				StringComparer.OrdinalIgnoreCase);
 
-			TagBuilder link = _generator.GenerateActionLink("",
+			TagBuilder link = _generator.GenerateActionLink(ViewContext,
+				"",
 				Action,
 				Controller,
 				String.Empty,
@@ -57,16 +58,16 @@ namespace QuickFrame.Mvc.Tags {
 				routeValues,
 				output.Attributes);
 
-			if (!String.IsNullOrEmpty(width))
+			if(!String.IsNullOrEmpty(width))
 				link.MergeAttribute("data-width", width, true);
 
-			if (!String.IsNullOrEmpty(height))
+			if(!String.IsNullOrEmpty(height))
 				link.MergeAttribute("data-height", height, true);
 
 			link.AddCssClass(htmlClass);
 
 			link.Attributes.Add("qf-fancybox", "");
-			output.Content.Append(link);
+			output.Content.AppendHtml(link);
 		}
 
 		public ActionLinkTagHelperBase(IHtmlGenerator generator) {

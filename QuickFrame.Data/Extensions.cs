@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
+using System.Reflection;
 
-namespace QuickFrame.Data
-{
-    public static class Extensions
-    {
+namespace QuickFrame.Data {
+
+	public static class Extensions {
+
 		/// <summary>
 		/// Orders a query by the specified property.
 		/// </summary>
@@ -51,7 +50,7 @@ namespace QuickFrame.Data
 		public static IQueryable<T> QueryContains<T>(this IQueryable<T> query, string filterColumn, string val) {
 			var parameterExp = Expression.Parameter(typeof(T), "type");
 			var propertyExp = Expression.Property(parameterExp, filterColumn);
-			var method = typeof(string).GetMethod("Contains", new[] { typeof(string) });
+			var method = typeof(string).GetTypeInfo().GetMethod("Contains", new[] { typeof(string) });
 			var constantVal = Expression.Constant(val, typeof(string));
 			var resultExpression = Expression.Call(propertyExp, method, constantVal);
 			return query.Provider.CreateQuery<T>(resultExpression);
@@ -68,7 +67,7 @@ namespace QuickFrame.Data
 		/// <returns></returns>
 		public static IQueryable<TSource> Where<TSource, TConfigurable>(this IQueryable<TSource> source, TConfigurable val, string column) {
 			var parameter = Expression.Parameter(typeof(TSource), "obj");
-			var propertyAccess = Expression.MakeMemberAccess(parameter, typeof(TSource).GetProperty(column));
+			var propertyAccess = Expression.MakeMemberAccess(parameter, typeof(TSource).GetTypeInfo().GetProperty(column));
 			var constant = Expression.Constant(val, typeof(TConfigurable));
 			var exp = Expression.Equal(propertyAccess, constant);
 			Expression result = Expression.Call(typeof(Queryable), "Where", new[] { source.ElementType }, source.Expression,

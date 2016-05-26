@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Authorization.Infrastructure;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 using QuickFrame.Security.Data.Interfaces;
-using System.ComponentModel.Composition;
+using System.Composition;
 using System.Linq;
 using System.Security.Claims;
 
@@ -23,7 +23,7 @@ namespace QuickFrame.Security.Policies {
 
 		protected override void Handle(AuthorizationContext context, OperationAuthorizationRequirement requirement, string resource) {
 			//First check to see if the user is directly in the role
-			if (
+			if(
 				_siteUsersData.IsUserInRole(
 					context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.PrimarySid.ToString())?.Value, resource)) {
 				context.Succeed(requirement);
@@ -32,7 +32,7 @@ namespace QuickFrame.Security.Policies {
 
 			//If not, check groups that may belong to the role.
 
-			if (context.User.Claims.Where(
+			if(context.User.Claims.Where(
 				c => c.Type == ClaimTypes.GroupSid.ToString() || c.Type == ClaimTypes.PrimaryGroupSid.ToString()).Any(groupName => _siteGroupsData.IsGroupInRole(groupName.Value, resource))) {
 				context.Succeed(requirement);
 				return;

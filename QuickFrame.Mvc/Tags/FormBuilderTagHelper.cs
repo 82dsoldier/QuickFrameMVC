@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNet.Mvc.Rendering;
-using Microsoft.AspNet.Mvc.TagHelpers;
-using Microsoft.AspNet.Mvc.ViewFeatures;
-using Microsoft.AspNet.Razor.TagHelpers;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.TagHelpers;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace QuickFrame.Mvc.Tags {
 
@@ -26,8 +26,8 @@ namespace QuickFrame.Mvc.Tags {
 				ViewContext.RouteData.Values["controller"].ToString(), null, null, null);
 			output.MergeAttributes(tagBuilder);
 
-			if (Antiforgery == true)
-				output.PostContent.Append(Generator.GenerateAntiforgery(ViewContext));
+			if(Antiforgery == true)
+				output.PostContent.AppendHtml(Generator.GenerateAntiforgery(ViewContext));
 		}
 	}
 }

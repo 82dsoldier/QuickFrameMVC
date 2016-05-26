@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿namespace QuickFrame.Data.Interfaces {
 
-namespace QuickFrame.Data.Interfaces
-{
-    public interface IGenericDataService<TDataType, TEntity> : IReadOnlyDataService<TDataType, TEntity> {
+	public interface IGenericDataService<TDataType, TEntity> : IReadOnlyDataService<TDataType, TEntity> {
+
 		void Create(TEntity model);
 
 		void CreateAsync(TEntity model);
@@ -17,6 +13,7 @@ namespace QuickFrame.Data.Interfaces
 		void Delete(TDataType id);
 
 		void DeleteAsync(TDataType id);
+
 		void Save(TEntity model);
 
 		void SaveAsync(TEntity model);

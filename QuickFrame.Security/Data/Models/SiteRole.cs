@@ -1,4 +1,4 @@
-﻿using QuickFrame.Data;
+﻿using QuickFrame.Data.Models;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
