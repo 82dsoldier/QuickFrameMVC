@@ -15,7 +15,7 @@ namespace QuickFrame.Mvc.Tags {
 	/// <summary>
 	/// Creates an HTML tag that is used to generate paging for a table that is larger than the specified number of elements.
 	/// </summary>
-	/// <seealso cref="Microsoft.AspNet.Razor.TagHelpers.TagHelper" />
+	/// <seealso cref="Microsoft.AspNetCore.Razor.TagHelpers.TagHelper" />
 	[HtmlTargetElement("qf-paging", TagStructure = TagStructure.NormalOrSelfClosing)]
 	public class PagingTagHelper : TagHelper {
 
@@ -103,7 +103,7 @@ namespace QuickFrame.Mvc.Tags {
 		public ViewContext ViewContext { get; set; }
 
 		/// <summary>
-		/// Synchronously executes the <see cref="T:Microsoft.AspNet.Razor.TagHelpers.TagHelper" /> with the given <paramref name="context" /> and
+		/// Synchronously executes the <see cref="T:Microsoft.AspNetCore.Razor.TagHelpers.TagHelper" /> with the given <paramref name="context" /> and
 		/// <paramref name="output" />.
 		/// </summary>
 		/// <param name="context">Contains information associated with the current HTML tag.</param>

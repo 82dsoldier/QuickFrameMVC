@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyModel;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
-using Microsoft.VisualStudio.Web.CodeGeneration.DotNet;
 using QuickFrame.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -19,9 +19,7 @@ namespace QuickFrame.Mvc {
 	public static class EmbeddedFileProviderExtensions {
 
 		public static IServiceCollection AddEmbeddedFileProviders(this IServiceCollection services) {
-			var libraryManager = services.FirstOrDefault(s => s.ServiceType == typeof(ILibraryManager)).ImplementationInstance as ILibraryManager;
-
-			List<IFileProvider> providerList = GetFileProviderList(libraryManager).ToList();
+			List<IFileProvider> providerList = GetFileProviderList().ToList();
 
 			services.Configure<RazorViewEngineOptions>(options => {
 				foreach(var provider in providerList)
@@ -31,8 +29,8 @@ namespace QuickFrame.Mvc {
 			return services;
 		}
 
-		public static IApplicationBuilder UseEmbeddedFileProviders(this IApplicationBuilder app, ILibraryManager libraryManager) {
-			List<IFileProvider> providerList = GetFileProviderList(libraryManager).ToList();
+		public static IApplicationBuilder UseEmbeddedFileProviders(this IApplicationBuilder app) {
+			List<IFileProvider> providerList = GetFileProviderList().ToList();
 
 			IOptions<RazorViewEngineOptions> razorViewEngineOptions =
 				app.ApplicationServices.GetService<IOptions<RazorViewEngineOptions>>();
@@ -43,9 +41,24 @@ namespace QuickFrame.Mvc {
 			return app;
 		}
 
-		private static IEnumerable<IFileProvider> GetFileProviderList(ILibraryManager libraryManager) {
+		private static IEnumerable<IFileProvider> GetFileProviderList() {
 #if NETCOREAPP1_0
-			foreach (var library in libraryManager.GetLibraries()) {
+			//This code should fix this when I get around to it:
+			/*
+			var loadableAssemblies = new List<Assembly>();
+
+var deps = DependencyContext.Default;
+foreach (var compilationLibrary in deps.CompileLibraries)
+{
+    if (compilationLibrary.Name.Contains(projectNamespace))
+    {
+        var assembly = Assembly.Load(new AssemblyName(compilationLibrary.Name));
+        loadableAssemblies.Add(assembly);
+    }
+}*/
+
+			//This code no longer works
+/*			foreach (var library in libraryManager.GetLibraries()) {
 				Assembly assembly = null;
 				try {
 					assembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(library.Path);
@@ -60,16 +73,40 @@ namespace QuickFrame.Mvc {
 						yield return (container as IEmbeddedFileProviderContainer).FileProvider;
 					}
 				}
-			}
+			}*/
+			return null;
 #else
-			foreach(var assemblyName in Assembly.GetAssembly(typeof(EmbeddedFileProviderExtensions)).GetReferencedAssemblies()) {
-				var assembly = Assembly.Load(assemblyName);
-				var providerContainer = assembly.GetTypes().FirstOrDefault(t => typeof(IEmbeddedFileProviderContainer).IsAssignableFrom(t) && !t.GetTypeInfo().IsInterface);
-				if(providerContainer != null) {
-					var container = Activator.CreateInstance(providerContainer);
-					yield return (container as IEmbeddedFileProviderContainer).FileProvider;
+			var deps = DependencyContext.Default;
+			foreach(var compilationLibrary in deps.CompileLibraries) {
+				//if(compilationLibrary.Name.Contains(projectNamespace)) {
+				Assembly assembly = null;
+				try {
+					assembly = Assembly.Load(new AssemblyName(compilationLibrary.Name));
+				} catch {
+				}
+				if(assembly != null) {
+					Type providerContainer = null;
+					try {
+						providerContainer = assembly.GetTypes().FirstOrDefault(t => typeof(IEmbeddedFileProviderContainer).IsAssignableFrom(t) && !t.GetTypeInfo().IsInterface);
+					} catch {
+					}
+					if(providerContainer != null) {
+						var container = Activator.CreateInstance(providerContainer);
+						yield return (container as IEmbeddedFileProviderContainer).FileProvider;
+					}
 				}
 			}
+
+			//foreach(var assemblyName in Assembly.GetAssembly(typeof(EmbeddedFileProviderExtensions)).GetReferencedAssemblies()) {
+			//	try {
+			//		var assembly = Assembly.Load(assemblyName);
+			//		var providerContainer = assembly.GetTypes().FirstOrDefault(t => typeof(IEmbeddedFileProviderContainer).IsAssignableFrom(t) && !t.GetTypeInfo().IsInterface);
+			//		if(providerContainer != null) {
+			//			var container = Activator.CreateInstance(providerContainer);
+			//			yield return (container as IEmbeddedFileProviderContainer).FileProvider;
+			//		}
+			//	} finally {
+			//	}
 #endif
 		}
 	}

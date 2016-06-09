@@ -8,7 +8,7 @@ using System.Text.Encodings.Web;
 namespace QuickFrame.Mvc {
 
 	/// <summary>
-	/// A new version of <see cref="Microsoft.AspNet.Mvc.Rendering.TagBuilder" /> in which commands used to set options on the tag builder can be chained together like
+	/// A new version of <see cref="Microsoft.AspNetCore.Mvc.Rendering.TagBuilder" /> in which commands used to set options on the tag builder can be chained together like
 	/// Linq queries.
 	/// </summary>
 	/// <seealso cref="IHtmlContent" />
@@ -26,7 +26,7 @@ namespace QuickFrame.Mvc {
 		/// Gets an AttributeDictionary containing the attributes to be associated with the created tag.
 		/// </summary>
 		/// <value>
-		/// An <see cref="Microsoft.AspNet.Mvc.ViewFeatures.AttributeDictionary" /> object
+		/// An <see cref="Microsoft.AspNetCore.Mvc.ViewFeatures.AttributeDictionary" /> object
 		/// </value>
 		public AttributeDictionary Attributes => TagBuilder.Attributes;
 

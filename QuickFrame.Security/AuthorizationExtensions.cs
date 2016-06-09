@@ -10,10 +10,10 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Security.Claims;
 
-namespace QuickFrame.Security
-{
-    public static class AuthorizationExtensions
-    {
+namespace QuickFrame.Security {
+
+	public static class AuthorizationExtensions {
+
 		public static IActionResult AuthorizeExecution(ClaimsPrincipal User, Func<IActionResult> func, [CallerMemberName]string callerName = "") {
 #if DEBUG
 			return func();

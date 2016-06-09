@@ -1,17 +1,21 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Autofac;
+using Autofac.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Server;
-using Microsoft.VisualStudio.Web.CodeGeneration.DotNet;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using QuickFrame.Configuration;
 using QuickFrame.Di;
 using QuickFrame.Mapping;
 using System;
+using System.Linq;
+using System.Reflection;
 
 namespace QuickFrame.Mvc {
 
@@ -26,7 +30,7 @@ namespace QuickFrame.Mvc {
 
 			if(env.IsDevelopment()) {
 				// For more details on using the user secret store see http://go.microsoft.com/fwlink/?LinkID=532709
-				builder.AddUserSecrets();
+				//builder.AddUserSecrets();
 			}
 
 			builder.AddEnvironmentVariables();
@@ -51,6 +55,7 @@ namespace QuickFrame.Mvc {
 
 			services.Configure<ViewOptions>(viewOptions => {
 				viewOptions.PerPageDefault = Configuration["ViewOptions:PerPageDefault"];
+
 				foreach(var child in Configuration.GetSection("ViewOptions:PerPageList").GetChildren()) {
 					viewOptions.PerPageList.Add(new SelectListItem {
 						Value = child.Key,
@@ -60,20 +65,27 @@ namespace QuickFrame.Mvc {
 				}
 			});
 
+			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
 			services.AddMapping();
-			services.AddAutofac();
+
+			ComponentContainer.Builder.Populate(services);
 
 			return ComponentContainer.ServiceProvider;
 		}
 
-		public virtual void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, ILibraryManager libraryManager) {
+		public virtual void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory) {
 			var listener = app.ServerFeatures.Get<WebListener>();
 			if(listener != null)
 				listener.AuthenticationManager.AuthenticationSchemes = AuthenticationSchemes.NTLM;
 
-			if(env.IsDevelopment())
+			loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+			loggerFactory.AddDebug();
+
+			if(env.IsDevelopment()) {
 				app.UseDeveloperExceptionPage();
-			else
+				app.UseBrowserLink();
+			} else
 				app.UseExceptionHandler("/Home/Error");
 
 			app.UseStaticFiles();
@@ -84,6 +96,20 @@ namespace QuickFrame.Mvc {
 				routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
 				routes.MapRoute("defaultArea", "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 			});
+		}
+
+		protected void RegisterAssembly(Type assemblyType) {
+			var assembly = assemblyType.Assembly;
+			var module = assembly.GetTypes().FirstOrDefault(t => typeof(Autofac.Module).IsAssignableFrom(t));
+
+			if(module != null)
+				ComponentContainer.Builder.RegisterAssemblyModules(assembly);
+			else
+				ComponentContainer.RegisterAssembly(assembly);
+
+			foreach(var mod in assembly.GetTypes().Where(t => t.GetTypeInfo().GetCustomAttribute<ExpressMapAttribute>() != null)) {
+				MapRegistration.Register(mod);
+			}
 		}
 	}
 }

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using QuickFrame.Configuration;
 using QuickFrame.Data;
@@ -27,6 +27,10 @@ namespace QuickFrame.Security.Data {
 		/// </remarks>
 		public PermissionsContext(IOptions<DataOptions> configOptions, IHttpContextAccessor contextAccessor)
 			: base(configOptions.Value.ConnectionString.Security, contextAccessor) {
+		}
+
+		public PermissionsContext(string nameOrConnectionString)
+			: base(nameOrConnectionString) {
 		}
 
 		/// <summary>

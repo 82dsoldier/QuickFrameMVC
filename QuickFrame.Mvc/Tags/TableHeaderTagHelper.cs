@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -17,7 +17,7 @@ namespace QuickFrame.Mvc.Tags {
 	/// <summary>
 	/// Pulls the name from the specified property and displays it in the th element
 	/// </summary>
-	/// <seealso cref="Microsoft.AspNet.Razor.TagHelpers.TagHelper" />
+	/// <seealso cref="Microsoft.AspNetCore.Razor.TagHelpers.TagHelper" />
 	[HtmlTargetElement("th", Attributes = "display-for")]
 	public class TableHeaderTagHelper : TagHelper {
 
@@ -29,13 +29,13 @@ namespace QuickFrame.Mvc.Tags {
 		/// <summary>
 		/// Allows access to the current context.
 		/// </summary>
-		/// <seealso cref="Microsoft.AspNet.Http.IHttpContextAccessor" />
+		/// <seealso cref="Microsoft.AspNetCore.Http.IHttpContextAccessor" />
 		protected IHttpContextAccessor ContextAccessor;
 
 		/// <summary>
 		/// Used to generate certain HTML tags.
 		/// </summary>
-		/// <seealso cref="Microsoft.AspNet.Mvc.ViewFeatures.IHtmlGenerator" />
+		/// <seealso cref="Microsoft.AspNetCore.Mvc.ViewFeatures.IHtmlGenerator" />
 		protected IHtmlGenerator Generator;
 
 		/// <summary>
@@ -95,7 +95,7 @@ namespace QuickFrame.Mvc.Tags {
 		public ViewContext ViewContext { get; set; }
 
 		/// <summary>
-		/// Synchronously executes the <see cref="T:Microsoft.AspNet.Razor.TagHelpers.TagHelper" /> with the given <paramref name="context" /> and
+		/// Synchronously executes the <see cref="T:Microsoft.AspNetCore.Razor.TagHelpers.TagHelper" /> with the given <paramref name="context" /> and
 		/// <paramref name="output" />.
 		/// </summary>
 		/// <param name="context">Contains information associated with the current HTML tag.</param>

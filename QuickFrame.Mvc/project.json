@@ -2,8 +2,11 @@
   "title": "QuickFrame.Mvc",
   "description": "QuickFrame MVC base.",
   "language": "en-US",
-  "version": "1.0.0-beta-2",
+  "version": "1.0.0-beta-3",
   "authors": [ "Drew Burchett" ],
+  "buildOptions": {
+    "embed": ["Views/**"]
+  },
   "packOptions": {
     "licenseUrl": "https://github.com/82dsoldier/QuickFrameMVC/blob/master/LICENSE",
     "iconUrl": "resource://@QiuckFrame/icon.png",
@@ -18,8 +21,8 @@
     "Microsoft.Composition": "1.0.27",
     "NETStandard.Library": "1.5.0-rc2-24027",
     "QuickFrame": "1.0.0-beta-2",
-    "QuickFrame.Data": "1.0.0-beta-2",
-    "QuickFrame.Security": "1.0.0-beta-3",
+    "QuickFrame.Data": "1.0.0-beta-3",
+    "QuickFrame.Security": "1.0.0-beta-4",
     "System.Data.SqlClient": "4.1.0-rc2-24027"
   },
 

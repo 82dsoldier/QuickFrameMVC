@@ -1,13 +1,8 @@
 ﻿using Autofac;
-using Autofac.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Mvc.Internal;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.Web.CodeGeneration.DotNet;
+using Microsoft.Extensions.DependencyModel;
 using System.Linq;
-using System.Reflection;
-
-#if NETCOREAPP1_0
-using System.Runtime.Loader;
-#endif
 
 namespace QuickFrame.Di {
 
@@ -17,42 +12,32 @@ namespace QuickFrame.Di {
 	public static class AutofacExtensions {
 
 		public static IServiceCollection AddAutofac(this IServiceCollection services) {
-#if NETCOREAPP1_0
+			//var partList = DefaultAssemblyPartDiscoveryProvider.DiscoverAssemblyParts(assemblyName);
 
-			var libraryManager = services.FirstOrDefault(s => s.ServiceType == typeof(ILibraryManager)).ImplementationInstance as ILibraryManager;
+			//foreach(var part in partList) {
+			//	//foreach(var obj in part.GetType().GetTypes()) {
+			//	//}
+			//}
+			var dependencyContext = DependencyContext.Default;
 
-			foreach (var library in libraryManager.GetLibraries()) {
-				Assembly assembly = null;
-				try {
-					assembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(library.Path);
-				} catch {
-					continue;
+			foreach(var compilationLibrary in dependencyContext.RuntimeLibraries.Where(lib => !lib.Name.StartsWith("Microsoft")
+			&& !lib.Name.StartsWith("NuGet")
+			&& !lib.Name.StartsWith("System")
+			&& !lib.Name.StartsWith("runtime"))) {
+				var partList = DefaultAssemblyPartDiscoveryProvider.DiscoverAssemblyParts(compilationLibrary.Name);
+				foreach(var part in partList) {
 				}
+				foreach(var assembly in compilationLibrary.Assemblies) {
+					//var loadedAssembly = Assembly.LoadFile(assembly);
+					//var moduleList = loadedAssembly.GetTypes().Where(t => typeof(Autofac.Module).IsAssignableFrom(t));
 
-				if (assembly != null) {
-					var module = assembly.GetTypes().FirstOrDefault(t => typeof(Autofac.Module).IsAssignableFrom(t));
-
-					if (module != null)
-						ComponentContainer.Builder.RegisterAssemblyModules(assembly);
-					else
-						ComponentContainer.RegisterAssembly(assembly);
-				}
-			}
-
-			ComponentContainer.Builder.Populate(services);
-#else
-			foreach(var assemblyName in Assembly.GetAssembly(typeof(AutofacExtensions)).GetReferencedAssemblies()) {
-				var assembly = Assembly.Load(assemblyName);
-				if(assembly != null) {
-					var module = assembly.GetTypes().FirstOrDefault(t => typeof(Autofac.Module).IsAssignableFrom(t));
-
-					if(module != null)
-						ComponentContainer.Builder.RegisterAssemblyModules(assembly);
-					else
-						ComponentContainer.RegisterAssembly(assembly);
+					//if(moduleList == null)
+					//	ComponentContainer.RegisterAssembly(loadedAssembly);
+					//else
+					//	ComponentContainer.Builder.RegisterAssemblyModules(loadedAssembly);
 				}
 			}
-#endif
+
 			return services;
 		}
 	}

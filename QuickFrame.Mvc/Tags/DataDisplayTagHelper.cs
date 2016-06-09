@@ -13,7 +13,7 @@ namespace QuickFrame.Mvc.Tags {
 	/// <summary>
 	/// Takes the name specified in the display-for attribute and displays the property associated with the name.
 	/// </summary>
-	/// <seealso cref="Microsoft.AspNet.Razor.TagHelpers.TagHelper" />
+	/// <seealso cref="Microsoft.AspNetCore.Razor.TagHelpers.TagHelper" />
 	[HtmlTargetElement("span", Attributes = "display-for")]
 	[HtmlTargetElement("div", Attributes = "display-for")]
 	[HtmlTargetElement("p", Attributes = "display-for")]
@@ -124,7 +124,7 @@ namespace QuickFrame.Mvc.Tags {
 		protected IHtmlGenerator Generator { get; }
 
 		/// <summary>
-		/// Synchronously executes the <see cref="T:Microsoft.AspNet.Razor.TagHelpers.TagHelper" /> with the given <paramref name="context" /> and
+		/// Synchronously executes the <see cref="T:Microsoft.AspNetCore.Razor.TagHelpers.TagHelper" /> with the given <paramref name="context" /> and
 		/// <paramref name="output" />.
 		/// </summary>
 		/// <param name="context">Contains information associated with the current HTML tag.</param>

@@ -1,7 +1,6 @@
 ﻿using Autofac;
 using System;
 using System.Composition;
-using System.Linq;
 using System.Reflection;
 
 namespace QuickFrame.Di {
@@ -35,18 +34,27 @@ namespace QuickFrame.Di {
 		public static void RegisterAssembly(Assembly assembly) {
 			if(assembly == null)
 				return;
+			try {
+				foreach(var obj in assembly.GetTypes()) {
+					ExportAttribute att = null;
+					try {
+						att = obj.GetTypeInfo().GetCustomAttribute<ExportAttribute>();
+					} catch {
+					}
 
-			foreach(var obj in assembly.GetTypes().Where(t => t.GetTypeInfo().GetCustomAttribute<ExportAttribute>() != null)) {
-				ExportAttribute att = obj.GetTypeInfo().GetCustomAttribute<ExportAttribute>();
-				if(att.ContractType != null) {
-					if(att.ContractType == obj)
-						Builder.RegisterType(obj).InstancePerLifetimeScope();
-					else
-						Builder.RegisterType(obj).As(att.ContractType);
-				} else {
-					foreach(var intf in obj.GetInterfaces())
-						Builder.RegisterType(obj).As(intf);
+					if(att != null) {
+						if(att.ContractType != null) {
+							if(att.ContractType == obj)
+								Builder.RegisterType(obj).InstancePerLifetimeScope();
+							else
+								Builder.RegisterType(obj).As(att.ContractType);
+						} else {
+							foreach(var intf in obj.GetInterfaces())
+								Builder.RegisterType(obj).As(intf);
+						}
+					}
 				}
+			} catch {
 			}
 		}
 	}
