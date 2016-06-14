@@ -59,6 +59,16 @@ namespace QuickFrame.Security.Data {
 						t.MapRightKey("RoleId");
 					});
 
+			modelBuilder.Entity<SiteUser>()
+				.HasMany(t => t.Groups)
+				.WithMany(t => t.Users)
+				.Map(
+					t => {
+						t.ToTable("UserGroups");
+						t.MapLeftKey("UserId");
+						t.MapRightKey("GroupId");
+					});
+
 			modelBuilder.Entity<SiteGroup>()
 				.HasMany(t => t.Roles)
 				.WithMany(t => t.Groups)

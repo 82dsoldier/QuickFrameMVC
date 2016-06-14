@@ -13,7 +13,10 @@ using Newtonsoft.Json.Serialization;
 using QuickFrame.Configuration;
 using QuickFrame.Di;
 using QuickFrame.Mapping;
+using QuickFrame.Utility;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 
@@ -38,7 +41,14 @@ namespace QuickFrame.Mvc {
 		}
 
 		public virtual IServiceProvider ConfigureServices(IServiceCollection services) {
+
+
+			//bool useFileProvider = true;
+			//Boolean.TryParse(Configuration["AppOptions:UseEmbeddedFileProviders"], out useFileProvider);
+
+			//if(useFileProvider)
 			services.AddEmbeddedFileProviders();
+			//services.AddMapping();
 			services.AddMvc();
 			services.AddOptions();
 			services.AddSession();
@@ -66,8 +76,6 @@ namespace QuickFrame.Mvc {
 			});
 
 			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
-			services.AddMapping();
 
 			ComponentContainer.Builder.Populate(services);
 

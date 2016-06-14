@@ -14,5 +14,7 @@ namespace QuickFrame.Security.Data.Interfaces {
 		bool IsUserInRole(string sid, string roleName);
 
 		IEnumerable<SiteRoleIndexDto> GetRolesForUser(string sid);
+
+		IEnumerable<SiteGroupIndexDto> GetGroupsForUser(string sid);
 	}
 }

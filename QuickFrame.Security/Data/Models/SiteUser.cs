@@ -7,5 +7,6 @@ namespace QuickFrame.Security.Data.Models {
 	/// </summary>
 	public class SiteUser : UserBase {
 		public virtual ICollection<SiteRole> Roles { get; set; }
+		public virtual ICollection<SiteGroup> Groups { get; set; }
 	}
 }

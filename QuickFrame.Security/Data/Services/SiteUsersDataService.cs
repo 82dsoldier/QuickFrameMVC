@@ -68,9 +68,15 @@ namespace QuickFrame.Security.Data.Services {
 			}
 		}
 
-		//public SiteUsersDataService(PermissionsContext dbContext)
-		//	: base(dbContext)
-		//{
-		//}
+		public IEnumerable<SiteGroupIndexDto> GetGroupsForUser(string sid) {
+			using(var contextFactory = ComponentContainer.Component<PermissionsContext>()) {
+				var query = contextFactory.Component.SiteUsers.Include(u => u.Groups).FirstOrDefault(u => u.UserId == sid);
+
+				if(query == null)
+					yield break;
+				foreach(var role in query.Groups)
+					yield return Mapper.Map<SiteGroup, SiteGroupIndexDto>(role);
+			}
+		}
 	}
 }

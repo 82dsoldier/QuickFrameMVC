@@ -16,6 +16,10 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "QuickFrame.Security", "Quic
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "QuickFrame.Mvc", "QuickFrame.Mvc\QuickFrame.Mvc.xproj", "{F497C5CD-1648-4A86-810F-A88728E1ED96}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "QuickFrame.Security.AccountControl", "QuickFrame.Security.AccountControl\QuickFrame.Security.AccountControl.xproj", "{8DE651EF-BF00-4A9C-8036-4FA2CB5896EF}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "QuickFrame.Security.AccountControl.ActiveDirectory", "QuickFrame.Security.AccountControl.ActiveDirectory\QuickFrame.Security.AccountControl.ActiveDirectory.xproj", "{B3AF7EE9-132B-4865-92B6-07054960AB57}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,6 +42,14 @@ Global
 		{F497C5CD-1648-4A86-810F-A88728E1ED96}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F497C5CD-1648-4A86-810F-A88728E1ED96}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F497C5CD-1648-4A86-810F-A88728E1ED96}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8DE651EF-BF00-4A9C-8036-4FA2CB5896EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8DE651EF-BF00-4A9C-8036-4FA2CB5896EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8DE651EF-BF00-4A9C-8036-4FA2CB5896EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8DE651EF-BF00-4A9C-8036-4FA2CB5896EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3AF7EE9-132B-4865-92B6-07054960AB57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3AF7EE9-132B-4865-92B6-07054960AB57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3AF7EE9-132B-4865-92B6-07054960AB57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3AF7EE9-132B-4865-92B6-07054960AB57}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

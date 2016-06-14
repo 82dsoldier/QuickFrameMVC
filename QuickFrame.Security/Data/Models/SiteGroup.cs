@@ -14,5 +14,6 @@ namespace QuickFrame.Security.Data.Models {
 		public string DisplayName { get; set; }
 
 		public virtual ICollection<SiteRole> Roles { get; set; }
+		public virtual ICollection<SiteUser> Users { get; set; }
 	}
 }

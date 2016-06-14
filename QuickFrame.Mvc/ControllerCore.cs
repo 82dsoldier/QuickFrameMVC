@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using QuickFrame.Data.Interfaces;
+using QuickFrame.Security.Attributes;
 using System;
 using System.Data.SqlClient;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Security.Claims;
 using static QuickFrame.Security.AuthorizationExtensions;
 
 namespace QuickFrame.Mvc {
-
+	[Roles(new[] { "SiteUsers"})]
 	public class ControllerCore<TDataType, TEntity, TIndex, TEdit>
 		 : Controller
 		 where TEntity : IDataModelCore<TDataType>
