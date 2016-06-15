@@ -8,7 +8,7 @@ using System.Linq;
 namespace QuickFrame.Data.Services {
 
 	public class DataServiceLong<TContext, TEntity>
-	: DataServiceCore<long, TContext, TEntity>
+	: DataServiceCore<TContext, long, TEntity>
 	where TContext : DbContext
 	where TEntity : class, IDataModelLong {
 

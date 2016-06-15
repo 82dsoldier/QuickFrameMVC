@@ -1,6 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Security.Principal;
 using System.Text.RegularExpressions;
 
 namespace QuickFrame {
@@ -52,5 +55,8 @@ namespace QuickFrame {
 					stack.Push(child);
 			}
 		}
+
+		public static string GetSid(this ClaimsPrincipal user)
+			=> user.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.PrimarySid.ToString())?.Value;
 	}
 }

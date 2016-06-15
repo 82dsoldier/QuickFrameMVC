@@ -9,7 +9,7 @@ using System.Linq;
 namespace QuickFrame.Data.Services {
 
 	public class DataServiceGuid<TContext, TEntity>
-	: DataServiceCore<Guid, TContext, TEntity>
+	: DataServiceCore<TContext, Guid, TEntity>
 	where TContext : DbContext
 	where TEntity : class, IDataModelGuid {
 
