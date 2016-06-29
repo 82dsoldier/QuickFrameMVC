@@ -18,9 +18,24 @@
   },
 
   "frameworks": {
+    "net451": {
+      "imports": [
+        "dotnet4.5"
+      ]
+    },
     "net452": {
       "imports": [
         "dotnet4.5"
+      ]
+    },
+    "net46": {
+      "imports": [
+        "dotnet4.6"
+      ]
+    },
+    "net461": {
+      "imports": [
+        "dotnet4.6"
       ]
     }
   }

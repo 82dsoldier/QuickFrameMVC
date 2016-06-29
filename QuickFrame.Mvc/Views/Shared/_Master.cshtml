@@ -9,7 +9,18 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ASMT - @ViewData["Title"]</title>
+	@{ 
+		var appName = $"{ViewData["AppName"]}";
+		var title = $"{ViewData["Title"]}";
+
+
+		if(!String.IsNullOrEmpty(title)) {
+		    <title>@appName - @title</title>
+		} else {
+			<title>@appName</title>
+		}
+	}
+
     <environment names="Development">
         <link rel="stylesheet" href="/css/site-bundle.css" />
         <link rel="stylesheet" href="~/css/Site.css" />

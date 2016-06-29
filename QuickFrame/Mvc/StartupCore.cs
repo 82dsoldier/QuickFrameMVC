@@ -101,8 +101,8 @@ namespace QuickFrame.Mvc {
 			app.UseSession();
 
 			app.UseMvc(routes => {
-				routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
 				routes.MapRoute("defaultArea", "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+				routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
 			});
 		}
 
