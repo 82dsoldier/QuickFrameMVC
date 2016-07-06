@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using QuickFrame.Di;
+using QuickFrame.Security.AccountControl.Interfaces;
 using QuickFrame.Security.Attributes;
-using QuickFrame.Security.Data.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -11,7 +11,6 @@ using System.Runtime.CompilerServices;
 using System.Security.Claims;
 
 namespace QuickFrame.Security {
-
 	public static class AuthorizationExtensions {
 
 		public static IActionResult AuthorizeExecution(ClaimsPrincipal User, Func<IActionResult> func, [CallerMemberName]string callerName = "") {

@@ -10,7 +10,7 @@
 
 		void CreateAsync<TModel>(TModel model);
 
-		void Delete(TDataType id);
+		bool Delete(TDataType id);
 
 		void DeleteAsync(TDataType id);
 

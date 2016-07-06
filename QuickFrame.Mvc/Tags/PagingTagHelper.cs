@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,17 +34,18 @@ namespace QuickFrame.Mvc.Tags {
 		/// The view options
 		/// </summary>
 		protected ViewOptions ViewOptions;
-
+		protected IUrlHelperFactory UrlHelperFactory;
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PagingTagHelper"/> class.
 		/// </summary>
 		/// <param name="generator">The generator.</param>
 		/// <param name="viewConfig">The view configuration.</param>
 		/// <param name="accessor">The accessor.</param>
-		public PagingTagHelper(IHtmlGenerator generator, IOptions<ViewOptions> viewConfig, IHttpContextAccessor accessor) {
+		public PagingTagHelper(IHtmlGenerator generator, IOptions<ViewOptions> viewConfig, IHttpContextAccessor accessor, IUrlHelperFactory urlHelperFactory) {
 			Generator = generator;
 			ViewOptions = viewConfig.Value;
 			ContextAccessor = accessor;
+			UrlHelperFactory = urlHelperFactory;
 		}
 
 		/// <summary>
@@ -109,7 +111,7 @@ namespace QuickFrame.Mvc.Tags {
 		/// <param name="context">Contains information associated with the current HTML tag.</param>
 		/// <param name="output">A stateful HTML element used to generate an HTML tag.</param>
 		public override void Process(TagHelperContext context, TagHelperOutput output) {
-			var urlHelper = ContextAccessor.HttpContext.RequestServices.GetRequiredService<IUrlHelper>();
+			var urlHelper = UrlHelperFactory.GetUrlHelper(new ActionContext(ContextAccessor.HttpContext, new Microsoft.AspNetCore.Routing.RouteData(), new Microsoft.AspNetCore.Mvc.Abstractions.ActionDescriptor())); //ContextAccessor.HttpContext.RequestServices.GetRequiredService<IUrlHelper>();
 
 			var itemsPerPage = 0;
 

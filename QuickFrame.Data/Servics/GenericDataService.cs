@@ -24,7 +24,7 @@ namespace QuickFrame.Data.Services {
 
 		public virtual void CreateAsync<TModel>(TModel model) => Task.Run(() => Create(Mapper.Map<TModel, TEntity>(model)));
 
-		public abstract void Delete(TDataType id);
+		public abstract bool Delete(TDataType id);
 
 		public virtual void DeleteAsync(TDataType id) => Task.Run(() => Delete(id));
 

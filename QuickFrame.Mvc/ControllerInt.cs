@@ -1,8 +1,11 @@
-﻿using QuickFrame.Data.Interfaces;
+﻿using Microsoft.AspNetCore.Mvc;
+using QuickFrame.Data.Interfaces;
+using System.Collections.Generic;
+using System.Data.SqlClient;
 
 namespace QuickFrame.Mvc {
 
-	public class ControllerInt<TEntity, TIndex, TEdit>
+	public abstract class ControllerInt<TEntity, TIndex, TEdit>
 			: ControllerCore<int, TEntity, TIndex, TEdit>
 			where TEntity : IDataModelInt
 			where TIndex : IDataTransferObjectInt<TEntity, TIndex>

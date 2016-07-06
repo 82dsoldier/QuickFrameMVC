@@ -2,14 +2,14 @@
 using QuickFrame.Data.Interfaces;
 using QuickFrame.Security.Attributes;
 using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Security.Claims;
 using static QuickFrame.Security.AuthorizationExtensions;
 
 namespace QuickFrame.Mvc {
-	[Roles(new[] { "SiteUsers"})]
-	public class ControllerCore<TDataType, TEntity, TIndex, TEdit>
+	public abstract class ControllerCore<TDataType, TEntity, TIndex, TEdit>
 		 : GenericControllerCore<TDataType, TEntity, TIndex, TEdit>
 		 where TEntity : IDataModelCore<TDataType>
 		 where TIndex : IDataTransferObjectCore<TDataType, TEntity, TIndex>

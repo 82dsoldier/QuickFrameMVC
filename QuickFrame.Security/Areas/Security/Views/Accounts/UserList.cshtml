@@ -1,0 +1,21 @@
+﻿@model UserListModel
+@{ 
+	Layout = "_PopupLayout";
+}
+<form qf-form>
+	<input type="hidden" asp-for="ReturnController" />
+	<input type="hidden" asp-for="ReturnAction"  />
+	<div class="col-md-6">
+		<label for="UserId"></label>
+		<div>
+	<select asp-for="UserId"
+			dc-dropdown-box
+			dc-data-url="@Url.Action("GetUsers", "Accounts", new { filter = Model.Filter })"
+			dc-id-field="userId"
+			dc-text-field="displayName"></select>
+		</div>
+	</div>
+	<div class="col-md-6">
+		@Html.Partial("FormButtons")
+	</div>
+</form>

@@ -59,5 +59,6 @@ namespace QuickFrame.Data.Services {
 
 		public virtual Task<IEnumerable<TResult>> GetListAsync<TResult>(int start = 0, int count = 0, string columnName = "Name", SortOrder sortOrder = SortOrder.Ascending, bool includeDeleted = false)
 			=> Task.Run(() => GetList<TResult>(start, count, columnName, sortOrder));
+
 	}
 }

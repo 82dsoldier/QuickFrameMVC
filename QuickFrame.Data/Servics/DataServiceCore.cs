@@ -16,9 +16,7 @@ namespace QuickFrame.Data.Services {
 		where TContext : DbContext
 		where TEntity : class, IDataModelCore<TDataType> {
 
-		public override long GetCount() {
-			throw new NotImplementedException();
-		}
+		public override long GetCount() => GetCount(false);
 		public override Task<long> GetCountAsync() {
 			throw new NotImplementedException();
 		}

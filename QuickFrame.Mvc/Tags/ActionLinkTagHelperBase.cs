@@ -64,9 +64,10 @@ namespace QuickFrame.Mvc.Tags {
 			if(!String.IsNullOrEmpty(height))
 				link.MergeAttribute("data-height", height, true);
 
+			htmlClass = $"fancybox {htmlClass}";
 			link.AddCssClass(htmlClass);
 
-			link.Attributes.Add("qf-fancybox", "");
+			//link.Attributes.Add("qf-fancybox", "");
 			output.Content.AppendHtml(link);
 		}
 

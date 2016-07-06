@@ -5,34 +5,43 @@
     <meta name="viewport" content="width=device-width" />
     <title>@ViewBag.Title</title>
     <environment names="Development">
-        <link rel="stylesheet" href="/css/site-bundle.css" />
+        <link rel="stylesheet" href="~/css/site-bundle.css" />
         <link rel="stylesheet" href="~/css/Site.css" />
     </environment>
     <environment names="Production">
-        <link rel="stylesheet" href="/css/site-bundle.css" />
+        <link rel="stylesheet" href="~/css/site-bundle.css" />
         <link rel="stylesheet" href="~/css/Site.css" />
     </environment>
+	<environment names="Staging">
+        <link rel="stylesheet" href="~/css/site-bundle.staging.css" />
+        <link rel="stylesheet" href="~/css/Site.css" />
+	</environment>
 </head>
 <body style="background: #F9F9F9">
+	<div id="overlay" class="overlay-off"><img src="~/images/fancybox_loading.gif" id="loading" /></div>
     @RenderBody()
     <environment names="Development">
-        <script src="/js/jquery-bundle.js"></script>
-        <script src="/js/popup.js"></script>
+        <script src="~/js/jquery-bundle.js"></script>
+        <script src="~/js/popup.js"></script>
         <script src="~/js/main.js"></script>
     </environment>
     <environment names="Production">
-        <script src="/js/jquery-bundle.min.js"></script>
-        <script src="/js/popup.min.js"></script>
-        <script src="~/js/main..min.js"></script>
+        <script src="~/js/jquery-bundle.min.js"></script>
+        <script src="~/js/popup.min.js"></script>
+        <script src="~/js/main.min.js"></script>
+    </environment>
+	<environment names="Staging">
+        <script src="~/js/jquery-bundle.min.js"></script>
+        <script src="~/js/popup.min.js"></script>
+        <script src="~/js/main.min.js"></script>
     </environment>
     @{
-        if ((bool?)ViewData["CloseOnSubmit"] == true) {
-            <environment names="Development">
-                <script src="~/js/closeOnSubmit.js"></script>
-            </environment>
-            <environment names="Production">
-                <script src="~/js/closeOnSubmit.min.js"></script>
-            </environment>
+        if (ViewBag.CloseOnSubmit == true) {
+			<script>
+				$(document).ready(function () {
+					parent.window.$.fancybox.close();
+				})
+			</script>
         }
     }
 

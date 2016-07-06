@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using QuickFrame.Data.Interfaces;
+using QuickFrame.Security.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -10,7 +11,8 @@ using static QuickFrame.Security.AuthorizationExtensions;
 
 namespace QuickFrame.Mvc
 {
-    public class GenericControllerCore<TDataType, TEntity, TIndex, TEdit>
+	[Roles(new[] { "SiteUsers" })]
+	public abstract class GenericControllerCore<TDataType, TEntity, TIndex, TEdit>
 		: Controller
 		where TIndex : IGenericDataTransferObject<TEntity, TIndex>
 		where TEdit : IGenericDataTransferObject<TEntity, TEdit>
@@ -34,6 +36,9 @@ namespace QuickFrame.Mvc
 
 		[HttpGet]
 		public virtual IActionResult Get() => GetBase();
+
+		[HttpGet]
+		public virtual IActionResult CloseCurrentView() => View();
 
 		[HttpGet]
 		public IActionResult Index(int page = 1, int itemsPerPage = 25, string sortColumn = "Name", SortOrder sortOrder = SortOrder.Ascending)

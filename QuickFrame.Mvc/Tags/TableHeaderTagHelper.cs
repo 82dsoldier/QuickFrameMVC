@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.DependencyInjection;
@@ -50,6 +51,7 @@ namespace QuickFrame.Mvc.Tags {
 		/// The metadata provider.
 		/// </value>
 		protected internal IModelMetadataProvider MetadataProvider { get; set; }
+		protected IUrlHelperFactory UrlHelperFactory;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ColumnHeaderTagHelper"/> class.
@@ -59,11 +61,12 @@ namespace QuickFrame.Mvc.Tags {
 		/// <param name="accessor">The accessor.</param>
 		/// <param name="viewConfig">The view configuration.</param>
 		public TableHeaderTagHelper(IModelMetadataProvider metadataProvider, IHtmlGenerator generator,
-			IHttpContextAccessor accessor, IOptions<ViewOptions> viewConfig) {
+			IHttpContextAccessor accessor, IOptions<ViewOptions> viewConfig, IUrlHelperFactory urlHelperFactory) {
 			MetadataProvider = metadataProvider;
 			ContextAccessor = accessor;
 			Generator = generator;
 			ViewOptions = viewConfig.Value;
+			UrlHelperFactory = urlHelperFactory;
 		}
 
 		/// <summary>
@@ -84,6 +87,17 @@ namespace QuickFrame.Mvc.Tags {
 		[HtmlAttributeName("qf-sort")]
 		public bool Sort { get; set; }
 
+		//[HtmlAttributeName("qf-filter")]
+		//public FilterStyle FilterStyle { get; set; }
+
+		//[HtmlAttributeName("qf-data-url")]
+		//public string DataUrl { get; set; }
+		//[HtmlAttributeName("qf-column")]
+		//public string Column { get; set; }
+		//[HtmlAttributeName("qf-search-column")]
+		//public string SearchColumn { get; set; }
+		//[HtmlAttributeName("qf-function")]
+		//public string SearchFunction { get; set; }
 		/// <summary>
 		/// Gets or sets the view context used to access the view model for the page containing this tag.
 		/// </summary>
@@ -130,7 +144,7 @@ namespace QuickFrame.Mvc.Tags {
 			}
 
 			if(Sort) {
-				var urlHelper = ContextAccessor.HttpContext.RequestServices.GetRequiredService<IUrlHelper>();
+				var urlHelper = UrlHelperFactory.GetUrlHelper(new ActionContext(ContextAccessor.HttpContext, new Microsoft.AspNetCore.Routing.RouteData(), new Microsoft.AspNetCore.Mvc.Abstractions.ActionDescriptor())); //ContextAccessor.HttpContext.RequestServices.GetRequiredService<IUrlHelper>();
 
 				var itemsPerPage = 0;
 				int.TryParse(ContextAccessor.HttpContext.Request.Query["itemsPerPage"], out itemsPerPage);
@@ -172,6 +186,44 @@ namespace QuickFrame.Mvc.Tags {
 
 				output.Content.AppendHtml(ul);
 			}
+			
+			//if(FilterStyle != FilterStyle.None) {
+			//	var filterLink = new FluentTagBuilder("i")
+			//		.AddCssClass("fa fa-search reveal")
+			//		.MergeAttribute("style", "cursor:pointer;margin-left:15px;vertical-align:middle;")
+			//		.AppendHtml(new FluentTagBuilder("br"));
+
+			//	output.Content.AppendHtml(filterLink);
+
+			//	var displayType = (SearchColumn == Column) ? "block" : "none";
+
+			//	var span = new FluentTagBuilder("span")
+			//		.MergeAttribute("style", $"display:{displayType}")
+			//		.AddCssClass("search-box");
+
+			//	if(FilterStyle == FilterStyle.TextBox) {
+			//		var textBox = new FluentTagBuilder("input")
+			//			.MergeAttributes(new Dictionary<string, string> {
+			//				{ "type", "text" },
+			//				{"placeholder", "Search" },
+			//				{"qf-column", Column },
+			//				{"onSearch", SearchFunction }
+			//				})
+			//			.AddCssClass("form-control");
+			//		output.Content.AppendHtml(span.AppendHtml(textBox));
+			//	}
+			//	if(FilterStyle == FilterStyle.Dropdown) {
+			//		var dropdown = new FluentTagBuilder("select")
+			//			.AddCssClass("form-control")
+			//			.MergeAttributes(new Dictionary<string, string> {
+			//				{"dc-dropdown-box", "" },
+			//				{"dc-data-url", DataUrl },
+			//				{"qf-column", Column },
+			//				{"onSearch", SearchFunction }
+			//			});
+			//		output.Content.AppendHtml(span.AppendHtml(dropdown));
+			//	}
+			//}
 		}
 
 		/// <summary>

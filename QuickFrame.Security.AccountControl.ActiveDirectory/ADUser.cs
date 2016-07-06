@@ -1,12 +1,8 @@
-﻿using QuickFrame.Security.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using QuickFrame.Security.AccountControl.Data;
+using QuickFrame.Security.AccountControl.Data.Models;
 
-namespace QuickFrame.Security.AccountControl.ActiveDirectory
-{
-    public class ADUser : UserBase
+namespace QuickFrame.Security.AccountControl.ActiveDirectory {
+	public class ADUser : UserBase
     {
     }
 }

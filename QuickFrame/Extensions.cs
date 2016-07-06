@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace QuickFrame {
@@ -58,5 +59,17 @@ namespace QuickFrame {
 
 		public static string GetSid(this ClaimsPrincipal user)
 			=> user.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.PrimarySid.ToString())?.Value;
+
+		public static string ToHexString(this SecurityIdentifier sid) {
+			byte[] buffer = new byte[sid.BinaryLength];
+			sid.GetBinaryForm(buffer, 0);
+			return buffer.ToHexString();
+		}
+		public static string ToHexString(this byte[] val) {
+			StringBuilder sb = new StringBuilder(val.Length * 2);
+			foreach(byte b in val)
+				sb.AppendFormat("\\{0:X2}", b);
+			return sb.ToString();
+		}
 	}
 }

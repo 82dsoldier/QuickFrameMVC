@@ -2,7 +2,7 @@
   "title": "QuickFrame.Mvc",
   "description": "QuickFrame MVC base.",
   "language": "en-US",
-  "version": "1.0.0-beta-3",
+  "version": "1.0.0-beta-4",
   "authors": [ "Drew Burchett" ],
   "buildOptions": {
     "embed": ["Views/**"]
@@ -20,9 +20,10 @@
     "Microsoft.AspNetCore.Razor.Runtime": "1.0.0-rc2-final",
     "Microsoft.Composition": "1.0.27",
     "NETStandard.Library": "1.5.0-rc2-24027",
-    "QuickFrame": "1.0.0-beta-2",
-    "QuickFrame.Data": "1.0.0-beta-3",
-    "QuickFrame.Security": "1.0.0-beta-4",
+    "QuickFrame": "1.0.0-beta-3",
+    "QuickFrame.Data": "1.0.0-beta-4",
+    "QuickFrame.Security": "1.0.0-beta-6",
+    "QuickFrame.Security.AccountControl.ActiveDirectory": "1.0.0-beta-1",
     "System.Data.SqlClient": "4.1.0-rc2-24027"
   },
 

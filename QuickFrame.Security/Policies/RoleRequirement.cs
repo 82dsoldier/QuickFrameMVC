@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
-using QuickFrame.Security.Data.Interfaces;
+using QuickFrame.Security.AccountControl.Interfaces;
 using System.Composition;
 using System.Linq;
 using System.Security.Claims;

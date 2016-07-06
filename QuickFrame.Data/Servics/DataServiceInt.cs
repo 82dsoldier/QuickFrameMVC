@@ -2,17 +2,19 @@
 using QuickFrame.Data.Exceptions;
 using QuickFrame.Data.Interfaces;
 using QuickFrame.Di;
+using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.SqlClient;
 using System.Linq;
 
 namespace QuickFrame.Data.Services {
 
-	public class DataServiceInt<TContext, TEntity>
+	public abstract class DataServiceInt<TContext, TEntity>
 	   : DataServiceCore< TContext, int,TEntity>
 	   where TContext : DbContext
 	   where TEntity : class, IDataModelInt {
 
-		public override void Delete(int id) {
+		public override bool Delete(int id) {
 			using(var contextFactory = ComponentContainer.Component<TContext>()) {
 				var dbModel = contextFactory.Component.Set<TEntity>().FirstOrDefault(obj => obj.Id == id);
 				if(dbModel == null)
@@ -21,6 +23,7 @@ namespace QuickFrame.Data.Services {
 				contextFactory.Component.Entry(dbModel).State = EntityState.Modified;
 				contextFactory.Component.SaveChanges();
 			}
+			return true;
 		}
 
 		public override TEntity Get(int id) {
@@ -31,7 +34,8 @@ namespace QuickFrame.Data.Services {
 
 		public override TResult Get<TResult>(int id) {
 			using(var contextFactory = ComponentContainer.Component<TContext>()) {
-				return Mapper.Map<TEntity, TResult>(contextFactory.Component.Set<TEntity>().FirstOrDefault(obj => obj.Id == id));
+				var app = contextFactory.Component.Set<TEntity>().FirstOrDefault(obj => obj.Id == id);
+				return Mapper.Map<TEntity, TResult>(app);
 			}
 		}
 	}
