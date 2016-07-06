@@ -2,7 +2,7 @@
   "title": "QuickFrame.Security.AccountControl.ActiveDirectory",
   "description": "Active Directory extension for QuickFrame security base.",
   "language": "en-US",
-  "version": "1.0.0-beta-2",
+  "version": "1.0.0-beta-1",
   "authors": [ "Drew Burchett" ],
   "packOptions": {
     "licenseUrl": "https://github.com/82dsoldier/QuickFrameMVC/blob/master/LICENSE",
@@ -20,9 +20,33 @@
   },
 
   "frameworks": {
+    "net451": {
+      "imports": [
+        "dotnet4.5"
+      ],
+      "frameworkAssemblies": {
+        "System.DirectoryServices": "4.0.0.0"
+      }
+    },
     "net452": {
       "imports": [
         "dotnet4.5"
+      ],
+      "frameworkAssemblies": {
+        "System.DirectoryServices": "4.0.0.0"
+      }
+    },
+    "net46": {
+      "imports": [
+        "dotnet4.6"
+      ],
+      "frameworkAssemblies": {
+        "System.DirectoryServices": "4.0.0.0"
+      }
+    },
+    "net461": {
+      "imports": [
+        "dotnet4.6"
       ],
       "frameworkAssemblies": {
         "System.DirectoryServices": "4.0.0.0"
