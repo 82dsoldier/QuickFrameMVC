@@ -30,6 +30,7 @@ namespace QuickFrame.Di {
 		}
 
 		public static ComponentFactory<TObject> Component<TObject>() => new ComponentFactory<TObject>(_container);
+		public static ComponentFactoryEx Component(Type typeToResolve) => new ComponentFactoryEx(_container, typeToResolve);
 
 		public static void RegisterAssembly(Assembly assembly) {
 			if(assembly == null)
@@ -71,6 +72,23 @@ namespace QuickFrame.Di {
 		}
 
 		public TObject Component => CurrentObject;
+
+		public void Dispose() {
+			(CurrentObject as IDisposable)?.Dispose();
+			CurrentScope.Dispose();
+		}
+	}
+
+	public class ComponentFactoryEx : IDisposable {
+		protected object CurrentObject;
+		protected ILifetimeScope CurrentScope;
+
+		public object Current => CurrentObject;
+
+		public ComponentFactoryEx(IContainer container, Type typeToResolve) {
+			CurrentScope = container.BeginLifetimeScope();
+			CurrentObject = CurrentScope.Resolve(typeToResolve);
+		}
 
 		public void Dispose() {
 			(CurrentObject as IDisposable)?.Dispose();

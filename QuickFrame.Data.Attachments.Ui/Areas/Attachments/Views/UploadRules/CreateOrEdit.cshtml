@@ -1,0 +1,48 @@
+﻿@model UploadRuleEditDto
+@{ 
+	ViewBag.Title = "Rules";
+	Layout = "_PopupLayout";
+}
+<form qf-form>
+    <div asp-validation-summary="All" class="text-danger"></div>
+	<input type="hidden" asp-for="Id" />
+	<div class="container">
+		<div class="col-md-6">
+			<label asp-for="Name"></label>
+			<div>
+				<input asp-for="Name" class="form-control" />
+			</div>
+		</div>
+		<div class="col-md-12">
+			<label asp-for="Description"></label>
+			<div>
+				<input class="form-control" asp-for="Description" />
+			</div>
+		</div>
+		<div class="col-md-4">
+			<label asp-for="FileExtensionId"></label>
+			<div>
+				<select class="form-control" asp-for="FileExtensionId"  data-url="@Url.Action("Get", "FileExtensions")" data-initial-val="@Model.FileExtensionId" data-placeholder="Please select a file extension"></select>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<label asp-for="FileHeaderPatternId"></label>
+			<div>
+				<select class="form-control" asp-for="FileHeaderPatternId"  data-url="@Url.Action("Get", "FileHeaderPatterns")" data-initial-val="@Model.FileHeaderPatternId" data-placeholder="Please select a file header pattern"></select>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<label asp-for="MimeTypeId"></label>
+			<div>
+				<select class="form-control" asp-for="MimeTypeId"  data-url="@Url.Action("Get", "MimeTypes")" data-initial-val="@Model.MimeTypeId" data-placeholder="Please select a mime type"></select>
+			</div>
+		</div>
+		<div class="col-md-6">
+			<input asp-for="IsAllow" /><label style="margin-left:15px;" asp-for="IsAllow"></label>
+		</div>
+		@Html.Partial("FormButtons");
+	</div>
+</form>
+
+@section scripts {
+}

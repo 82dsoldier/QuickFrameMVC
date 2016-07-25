@@ -15,6 +15,13 @@ namespace QuickFrame.Data.Services {
 	where TContext : DbContext
 	where TEntity : class, IDataModelGuid {
 
+		public override Guid Create(TEntity model) {
+			using(var contextFactory = ComponentContainer.Component<TContext>()) {
+				contextFactory.Component.Set<TEntity>().Add(model);
+				contextFactory.Component.SaveChanges();
+				return model.Id;
+			}
+		}
 		public override bool Delete(Guid id) {
 			using(var contextFactory = ComponentContainer.Component<TContext>()) {
 				var dbModel = contextFactory.Component.Set<TEntity>().FirstOrDefault(obj => obj.Id == id);

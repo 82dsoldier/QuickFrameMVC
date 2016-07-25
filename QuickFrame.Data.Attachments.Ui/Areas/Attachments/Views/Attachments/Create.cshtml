@@ -1,0 +1,35 @@
+﻿@model AttachmentCreateDto
+@{ 
+	ViewBag.Title = "File Extension";
+	Layout = "_PopupLayout";
+}
+<form qf-form enctype="multipart/form-data">
+    <div asp-validation-summary="All" class="text-danger"></div>
+	<div class="container">
+		<div class="col-md-6">
+			<label asp-for="Name"></label>
+			<div>
+				<input asp-for="Name" class="form-control"  />
+			</div>
+		</div>
+		<div class="col-md-6">
+			<label asp-for="DocumentNumber"></label>
+			<div>
+				<input asp-for="DocumentNumber" class="form-control" />
+			</div>
+		</div>
+		<div class="col-md-12">
+			<label asp-for="Description"></label>
+			<div>
+				<textarea asp-for="Description"></textarea>
+			</div>
+		</div>
+		<div class="col-md-6">
+			<label asp-for="Data"></label>
+			<div>
+				<input asp-for="Data" type="file" />
+			</div>
+		</div>
+		@Html.Partial("FormButtons");
+	</div>
+</form>

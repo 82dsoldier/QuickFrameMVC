@@ -69,6 +69,19 @@ namespace QuickFrame.Configuration {
 			}
 		}
 
+		public string Attachments
+		{
+			get
+			{
+				if(_connectionStringList == null)
+					return null;
+				if(_connectionStringList.Count == 0)
+					return null;
+				if(_connectionStringList.ContainsKey("Attachments"))
+					return _connectionStringList["Attachments"];
+				return Default;
+			}
+		}
 		public string this[string index]
 		{
 			get

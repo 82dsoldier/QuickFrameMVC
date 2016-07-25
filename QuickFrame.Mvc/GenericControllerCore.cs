@@ -24,7 +24,8 @@ namespace QuickFrame.Mvc
 
 		[HttpPost]
 		public IActionResult Create(TEdit model) => CreateBase(model);
-
+		[HttpDelete]
+		public IActionResult Delete(TDataType id) => new ObjectResult(DeleteBase(id));
 		[HttpGet]
 		public IActionResult Details(TDataType id) => DetailsBase<TEdit>(id);
 
@@ -61,6 +62,8 @@ namespace QuickFrame.Mvc
 
 				return View(modelName, model);
 			});
+
+		protected bool DeleteBase(TDataType id) => _dataService.Delete(id);
 
 		protected virtual IActionResult DetailsBase<TModel>(TDataType id)
 			where TModel : IGenericDataTransferObject<TEntity, TModel>

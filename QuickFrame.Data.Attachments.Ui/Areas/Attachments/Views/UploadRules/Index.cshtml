@@ -1,0 +1,82 @@
+﻿@model IEnumerable<UploadRuleIndexDto>
+@{ 
+	ViewBag.UseSearch = true;
+	ViewBag.UsePaging = true;
+	ViewBag.Title = "Rules";
+	Layout = "_Layout";
+}
+@section menu {
+    @Html.Partial("MainMenu")
+}
+
+@section createbutton {
+    <a asp-controller="UploadRules" asp-action="Create" class="btn btn-sm btn-default fancybox" data-width="640px" data-height="480px" dc-after="mainCtl.reloadMe();"><i class="fa fa-plus"></i> Create a New Rule</a>
+}
+
+@{
+	if(Model.Any()) {
+		<table class="table index table-striped table-bordered table-hover" style="border: 0;">
+			<thead>
+				<tr>
+					<th style="width:5%"></th>
+					<th display-for="Priority" style="width:5%"></th>
+					<th display-for="Name" style="width:15%"></th>
+					<th display-for="Description"></th>
+					<th display-for="FileExtensionName"></th>
+					<th display-for="FileHeaderPatternName"></th>
+					<th display-for="MimeTypeName"></th>
+					<th display-for="IsActive" style="width:5%"></th>
+				</tr>
+			</thead>
+			<tbody>
+				@{ 
+					foreach(var obj in Model) {
+						<tr>
+							<td style="text-align:center;">
+								<div class="dropdown">
+									<a href="#" class="dropdown-toggle" style="display:inline-block;width:100%;" data-toggle="dropdown"><i class="fa fa-lg fa-ellipsis-v"></i></a>
+									<ul class="dropdown-menu">
+										@{ 
+											if(obj.IsActive) {
+												<li><a asp-controller="UploadRules" asp-action="Deactivate" asp-route-id="@obj.Id" class="deactivate-ctl"><i class="fa-fw fa fa-circle-o-notch"></i>Deactivate</a></li>
+											} else {
+												<li><a asp-controller="UploadRules" asp-action="Activate" asp-route-id="@obj.Id" asp-route-closeOnSubmit="true" class="fancybox" data-width="640px" data-height="480px"><i class="fa-fw fa fa-power-off"></i>Activate</a></li>
+											}
+										}
+										<li><a asp-controller="UploadRules" asp-action="Edit" asp-route-id="@obj.Id" asp-route-closeOnSubmit="true" class="fancybox" data-width="640px" data-height="480px"><i class="fa-fw fa fa-edit"></i>Edit</a></li>
+										<li><a asp-controller="UploadRules" asp-action="Delete" asp-route-id="@obj.Id" class="remove-object"><i class="fa-fw fa fa-times red"></i>Delete</a></li>
+									</ul>
+								</div>
+							</td>
+							<td display-for="@obj.Priority"></td>
+							<td display-for="@obj.Name"></td>
+							<td display-for="@obj.Description"></td>
+							<td display-for="@obj.FileExtensionName"></td>
+							<td display-for="@obj.FileHeaderPatternName"></td>
+							<td display-for="@obj.MimeTypeName"></td>
+							<td><input asp-for="@obj.IsActive" disabled /></td>
+						</tr>
+					}
+				}
+			</tbody>
+		</table>
+	}
+}
+@section scripts {
+	<script>
+		$(document).ready(function () {
+			$('.deactivate-ctl').each(function () {
+				$(this).on('click', function (e) {
+					e.preventDefault();
+					$.ajax({
+						'method': 'GET',
+						'url': $(this).attr('href'),
+						success: function () {
+							window.location.reload();
+						}
+					});
+				});
+			});
+		});
+	</script>
+}

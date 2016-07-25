@@ -4,8 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace QuickFrame.Data.Models {
 
-	public class DataModelCore<TDataType>
-	: IDataModelCore<TDataType> {
+	public class DataModelCore<TDataType> : IDataModelCore<TDataType> {
 
 		[Key]
 		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]

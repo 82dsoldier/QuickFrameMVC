@@ -1,14 +1,16 @@
-﻿namespace QuickFrame.Data.Interfaces {
+﻿using System.Threading.Tasks;
+
+namespace QuickFrame.Data.Interfaces {
 
 	public interface IGenericDataService<TDataType, TEntity> : IReadOnlyDataService<TDataType, TEntity> {
 
-		void Create(TEntity model);
+		TDataType Create(TEntity model);
 
-		void CreateAsync(TEntity model);
+		Task<TDataType> CreateAsync(TEntity model);
 
-		void Create<TModel>(TModel model);
+		TDataType Create<TModel>(TModel model);
 
-		void CreateAsync<TModel>(TModel model);
+		Task<TDataType> CreateAsync<TModel>(TModel model);
 
 		bool Delete(TDataType id);
 

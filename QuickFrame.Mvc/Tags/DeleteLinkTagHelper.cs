@@ -8,7 +8,7 @@ namespace QuickFrame.Mvc.Tags {
 
 		public DeleteLinkTagHelper(IHtmlGenerator generator)
 			: base(generator) {
-			htmlClass = "fa fa-times icon indent-15 text-danger removeObject";
+			htmlClass = "fa fa-times icon indent-15 text-danger remove-object";
 		}
 	}
 }

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Linq;
+using System;
 
 namespace QuickFrame.Data.Services {
 
@@ -14,6 +15,13 @@ namespace QuickFrame.Data.Services {
 	   where TContext : DbContext
 	   where TEntity : class, IDataModelInt {
 
+		public override int Create(TEntity model) {
+			using(var contextFactory = ComponentContainer.Component<TContext>()) {
+				contextFactory.Component.Set<TEntity>().Add(model);
+				contextFactory.Component.SaveChanges();
+				return model.Id;
+			}
+		}
 		public override bool Delete(int id) {
 			using(var contextFactory = ComponentContainer.Component<TContext>()) {
 				var dbModel = contextFactory.Component.Set<TEntity>().FirstOrDefault(obj => obj.Id == id);

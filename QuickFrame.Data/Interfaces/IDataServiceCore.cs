@@ -8,6 +8,5 @@ namespace QuickFrame.Data.Interfaces {
 	public interface IDataServiceCore<TDataType, TEntity> 
 		: IGenericDataService<TDataType, TEntity> 
 		where TEntity : IDataModelCore<TDataType> {
-		long GetCount(bool includeDeleted = false);
 	}
 }

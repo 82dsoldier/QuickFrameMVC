@@ -14,9 +14,9 @@ namespace QuickFrame.Data.Interfaces {
 
 		Task<TResult> GetAsync<TResult>(TDataType id);
 
-		long GetCount();
+		long GetCount(bool includeDeleted = false);
 
-		Task<long> GetCountAsync();
+		Task<long> GetCountAsync(bool includeDeleted = false);
 
 		IEnumerable<TEntity> GetList(int start = 0, int count = 0, string columnName = "Name", SortOrder sortOrder = SortOrder.Ascending, bool includeDeleted = false);
 

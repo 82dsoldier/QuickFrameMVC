@@ -28,15 +28,12 @@
     @RenderBody()
     <environment names="Development">
         <script src="~/js/jquery-bundle.js"></script>
-		<script src="~/js/main.js"></script>
     </environment>
     <environment names="Production">
         <script src="~/js/jquery-bundle.min.js"></script>
-		<script src="~/js/main.min.js"></script>
     </environment>
 	<environment names="Staging">
         <script src="~/js/jquery-bundle.js"></script>
-		<script src="~/js/main.js"></script>
     </environment>
     @RenderSection("scripts", false)
 </body>

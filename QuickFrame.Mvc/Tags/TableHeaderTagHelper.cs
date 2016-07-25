@@ -216,8 +216,8 @@ namespace QuickFrame.Mvc.Tags {
 			//		var dropdown = new FluentTagBuilder("select")
 			//			.AddCssClass("form-control")
 			//			.MergeAttributes(new Dictionary<string, string> {
-			//				{"dc-dropdown-box", "" },
-			//				{"dc-data-url", DataUrl },
+			//				{"", "" },
+			//				{"data-url", DataUrl },
 			//				{"qf-column", Column },
 			//				{"onSearch", SearchFunction }
 			//			});

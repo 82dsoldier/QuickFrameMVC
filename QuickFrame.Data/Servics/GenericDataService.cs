@@ -11,36 +11,19 @@ namespace QuickFrame.Data.Services {
 		where TContext : DbContext
 		where TEntity : class {
 
-		public virtual void Create(TEntity model) {
-			using(var contextFactory = ComponentContainer.Component<TContext>()) {
-				contextFactory.Component.Set<TEntity>().Add(model);
-				contextFactory.Component.SaveChanges();
-			}
-		}
+		public abstract TDataType Create(TEntity model);
 
-		public virtual void CreateAsync(TEntity model) => Task.Run(() => Create(model));
+		public virtual Task<TDataType> CreateAsync(TEntity model) => Task.Run(() => Create(model));
 
-		public virtual void Create<TModel>(TModel model) => Create(Mapper.Map<TModel, TEntity>(model));
+		public virtual TDataType Create<TModel>(TModel model) => Create(Mapper.Map<TModel, TEntity>(model));
 
-		public virtual void CreateAsync<TModel>(TModel model) => Task.Run(() => Create(Mapper.Map<TModel, TEntity>(model)));
+		public virtual Task<TDataType> CreateAsync<TModel>(TModel model) => Task.Run(() => Create(Mapper.Map<TModel, TEntity>(model)));
 
 		public abstract bool Delete(TDataType id);
 
 		public virtual void DeleteAsync(TDataType id) => Task.Run(() => Delete(id));
 
 		public abstract void Save(TEntity model);
-		//public virtual void Save(TEntity model) {
-		//	using(var contextFactory = ComponentContainer.Component<TContext>()) {
-		//		var dbSet = contextFactory.Component.Set<TEntity>();
-		//		if(model.Id.Equals(default(TDataType))) {
-		//			Create(model);
-		//			return;
-		//		}
-		//		dbSet.Attach(model);
-		//		contextFactory.Component.Entry(model).State = EntityState.Modified;
-		//		contextFactory.Component.SaveChanges();
-		//	}
-		//}
 
 		public virtual void SaveAsync(TEntity model) => Task.Run(() => Save(model));
 

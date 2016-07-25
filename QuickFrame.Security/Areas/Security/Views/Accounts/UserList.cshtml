@@ -9,10 +9,10 @@
 		<label for="UserId"></label>
 		<div>
 	<select asp-for="UserId"
-			dc-dropdown-box
-			dc-data-url="@Url.Action("GetUsers", "Accounts", new { filter = Model.Filter })"
-			dc-id-field="userId"
-			dc-text-field="displayName"></select>
+			
+			data-url="@Url.Action("GetUsers", "Accounts", new { filter = Model.Filter })"
+			data-id="userId"
+			data-text="displayName"></select>
 		</div>
 	</div>
 	<div class="col-md-6">

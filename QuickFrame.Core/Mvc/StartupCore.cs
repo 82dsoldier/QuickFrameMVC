@@ -18,8 +18,11 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using QuickFrame.Configuration;
 using QuickFrame.Data;
+using QuickFrame.Data.Attachments;
+using QuickFrame.Data.Attachments.Ui.Areas.Attachments.Controllers;
 using QuickFrame.Di;
 using QuickFrame.Mapping;
+using QuickFrame.Mvc;
 using QuickFrame.Security.AccountControl.ActiveDirectory;
 using QuickFrame.Security.Policies;
 using QuickFrame.Utility;
@@ -29,7 +32,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 
-namespace QuickFrame.Mvc {
+namespace QuickFrame.Core.Mvc {
 
 	public class StartupCore {
 		protected IConfigurationRoot Configuration;
@@ -58,9 +61,13 @@ namespace QuickFrame.Mvc {
 			RegisterAssembly(typeof(FluentTagBuilder));
 			RegisterAssembly(typeof(RoleRequirement));
 			RegisterAssembly(typeof(ADUser));
+			RegisterAssembly(typeof(AttachmentsContext));
+			RegisterAssembly(typeof(FileExtensionsController));
+
 			services.Configure<RazorViewEngineOptions>(options => {
 				options.FileProviders.Add(new EmbeddedFileProvider(typeof(FluentTagBuilder).Assembly, "QuickFrame.Mvc"));
 				options.FileProviders.Add(new EmbeddedFileProvider(typeof(RoleRequirement).Assembly, "QuickFrame.Security"));
+				options.FileProviders.Add(new EmbeddedFileProvider(typeof(FileExtensionsController).Assembly, "QuickFrame.Data.Attachments.Ui"));
 			});
 			//bool useFileProvider = true;
 			//Boolean.TryParse(Configuration["AppOptions:UseEmbeddedFileProviders"], out useFileProvider);
@@ -124,6 +131,7 @@ namespace QuickFrame.Mvc {
 
 			razorViewEngineOptions.Value.FileProviders.Add(new EmbeddedFileProvider(typeof(FluentTagBuilder).Assembly, "QuickFrame.Mvc"));
 			razorViewEngineOptions.Value.FileProviders.Add(new EmbeddedFileProvider(typeof(RoleRequirement).Assembly, "QuickFrame.Security"));
+			razorViewEngineOptions.Value.FileProviders.Add(new EmbeddedFileProvider(typeof(FileExtensionsController).Assembly, "QuickFrame.Data.Attachments.Ui"));
 			app.UseSession();
 
 			app.UseMvc(routes => {
