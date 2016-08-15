@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
-using QuickFrame.Configuration;
 using QuickFrame.Data.Models;
 using System;
 using System.Collections.Generic;

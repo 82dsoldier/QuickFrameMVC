@@ -4,8 +4,8 @@ namespace QuickFrame.Data {
 
 	public class ConcurrentDataTransferObjectCore<TDataType, TSrc, TDest>
 	: DataTransferObjectCore<TDataType, TSrc, TDest>,
-	IConcurrentDataTransferObjectCore<TDataType, TSrc, TDest>
-	where TSrc : IConcurrentDataModelCore<TDataType> {
+	IConcurrentDataTransferObject<TDataType, TSrc, TDest>
+	where TSrc : IConcurrentDataModel<TDataType> {
 		public byte[] RowVersion { get; set; }
 	}
 }

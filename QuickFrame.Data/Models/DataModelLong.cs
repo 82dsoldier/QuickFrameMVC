@@ -2,6 +2,6 @@
 
 namespace QuickFrame.Data.Models {
 
-	public class DataModelLong : DataModelCore<long>, IDataModelLong {
+	public class DataModelLong : DataModel<long>, IDataModelLong {
 	}
 }

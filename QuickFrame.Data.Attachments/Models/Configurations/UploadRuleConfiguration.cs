@@ -1,15 +1,11 @@
-
 using QuickFrame.Data.Models.Configurations;
 
-namespace QuickFrame.Data.Attachments.Models.Configurations
-{
+namespace QuickFrame.Data.Attachments.Models.Configurations {
+	// AllRules
 
-    // AllRules
-    
-    public class UploadRuleConfiguration : ConfigurationInt<UploadRule>
-    {
-        public UploadRuleConfiguration() : base()
-        {
+	public class UploadRuleConfiguration : ConfigurationInt<UploadRule> {
+
+		public UploadRuleConfiguration() : base() {
 			Property(x => x.Name).HasColumnName(@"Name").IsRequired().HasColumnType("nvarchar").HasMaxLength(64);
 			Property(x => x.Description).HasColumnName(@"Description").IsOptional().HasColumnType("nvarchar").HasMaxLength(2048);
 			Property(x => x.Priority).HasColumnName(@"Priority").IsOptional().HasColumnType("int");
@@ -25,6 +21,6 @@ namespace QuickFrame.Data.Attachments.Models.Configurations
 			HasOptional(a => a.MimeType).WithMany(b => b.UploadRules).HasForeignKey(c => c.MimeTypeId).WillCascadeOnDelete(false); // FK__UploadRul__MimeT__4316F928
 		}
 	}
-
 }
+
 // </auto-generated>

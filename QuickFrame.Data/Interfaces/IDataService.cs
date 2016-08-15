@@ -4,4 +4,9 @@ namespace QuickFrame.Data.Interfaces {
 	: IDataServiceInt<TEntity>
 	where TEntity : IDataModelInt {
 	}
+
+	public interface IDataService<TDataType, TEntity>
+	: IGenericDataService<TDataType, TEntity>
+	where TEntity : IDataModel<TDataType> {
+	}
 }

@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using QuickFrame.Data.Interfaces;
-using System.Collections.Generic;
-using System.Data.SqlClient;
+﻿using QuickFrame.Data.Interfaces;
 
 namespace QuickFrame.Mvc {
 

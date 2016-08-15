@@ -1,15 +1,11 @@
-
 using QuickFrame.Data.Models.Configurations;
 
-namespace QuickFrame.Data.Attachments.Models.Configurations
-{
+namespace QuickFrame.Data.Attachments.Models.Configurations {
+	// FileHeaderPatterns
 
-    // FileHeaderPatterns
-    
-    public class FileHeaderPatternConfiguration : ConfigurationInt<FileHeaderPattern>
-    {
-        public FileHeaderPatternConfiguration() : base()
-        {
+	public class FileHeaderPatternConfiguration : ConfigurationInt<FileHeaderPattern> {
+
+		public FileHeaderPatternConfiguration() : base() {
 			Property(x => x.Name).HasColumnName(@"Name").IsRequired().HasColumnType("nvarchar").HasMaxLength(64);
 			Property(x => x.Description).HasColumnName(@"Description").IsOptional().HasColumnType("nvarchar").HasMaxLength(2048);
 			Property(x => x.Location).HasColumnName(@"Location").IsRequired().HasColumnType("bit");
@@ -17,6 +13,6 @@ namespace QuickFrame.Data.Attachments.Models.Configurations
 			Property(x => x.FileHeader).HasColumnName(@"FileHeader").IsRequired().HasColumnType("varbinary").HasMaxLength(2048);
 		}
 	}
-
 }
+
 // </auto-generated>

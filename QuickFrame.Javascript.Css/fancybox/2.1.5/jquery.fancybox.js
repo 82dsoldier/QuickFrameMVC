@@ -269,7 +269,6 @@
 						if ($.metadata) {
 							$.extend(true, obj, element.metadata());
 						}
-
 					} else {
 						obj = element;
 					}
@@ -295,13 +294,10 @@
 					if (!type) {
 						if (F.isImage(href)) {
 							type = 'image';
-
 						} else if (F.isSWF(href)) {
 							type = 'swf';
-
 						} else if (href.charAt(0) === '#') {
 							type = 'inline';
-
 						} else if (isString(element)) {
 							type    = 'html';
 							content = element;
@@ -321,14 +317,11 @@
 					if (type === 'inline') {
 						if (href) {
 							content = $( isString(href) ? href.replace(/.*(?=#[^\s]+$)/, '') : href ); //strip for ie7
-
 						} else if (obj.isDom) {
 							content = element;
 						}
-
 					} else if (type === 'html') {
 						content = href;
-
 					} else if (!type && !href && obj.isDom) {
 						type    = 'inline';
 						content = element;
@@ -409,7 +402,6 @@
 				$('.fancybox-wrap').stop(true).trigger('onReset').remove();
 
 				F._afterZoomOut();
-
 			} else {
 				F.isOpen = F.isOpened = false;
 				F.isClosing = true;
@@ -536,7 +528,6 @@
 					delete pos.position;
 
 					wrap.stop(true, true).animate(pos, 200);
-
 				} else {
 					wrap.css(pos);
 
@@ -579,7 +570,6 @@
 				F.trigger('onUpdate');
 
 				didUpdate = null;
-
 			}, (anyway && !isTouch ? 0 : 300));
 		},
 
@@ -642,7 +632,6 @@
 			if (locked) {
 				rez.w = locked[0].clientWidth;
 				rez.h = locked[0].clientHeight;
-
 			} else {
 				// See http://bugs.jquery.com/ticket/6724
 				rez.w = isTouch && window.innerWidth  ? window.innerWidth  : W.width();
@@ -726,7 +715,6 @@
 						if (F.group.length > 1 && !current.canShrink) {
 							if (deltaY > 0 || deltaX > 0) {
 								F.prev( deltaY > 0 ? 'down' : 'left' );
-
 							} else if (deltaY < 0 || deltaX < 0) {
 								F.next( deltaY < 0 ? 'up' : 'right' );
 							}
@@ -901,20 +889,16 @@
 				if (!coming.content || !coming.content.length) {
 					return F._error( 'content' );
 				}
-
 			} else if (!href) {
 				return F._error( 'href' );
 			}
 
 			if (type === 'image') {
 				F._loadImage();
-
 			} else if (type === 'ajax') {
 				F._loadAjax();
-
 			} else if (type === 'iframe') {
 				F._loadIframe();
-
 			} else {
 				F._afterLoad();
 			}
@@ -971,7 +955,6 @@
 				error: function (jqXHR, textStatus) {
 					if (F.coming && textStatus !== 'abort') {
 						F._error( 'ajax', jqXHR );
-
 					} else {
 						F.hideLoading();
 					}
@@ -1100,7 +1083,6 @@
 				case 'html':
 					if (current.selector) {
 						content = $('<div>').html(content).find(current.selector);
-
 					} else if (isQuery(content)) {
 						if (!content.data(placeholder)) {
 							content.data(placeholder, $('<div class="' + placeholder + '"></div>').insertAfter( content ).hide() );
@@ -1155,7 +1137,6 @@
 
 			if (!F.isOpened) {
 				$('.fancybox-wrap').not( current.wrap ).stop(true).trigger('onReset').remove();
-
 			} else if (previous.prevMethod) {
 				F.transitions[ previous.prevMethod ]();
 			}
@@ -1230,10 +1211,8 @@
 
 							origHeight = body.outerHeight(true);
 						}
-
 					} catch (e) {}
 				}
-
 			} else if (current.autoWidth || current.autoHeight) {
 				inner.addClass( 'fancybox-tmp' );
 
@@ -1301,7 +1280,6 @@
 					height = minHeight;
 					width  = getScalar(height * ratio);
 				}
-
 			} else {
 				width = Math.max(minWidth, Math.min(width, maxWidth));
 
@@ -1350,7 +1328,6 @@
 						width_  = wrap.width();
 						height_ = wrap.height();
 					}
-
 				} else {
 					width  = Math.max(minWidth,  Math.min(width,  width  - (width_  - maxWidth_)));
 					height = Math.max(minHeight, Math.min(height, height - (height_ - maxHeight_)));
@@ -1405,7 +1382,6 @@
 
 			if (current.autoCenter && current.fixed && !onlyAbsolute && height <= viewport.h && width <= viewport.w) {
 				rez.position = 'fixed';
-
 			} else if (!current.locked) {
 				rez.top  += viewport.y;
 				rez.left += viewport.x;
@@ -1466,7 +1442,6 @@
 			// Stop the slideshow if this is the last item
 			if (!current.loop && current.index === current.group.length - 1) {
 				F.play( false );
-
 			} else if (F.opts.autoPlay && !F.player.isActive) {
 				F.opts.autoPlay = false;
 
@@ -1529,7 +1504,6 @@
 					width  = orig.outerWidth();
 					height = orig.outerHeight();
 				}
-
 			} else {
 				pos.top  = viewport.y + (viewport.h - height) * current.topRatio;
 				pos.left = viewport.x + (viewport.w - width)  * current.leftRatio;
@@ -1590,7 +1564,6 @@
 				if (current.openOpacity) {
 					startPos.opacity = 0.1;
 				}
-
 			} else if (effect === 'fade') {
 				startPos.opacity = 0.1;
 			}
@@ -1642,7 +1615,6 @@
 				if (direction === 'down' || direction === 'right') {
 					startPos[ field ] = getValue(getScalar(startPos[ field ]) - distance);
 					endPos[ field ]   = '+=' + distance + 'px';
-
 				} else {
 					startPos[ field ] = getValue(getScalar(startPos[ field ]) + distance);
 					endPos[ field ]   = '-=' + distance + 'px';
@@ -1652,7 +1624,6 @@
 			// Workaround for http://bugs.jquery.com/ticket/12273
 			if (effect === 'none') {
 				F._afterZoomIn();
-
 			} else {
 				F.wrap.css(startPos).animate(endPos, {
 					duration : current.nextSpeed,
@@ -1726,7 +1697,6 @@
 
 			if (this.overlay) {
 				this.overlay.unbind('.overlay').width('auto').height('auto');
-
 			} else {
 				this.create(opts);
 			}
@@ -1793,7 +1763,6 @@
 				if (D.width() > offsetWidth) {
 					width = D.width();
 				}
-
 			} else if (D.width() > W.width()) {
 				width = D.width();
 			}
@@ -1961,7 +1930,6 @@
 
 		if (!selector || options.live === false) {
 			that.unbind('click.fb-start').bind('click.fb-start', run);
-
 		} else {
 			D.undelegate(selector, 'click.fb-start').delegate(selector + ":not('.fancybox-item, .fancybox-nav')", 'click.fb-start', run);
 		}
@@ -2016,5 +1984,4 @@
 
 		$("<style type='text/css'>.fancybox-margin{margin-right:" + (w2 - w1) + "px;}</style>").appendTo("head");
 	});
-
 }(window, document, jQuery));

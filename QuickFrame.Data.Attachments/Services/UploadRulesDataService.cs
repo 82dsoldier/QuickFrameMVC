@@ -1,20 +1,19 @@
-﻿using QuickFrame.Data.Attachments.Interfaces;
+﻿using ExpressMapper;
+using QuickFrame.Data.Attachments.Dtos;
+using QuickFrame.Data.Attachments.Interfaces;
 using QuickFrame.Data.Attachments.Models;
-using QuickFrame.Data.Interfaces;
 using QuickFrame.Data.Services;
 using QuickFrame.Di;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
-using System.Threading.Tasks;
-using QuickFrame.Data.Attachments.Dtos;
-using ExpressMapper;
 
-namespace QuickFrame.Data.Attachments.Services
-{
+namespace QuickFrame.Data.Attachments.Services {
+
 	[Export]
 	public class UploadRulesDataService : DataService<AttachmentsContext, UploadRule>, IUploadRulesDataService {
+
 		public int GetLastPriority() {
 			using(var context = ComponentContainer.Component<AttachmentsContext>()) {
 				return context.Component.UploadRules

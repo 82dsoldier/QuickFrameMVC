@@ -1,15 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using QuickFrame.Data.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using static QuickFrame.Security.AuthorizationExtensions;
 
-namespace QuickFrame.Mvc
-{
+namespace QuickFrame.Mvc {
+
 	public class ReadOnlyControllerCore<TDataType, TEntity, TIndex, TEdit>
 		: Controller
 		where TIndex : IGenericDataTransferObject<TEntity, TIndex>
@@ -26,7 +24,6 @@ namespace QuickFrame.Mvc
 		public IActionResult Index(int page = 1, int itemsPerPage = 25, string sortColumn = "Name", SortOrder sortOrder = SortOrder.Ascending)
 			=> IndexBase<TIndex>(page, itemsPerPage, sortColumn, sortOrder);
 
-
 		protected virtual IActionResult DetailsBase<TModel>(TDataType id)
 			where TModel : IGenericDataTransferObject<TEntity, TModel>
 			=> Authorize(User, () => View(_dataService.Get<TModel>(id)));
@@ -40,7 +37,22 @@ namespace QuickFrame.Mvc
 				return View("Index", _dataService.GetList<TResult>(itemsPerPage * (page - 1), itemsPerPage, sortColumn, sortOrder).ToList());
 			});
 
-		protected virtual IActionResult Authorize(ClaimsPrincipal user, Func<IActionResult> func) => AuthorizeExecution(user, func);
+		protected virtual IActionResult Authorize(ClaimsPrincipal user, Func<IActionResult> func) => AuthorizeExecution(user, CurrentUrl, func);
+
+		protected string CurrentUrl
+		{
+			get
+			{
+				var builder = new UriBuilder {
+					Scheme = Request.Scheme,
+					Host = Request.Host.Value,
+					Path = Request.Path,
+					Query = Request.QueryString.ToUriComponent()
+				};
+
+				return builder.Uri.ToString();
+			}
+		}
 
 		public ReadOnlyControllerCore(IReadOnlyDataService<TDataType, TEntity> dataService) {
 			_dataService = dataService;

@@ -3,6 +3,6 @@ using System;
 
 namespace QuickFrame.Data.Models {
 
-	public class DataModelGuid : DataModelCore<Guid>, IDataModelGuid {
+	public class DataModelGuid : DataModel<Guid>, IDataModelGuid {
 	}
 }

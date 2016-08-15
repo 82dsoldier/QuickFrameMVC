@@ -2,6 +2,6 @@
 
 namespace QuickFrame.Data.Models {
 
-	public class ConcurrentDataModelInt : ConcurrentDataModelCore<int>, IConcurrentDataModelInt {
+	public class ConcurrentDataModelInt : ConcurrentDataModel<int>, IConcurrentDataModelInt {
 	}
 }

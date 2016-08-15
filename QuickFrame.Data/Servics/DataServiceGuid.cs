@@ -3,15 +3,13 @@ using QuickFrame.Data.Exceptions;
 using QuickFrame.Data.Interfaces;
 using QuickFrame.Di;
 using System;
-using System.Collections.Generic;
 using System.Data.Entity;
-using System.Data.SqlClient;
 using System.Linq;
 
 namespace QuickFrame.Data.Services {
 
 	public abstract class DataServiceGuid<TContext, TEntity>
-	: DataServiceCore<TContext, Guid, TEntity>
+	: DataService<TContext, Guid, TEntity>
 	where TContext : DbContext
 	where TEntity : class, IDataModelGuid {
 
@@ -22,6 +20,7 @@ namespace QuickFrame.Data.Services {
 				return model.Id;
 			}
 		}
+
 		public override bool Delete(Guid id) {
 			using(var contextFactory = ComponentContainer.Component<TContext>()) {
 				var dbModel = contextFactory.Component.Set<TEntity>().FirstOrDefault(obj => obj.Id == id);

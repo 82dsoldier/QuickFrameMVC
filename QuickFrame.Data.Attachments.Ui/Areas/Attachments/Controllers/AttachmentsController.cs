@@ -1,18 +1,15 @@
-﻿using QuickFrame.Data.Attachments.Models;
+﻿using Microsoft.AspNetCore.Mvc;
+using QuickFrame.Data.Attachments.Dtos;
+using QuickFrame.Data.Attachments.Interfaces;
+using QuickFrame.Data.Attachments.Models;
 using QuickFrame.Mvc;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using QuickFrame.Data.Interfaces;
-using QuickFrame.Data.Attachments.Interfaces;
-using QuickFrame.Data.Attachments.Dtos;
-using Microsoft.AspNetCore.Mvc;
 
-namespace QuickFrame.Data.Attachments.Ui.Areas.Attachments.Controllers
-{
+namespace QuickFrame.Data.Attachments.Ui.Areas.Attachments.Controllers {
+
 	[Area("Attachments")]
 	public class AttachmentsController : ControllerGuid<Attachment, AttachmentIndexDto, AttachmentCreateDto> {
+
 		[HttpGet]
 		public IActionResult CreateRevision(Guid id, Guid parentId) {
 			return View(new AttachmentCreateRevisionDto {
@@ -40,6 +37,7 @@ namespace QuickFrame.Data.Attachments.Ui.Areas.Attachments.Controllers
 				return View("Create");
 			return RedirectToAction("CreateRevision", new { id = id, parentId = parentId });
 		}
+
 		public AttachmentsController(IAttachmentsDataService dataService) : base(dataService) {
 		}
 	}

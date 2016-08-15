@@ -1,19 +1,13 @@
-﻿using QuickFrame.Data.Models;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
 
 namespace QuickFrame.Security.AccountControl.Data.Models {
 
-	public class SiteGroup : DataModel {
-
-		[Required]
-		[StringLength(128)]
-		public string GroupId { get; set; }
-
-		[StringLength(256)]
-		public string DisplayName { get; set; }
-
-		public virtual ICollection<SiteRole> Roles { get; set; }
-		public virtual ICollection<SiteUser> Users { get; set; }
+	public class SiteGroup {
+		public string Id { get; set; }
+		public string Name { get; set; }
+		public List<string> Member { get; set; }
+		public List<string> GroupType { get; set; }
+		public string ObjectGuid { get; set; }
+		public string AccountName { get; set; }
 	}
 }

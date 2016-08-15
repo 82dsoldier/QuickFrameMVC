@@ -1,7 +1,7 @@
 namespace QuickFrame.Data.Interfaces {
 
 	public interface IConcurrentDataTransferObjectLong<TSrc, TDest>
-		: IConcurrentDataModelCore<long>
+		: IConcurrentDataModel<long>
 		where TSrc : IConcurrentDataModelLong {
 	}
 }

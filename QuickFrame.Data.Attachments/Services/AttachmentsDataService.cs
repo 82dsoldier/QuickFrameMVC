@@ -8,13 +8,14 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Data.Entity;
+using System.Data.SqlClient;
 using System.Linq;
-using System.Threading.Tasks;
 
-namespace QuickFrame.Data.Attachments.Services
-{
+namespace QuickFrame.Data.Attachments.Services {
+
 	[Export]
 	public class AttachmentsDataService : DataServiceGuid<AttachmentsContext, Attachment>, IAttachmentsDataService {
+
 		public Guid CreateAttachment<TModel>(TModel model) {
 			using(var context = ComponentContainer.Component<AttachmentsContext>()) {
 				var dbModel = Mapper.Map<TModel, Attachment>(model);
@@ -41,6 +42,29 @@ namespace QuickFrame.Data.Attachments.Services
 				context.Component.Entry(current).State = EntityState.Modified;
 				context.Component.SaveChanges();
 				return current.Id;
+			}
+		}
+
+		protected override IEnumerable<Attachment> GetListBase(int start = 0, int count = 0, string columnName = "Name", SortOrder sortOrder = SortOrder.Ascending, bool includeDeleted = false) {
+			using(var contextFactory = ComponentContainer.Component<AttachmentsContext>()) {
+				var query = includeDeleted ? contextFactory.Component.Attachments.Where(o => 1 == 1) : contextFactory.Component.Attachments.Where(o => o.IsDeleted == false);
+				if(start > 0)
+					query = query.Skip(start);
+				if(count > 0)
+					query = query.Take(count);
+				return query.ToList();
+			}
+		}
+
+		protected override IEnumerable<TResult> GetListBase<TResult>(int start = 0, int count = 0, string columnName = "Name", SortOrder sortOrder = SortOrder.Ascending, bool includeDeleted = false) {
+			using(var contextFactory = ComponentContainer.Component<AttachmentsContext>()) {
+				var query = includeDeleted ? contextFactory.Component.Attachments.Where(o => 1 == 1) : contextFactory.Component.Attachments.Where(o => o.IsDeleted == false);
+				if(start > 0)
+					query = query.Skip(start);
+				if(count > 0)
+					query = query.Take(count);
+				foreach(var obj in query)
+					yield return Mapper.Map<Attachment, TResult>(obj);
 			}
 		}
 	}

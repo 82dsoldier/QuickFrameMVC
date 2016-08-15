@@ -1,15 +1,17 @@
-﻿using QuickFrame.Data;
-using QuickFrame.Mapping;
+﻿using QuickFrame.Data.Dtos;
 using QuickFrame.Security.AccountControl.Data.Models;
-using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace QuickFrame.Security.AccountControl.Data.Dtos {
 
-	[ExpressMap]
-	public class SiteRoleIndexDto : DataTransferObject<SiteRole, SiteRoleIndexDto> {
+	public class SiteRoleIndexDto : GenericDataTransferObject<SiteRole, SiteRoleIndexDto> {
+		public string Id { get; set; }
+
+		[StringLength(128)]
+		[Required]
 		public string Name { get; set; }
+
+		[StringLength(2048)]
 		public string Description { get; set; }
-		public List<SiteUserIndexDto> Users { get; set; }
-		public List<SiteGroupIndexDto> Groups { get; set; }
 	}
 }

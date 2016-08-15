@@ -1,6 +1,5 @@
 ﻿using ExpressMapper;
 using QuickFrame.Data.Interfaces;
-using QuickFrame.Di;
 using System.Data.Entity;
 using System.Threading.Tasks;
 

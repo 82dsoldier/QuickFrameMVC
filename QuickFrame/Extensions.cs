@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.DirectoryServices;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
@@ -65,11 +66,28 @@ namespace QuickFrame {
 			sid.GetBinaryForm(buffer, 0);
 			return buffer.ToHexString();
 		}
+
 		public static string ToHexString(this byte[] val) {
 			StringBuilder sb = new StringBuilder(val.Length * 2);
 			foreach(byte b in val)
 				sb.AppendFormat("\\{0:X2}", b);
 			return sb.ToString();
+		}
+
+		public static bool ListIsNullOrEmpty<T>(this IList<T> list) {
+			if(list == null)
+				return true;
+			if(list.Count == 0)
+				return true;
+			return false;
+		}
+
+		public static bool ListIsNullOrEmpty(this ResultPropertyValueCollection list) {
+			if(list == null)
+				return true;
+			if(list.Count == 0)
+				return true;
+			return false;
 		}
 	}
 }

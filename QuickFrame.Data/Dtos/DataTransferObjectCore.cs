@@ -5,9 +5,9 @@ using QuickFrame.Data.Models;
 namespace QuickFrame.Data {
 
 	public class DataTransferObjectCore<TDataType, TSrc, TDest>
-		: DataModelCore<TDataType>,
-		IDataTransferObjectCore<TDataType, TSrc, TDest>
-		where TSrc : IDataModelCore<TDataType> {
+		: DataModel<TDataType>,
+		IDataTransferObject<TDataType, TSrc, TDest>
+		where TSrc : IDataModel<TDataType> {
 
 		public virtual void Register() {
 			Mapper.Register<TSrc, TDest>();

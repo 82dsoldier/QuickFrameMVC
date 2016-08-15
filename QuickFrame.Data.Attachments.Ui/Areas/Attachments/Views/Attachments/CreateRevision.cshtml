@@ -1,5 +1,5 @@
 ﻿@model AttachmentCreateRevisionDto
-@{ 
+@{
 	ViewBag.Title = "File Extension";
 	Layout = "_PopupLayout";
 }
@@ -9,7 +9,7 @@
 	<div class="container">
 		<div class="col-md-6">
 			<input type="radio" asp-for="IsRevision" value="true" /><label style="margin-left:15px">This is a new version of the previous file.</label>
-			<input type="radio" asp-for="IsRevision" value="false"/><label style="margin-left:15px">This is a seperate attachment.</label>
+			<input type="radio" asp-for="IsRevision" value="false" /><label style="margin-left:15px">This is a seperate attachment.</label>
 		</div>
 		@Html.Partial("FormButtons");
 	</div>

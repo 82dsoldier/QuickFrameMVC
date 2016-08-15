@@ -1,19 +1,16 @@
 ﻿using ExpressMapper;
+using Microsoft.AspNetCore.Http;
 using QuickFrame.Data.Attachments.Interfaces;
 using QuickFrame.Data.Attachments.Models;
 using QuickFrame.Mapping;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 
-namespace QuickFrame.Data.Attachments.Dtos
-{
+namespace QuickFrame.Data.Attachments.Dtos {
+
 	[ExpressMap]
 	public class FileHeaderPatternDto : DataTransferObject<FileHeaderPattern, FileHeaderPatternDto>, IUploadRuleDto {
 		private static Regex stringMap = new Regex(@"([A-Fa-f0-9][A-Fa-f0-9]?)[,\s]?", RegexOptions.Compiled);
@@ -21,11 +18,14 @@ namespace QuickFrame.Data.Attachments.Dtos
 		[StringLength(64)]
 		[Required]
 		public string Name { get; set; } // Name (length: 64)
+
 		[StringLength(1024)]
 		public string Description { get; set; } // Description (length: 1024)
+
 		public bool LocationBeginning { get; set; } = true;// Location
 		public bool LocationEnd { get; set; } = false;
 		public int Offset { get; set; } = 0;// Offset
+
 		[RegularExpression(@"(([A-Fa-f0-9][A-Fa-f0-9]?)[,\s]?)+", ErrorMessage = "Offset value must be a series of valid hexidecimal numbers seperated by a space or comma.")]
 		public string FileHeader { get; set; } // FileHeader (length: 2048)
 

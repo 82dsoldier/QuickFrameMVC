@@ -1,0 +1,48 @@
+﻿@model IEnumerable<SiteRoleIndexDto>
+@{
+	ViewBag.Title = "Roles";
+	ViewBag.UseSearch = true;
+	ViewBag.UsePaging = true;
+	Layout = "_Layout";
+}
+@section menu {
+    @Html.Partial("MainMenu")
+}
+
+@section createbutton {
+    <a asp-controller="Roles" asp-action="Create" class="btn btn-sm btn-default" dc-fancybox data-width="1280px" data-height="768px" dc-after="mainCtl.reloadMe();"><i class="fa fa-plus"></i> Create a New Role</a>
+}
+@{
+	if(Model?.Any() == true) {
+		<table class="table index table-striped table-bordered table-hover" style="border: 0;">
+			<thead>
+				<tr>
+					<th style="width:5%;"></th>
+					<th display-for="Name"></th>
+					<th display-for="Description"></th>
+				</tr>
+			</thead>
+			<tbody>
+				@{
+					foreach(var obj in Model) {
+						<tr>
+							<td>
+								<div class="dropdown">
+									<a href="#" class="dropdown-toggle" style="display:inline-block;width:100%;" data-toggle="dropdown"><i class="fa fa-lg fa-ellipsis-v"></i></a>
+									<ul class="dropdown-menu">
+										<li><a asp-controller="Roles" asp-action="Edit" asp-route-id="@obj.Id" asp-route-closeOnSubmit="true" class="fancybox" data-width="640px" data-height="480px"><i class="fa-fw fa fa-edit"></i>Edit</a></li>
+										<li><a asp-controller="Roles" asp-action="Delete" asp-route-id="@obj.Id" class="remove-object"><i class="fa-fw fa fa-times red"></i>Delete</a></li>
+										<li><a asp-controller="Roles" asp-action="ListUsers" asp-route-id="@obj.Name"><i class="fa-fw fa fa-user"></i>List Users</a></li>
+										<li><a asp-controller="Roles" asp-action="ListGroups" asp-route-id="@obj.Name"><i class="fa-fw fa fa-group"></i>List Groups</a></li>
+									</ul>
+								</div>
+							</td>
+							<td display-for="@obj.Name"></td>
+							<td display-for="@obj.Description"></td>
+						</tr>
+					}
+				}
+			</tbody>
+		</table>
+	}
+}

@@ -1,15 +1,14 @@
 ﻿using ExpressMapper;
 using QuickFrame.Data.Interfaces;
 using QuickFrame.Di;
-using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Data.SqlClient;
 
-namespace QuickFrame.Data.Servics
-{
+namespace QuickFrame.Data.Servics {
+
 	public abstract class CompositeDataService<TContext, TPrimaryDataType, TSecondaryDataType, TEntity>
 		: ICompositeDataService<TPrimaryDataType, TSecondaryDataType, TEntity>
 		where TContext : DbContext

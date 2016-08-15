@@ -4,4 +4,9 @@ namespace QuickFrame.Data.Interfaces {
 		: IConcurrentDataTransferObjectInt<TSrc, TDest>
 		where TSrc : IConcurrentDataModelInt {
 	}
+
+	public interface IConcurrentDataTransferObject<TDataType, TSrc, TDest>
+	: IConcurrentDataModel<TDataType>
+	where TSrc : IConcurrentDataModel<TDataType> {
+	}
 }

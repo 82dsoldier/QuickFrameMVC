@@ -2,6 +2,6 @@
 
 namespace QuickFrame.Data.Models {
 
-	public class DataModelInt : DataModelCore<int>, IDataModelInt {
+	public class DataModelInt : DataModel<int>, IDataModelInt {
 	}
 }

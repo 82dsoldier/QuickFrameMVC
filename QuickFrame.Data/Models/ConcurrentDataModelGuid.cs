@@ -3,6 +3,6 @@ using System;
 
 namespace QuickFrame.Data.Models {
 
-	public class ConcurrentDataModelGuid : ConcurrentDataModelCore<Guid>, IConcurrentDataModelGuid {
+	public class ConcurrentDataModelGuid : ConcurrentDataModel<Guid>, IConcurrentDataModelGuid {
 	}
 }

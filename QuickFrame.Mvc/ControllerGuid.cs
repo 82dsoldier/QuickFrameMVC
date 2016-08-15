@@ -1,7 +1,5 @@
 ﻿using QuickFrame.Data.Interfaces;
 using System;
-using Microsoft.AspNetCore.Mvc;
-using System.Data.SqlClient;
 
 namespace QuickFrame.Mvc {
 

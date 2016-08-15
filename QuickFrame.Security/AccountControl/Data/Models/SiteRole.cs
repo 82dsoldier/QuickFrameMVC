@@ -1,41 +1,17 @@
-﻿using QuickFrame.Data.Models;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-
 namespace QuickFrame.Security.AccountControl.Data.Models {
 
-	/// <summary>
-	///     Identifies a security group within an application.
-	/// </summary>
-	public class SiteRole : DataModel {
-
-		/// <summary>
-		///     Gets or sets the name.
-		/// </summary>
-		/// <value>
-		///     The name.
-		/// </value>
-		[Required]
-		[StringLength(256)]
+	public class SiteRole {
+		public string Id { get; set; }
 		public string Name { get; set; }
-
-		/// <summary>
-		///     Gets or sets the description.
-		/// </summary>
-		/// <value>
-		///     The description.
-		/// </value>
-		[StringLength(2048)]
+		public string NormalizedName { get; set; }
+		public string ConcurrencyStamp { get; set; }
 		public string Description { get; set; }
 
-		/// <summary>
-		///     A navigation property used to display all users assigned to this role.
-		/// </summary>
-		/// <value>
-		///     The list of users assigned to this role.
-		/// </value>
-		public virtual ICollection<SiteUser> Users { get; set; }
-
-		public virtual ICollection<SiteGroup> Groups { get; set; }
+		public virtual System.Collections.Generic.ICollection<GroupRole> GroupRoles { get; set; }
+		public virtual System.Collections.Generic.ICollection<SiteRoleClaim> SiteRoleClaims { get; set; }
+		public virtual System.Collections.Generic.ICollection<SiteRule> SiteRules { get; set; }
+		public virtual System.Collections.Generic.ICollection<UserRole> UserRoles { get; set; }
 	}
 }
+
+// </auto-generated>

@@ -1,5 +1,5 @@
 namespace QuickFrame.Data.Interfaces {
 
-	public interface IDataModelLong : IDataModelCore<long> {
+	public interface IDataModelLong : IDataModel<long> {
 	}
 }

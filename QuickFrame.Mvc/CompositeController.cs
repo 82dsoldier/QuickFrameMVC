@@ -2,18 +2,16 @@
 using QuickFrame.Data.Interfaces;
 using QuickFrame.Security.Attributes;
 using System;
-using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using static QuickFrame.Security.AuthorizationExtensions;
 
-namespace QuickFrame.Mvc
-{
+namespace QuickFrame.Mvc {
+
 	[Roles(new[] { "SiteUsers" })]
 	public abstract class CompositeController<TPrimaryDataType, TSecondaryDataType, TEntity, TIndex, TEdit>
-		:Controller
+		: Controller
 		where TIndex : IGenericDataTransferObject<TEntity, TIndex>
 		where TEdit : IGenericDataTransferObject<TEntity, TEdit> {
 		protected readonly ICompositeDataService<TPrimaryDataType, TSecondaryDataType, TEntity> _dataService;
@@ -89,11 +87,25 @@ namespace QuickFrame.Mvc
 				return View("Index", _dataService.GetList<TResult>(itemsPerPage * (page - 1), itemsPerPage, sortColumn, sortOrder).ToList());
 			});
 
-		protected virtual IActionResult Authorize(ClaimsPrincipal user, Func<IActionResult> func) => AuthorizeExecution(user, func);
+		protected virtual IActionResult Authorize(ClaimsPrincipal user, Func<IActionResult> func) => AuthorizeExecution(user, CurrentUrl, func);
+
+		protected string CurrentUrl
+		{
+			get
+			{
+				var builder = new UriBuilder {
+					Scheme = Request.Scheme,
+					Host = Request.Host.Value,
+					Path = Request.Path,
+					Query = Request.QueryString.ToUriComponent()
+				};
+
+				return builder.Uri.ToString();
+			}
+		}
 
 		public CompositeController(ICompositeDataService<TPrimaryDataType, TSecondaryDataType, TEntity> dataService) {
 			_dataService = dataService;
 		}
-
 	}
 }

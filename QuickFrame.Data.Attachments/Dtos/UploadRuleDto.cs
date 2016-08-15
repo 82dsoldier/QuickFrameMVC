@@ -1,15 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using QuickFrame.Data.Attachments.Interfaces;
 using QuickFrame.Data.Attachments.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace QuickFrame.Data.Attachments.Dtos
-{
-    public class UploadRuleDto : DataTransferObject<UploadRule, UploadRuleDto>
-    {
+namespace QuickFrame.Data.Attachments.Dtos {
+
+	public class UploadRuleDto : DataTransferObject<UploadRule, UploadRuleDto> {
 		public string Name { get; set; } // Name (length: 64)
 		public string Description { get; set; } // Description (length: 2048)
 		public int? Priority { get; set; } // Priority
@@ -21,6 +16,7 @@ namespace QuickFrame.Data.Attachments.Dtos
 
 		// Foreign keys
 		public FileExtensionDto FileExtension { get; set; } // FK__UploadRul__FileE__412EB0B6
+
 		public FileHeaderPatternDto FileHeaderPattern { get; set; } // FK__UploadRul__FileH__4222D4EF
 		public MimeTypeDto MimeType { get; set; } // FK__UploadRul__MimeT__4316F928
 

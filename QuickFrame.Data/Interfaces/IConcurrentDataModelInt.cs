@@ -1,5 +1,5 @@
 namespace QuickFrame.Data.Interfaces {
 
-	public interface IConcurrentDataModelInt : IConcurrentDataModelCore<int>, IDataModelInt {
+	public interface IConcurrentDataModelInt : IConcurrentDataModel<int>, IDataModelInt {
 	}
 }

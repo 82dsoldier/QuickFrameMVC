@@ -1,0 +1,19 @@
+﻿@model QuickFrame.Security.Areas.Security.Models.GroupListModel
+@{
+	Layout = "_PopupLayout";
+}
+<form asp-action="@Model.Action" asp-controller="@Model.Controller">
+	<div class="col-md-6">
+		<label for="UserId"></label>
+		<div>
+	<select asp-for="UserId"
+
+			data-url="@Url.Action("GetGroups", "Groups", new { filter = Model.Filter })"
+			data-id="id"
+			data-text="name"></select>
+		</div>
+	</div>
+	<div class="col-md-6">
+		@Html.Partial("FormButtons")
+	</div>
+</form>

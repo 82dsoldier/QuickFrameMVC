@@ -3,7 +3,7 @@ using System;
 namespace QuickFrame.Data.Interfaces {
 
 	public interface IConcurrentDataTransferObjectGuid<TSrc, TDest>
-		: IConcurrentDataModelCore<Guid>
+		: IConcurrentDataModel<Guid>
 		where TSrc : IConcurrentDataModelGuid {
 	}
 }

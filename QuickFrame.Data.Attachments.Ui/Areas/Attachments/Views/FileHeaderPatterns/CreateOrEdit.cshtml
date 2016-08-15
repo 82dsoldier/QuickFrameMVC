@@ -1,5 +1,5 @@
 ﻿@model FileHeaderPatternDto
-@{ 
+@{
 	ViewBag.Title = "File Extension";
 	Layout = "_PopupLayout";
 }
@@ -50,7 +50,7 @@
 		$(document).ready(function() {
 			$('#LocationBeginning').click(function() {
 				$('#LocationEnd').prop('checked', !$('#LocationBeginning').prop('checked'));
-			
+
 			});
 			$('#LocationEnd').click(function () {
 				$('#LocationBeginning').prop('checked', !$('#LocationEnd').prop('checked'));

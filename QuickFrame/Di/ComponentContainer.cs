@@ -30,6 +30,7 @@ namespace QuickFrame.Di {
 		}
 
 		public static ComponentFactory<TObject> Component<TObject>() => new ComponentFactory<TObject>(_container);
+
 		public static ComponentFactoryEx Component(Type typeToResolve) => new ComponentFactoryEx(_container, typeToResolve);
 
 		public static void RegisterAssembly(Assembly assembly) {
@@ -76,6 +77,10 @@ namespace QuickFrame.Di {
 		public void Dispose() {
 			(CurrentObject as IDisposable)?.Dispose();
 			CurrentScope.Dispose();
+		}
+
+		public static implicit operator TObject(ComponentFactory<TObject> obj) {
+			return obj.Component;
 		}
 	}
 

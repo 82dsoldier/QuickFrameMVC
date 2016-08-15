@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Linq;
 using System.Threading.Tasks;
 
-namespace QuickFrame.Data.Interfaces
-{
-    public interface ICompositeDataService<TPrimaryDataType, TSecondaryDataType, TEntity>
-    {
+namespace QuickFrame.Data.Interfaces {
+
+	public interface ICompositeDataService<TPrimaryDataType, TSecondaryDataType, TEntity> {
+
 		void Create(TEntity model);
 
 		void CreateAsync(TEntity model);
@@ -39,6 +37,7 @@ namespace QuickFrame.Data.Interfaces
 		IEnumerable<TResult> GetList<TResult>(int start = 0, int count = 0, string columnName = "Name", SortOrder sortOrder = SortOrder.Ascending, bool includeDeleted = false);
 
 		Task<IEnumerable<TResult>> GetListAsync<TResult>(int start = 0, int count = 0, string columnName = "Name", SortOrder sortOrder = SortOrder.Ascending, bool includeDeleted = false);
+
 		void Save(TEntity model);
 
 		void SaveAsync(TEntity model);

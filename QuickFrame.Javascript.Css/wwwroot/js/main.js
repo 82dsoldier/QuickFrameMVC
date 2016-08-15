@@ -42,8 +42,10 @@
       opts.closeBtn = $(this).is('[close-button]');
       opts.iframe = {};
       opts.iframe.scrolling = 'no';
+      opts.afterClose = function() {
+        return parent.window.location.reload();
+      };
       return $(this).fancybox(opts);
     });
   });
-
 }).call(this);

@@ -2,6 +2,6 @@ using System;
 
 namespace QuickFrame.Data.Interfaces {
 
-	public interface IConcurrentDataModelGuid : IConcurrentDataModelCore<Guid>, IDataModelGuid {
+	public interface IConcurrentDataModelGuid : IConcurrentDataModel<Guid>, IDataModelGuid {
 	}
 }
