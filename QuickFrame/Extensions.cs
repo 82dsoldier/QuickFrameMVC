@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.DirectoryServices;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
@@ -74,20 +73,20 @@ namespace QuickFrame {
 			return sb.ToString();
 		}
 
-		public static bool ListIsNullOrEmpty<T>(this IList<T> list) {
-			if(list == null)
-				return true;
-			if(list.Count == 0)
-				return true;
-			return false;
-		}
+		//public static bool ListIsNullOrEmpty<T>(this IList<T> list) {
+		//	if(list == null)
+		//		return true;
+		//	if(list.Count == 0)
+		//		return true;
+		//	return false;
+		//}
 
-		public static bool ListIsNullOrEmpty(this ResultPropertyValueCollection list) {
-			if(list == null)
-				return true;
-			if(list.Count == 0)
-				return true;
-			return false;
-		}
+		//public static bool ListIsNullOrEmpty(this ResultPropertyValueCollection list) {
+		//	if(list == null)
+		//		return true;
+		//	if(list.Count == 0)
+		//		return true;
+		//	return false;
+		//}
 	}
 }
