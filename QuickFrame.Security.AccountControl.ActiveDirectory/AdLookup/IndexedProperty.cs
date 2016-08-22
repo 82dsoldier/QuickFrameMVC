@@ -10,13 +10,13 @@ namespace QuickFrame.Security.AccountControl.ActiveDirectory.AdLookup {
 		{
 			get
 			{
-				return _searchResult[i] as T;
+				return _searchResult?[i] as T;
 			}
 		}
 
 		public int Count
 		{
-			get { return _searchResult.Count; }
+			get { return _searchResult != null ? _searchResult.Count : 0; }
 		}
 
 		public IndexedProperty(ResultPropertyValueCollection searchResult) {

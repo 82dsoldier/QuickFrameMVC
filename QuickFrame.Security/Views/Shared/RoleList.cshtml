@@ -1,16 +1,15 @@
-﻿@model QuickFrame.Security.Areas.Security.Models.UserListModel
+﻿@model QuickFrame.Security.Areas.Security.Models.RoleListModel
 @{
 	Layout = "_PopupLayout";
 }
 <form asp-action="@Model.Action" asp-controller="@Model.Controller" asp-area="@Model.Area">
 	<div class="col-md-6">
-		<label for="UserId"></label>
+		<label for="RoleId"></label>
 		<div>
-	<select asp-for="UserId"
-
-			data-url="@Url.Action("GetUsers", "Users", new { area="Security", filter = Model.Filter })"
+	<select asp-for="RoleId"
+			data-url="@Url.Action("GetRoles", "Roles", new { area="Security", filter = Model.Filter })"
 			data-id="id"
-			data-text="displayName"></select>
+			data-text="name"></select>
 		</div>
 	</div>
 	<div class="col-md-6">

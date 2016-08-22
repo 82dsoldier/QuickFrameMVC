@@ -3,6 +3,7 @@ using QuickFrame.Data.Dtos;
 using QuickFrame.Mapping;
 using QuickFrame.Security.AccountControl.ActiveDirectory.AdLookup.Interfaces;
 using QuickFrame.Security.AccountControl.Data.Models;
+using System.Collections.Generic;
 using System.DirectoryServices;
 
 namespace QuickFrame.Security.AccountControl.ActiveDirectory.AdLookup {
@@ -24,8 +25,11 @@ namespace QuickFrame.Security.AccountControl.ActiveDirectory.AdLookup {
 		public string ObjectSid { get { return _objectSid[0]; } }
 		public string AccountName { get { return _accountName[0]; } }
 
+		public Group() {
+
+		}
 		public Group(SearchResult result) {
-			_commonName = result.Properties["cn"][0].ToString();
+			_commonName = result.Properties.Contains("cn") ? result.Properties["cn"][0].ToString() : result.Properties["sAMAccountName"][0].ToString();
 			_member = new IndexedProperty<string>(result.Properties["member"]);
 			_groupType = new IndexedProperty<int[], string[]>(result.Properties["groupType"], new GroupTypeTransformer());
 			_memberOf = new IndexedProperty<string>(result.Properties["memberOf"]);
@@ -37,7 +41,9 @@ namespace QuickFrame.Security.AccountControl.ActiveDirectory.AdLookup {
 		public override void Register() {
 			Mapper.Register<Group, SiteGroup>()
 				.Member(dest => dest.Id, src => src.ObjectSid)
-				.Member(dest => dest.Name, src => src.CommonName);
+				.Member(dest => dest.Name, src => src.CommonName)
+				.Function(dest => dest.Member, src => { return new List<string>(); })
+				.Function(dest => dest.GroupType, src => { return new List<string>(); });
 		}
 	}
 }

@@ -40,7 +40,7 @@ namespace QuickFrame.Security.AccountControl.ActiveDirectory.AdLookup.Interfaces
 	public class GuidTransformer : ITransformData<byte[], string> {
 
 		public string Call(byte[] arg) {
-			return new Guid(arg).ToString();
+			return arg != null ? new Guid(arg).ToString() : null;
 		}
 	}
 }

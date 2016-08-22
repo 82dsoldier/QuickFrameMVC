@@ -12,6 +12,7 @@ namespace QuickFrame.Security.AccountControl.Data.Models {
 		public virtual ICollection<GroupRule> GroupRules { get; set; }
 		public virtual ICollection<SiteRole> SiteRoles { get; set; }
 		public virtual ICollection<UserRule> UserRules { get; set; }
+		public virtual ICollection<RoleRule> RoleRules { get; set; }
 	}
 }
 

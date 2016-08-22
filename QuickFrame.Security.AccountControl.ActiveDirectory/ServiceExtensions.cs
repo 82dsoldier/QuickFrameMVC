@@ -38,10 +38,10 @@ namespace QuickFrame.Security.AccountControl.ActiveDirectory {
 			Mapper.RegisterCustom<Person, SiteUser, PersonSiteUserMap>();
 			services.Configure<RazorViewEngineOptions>(options => {
 				options.FileProviders.Add(new EmbeddedFileProvider(
-					typeof(EmbeddedFileProviderContainer).GetTypeInfo().Assembly,
+					typeof(AdGroupStore).GetTypeInfo().Assembly,
 					"QuickFrame.Security.AccountControl.ActiveDirectory"));
 			});
-
+			(new Group()).Register();
 			services.Configure<NameListOptions>(excluded => {
 				excluded.Load(configuration.GetSection("ExcludedNames"));
 			});
@@ -57,7 +57,7 @@ namespace QuickFrame.Security.AccountControl.ActiveDirectory {
 			IOptions<RazorViewEngineOptions> razorViewEngineOptions =
 				app.ApplicationServices.GetService<IOptions<RazorViewEngineOptions>>();
 			razorViewEngineOptions.Value.FileProviders.Add(new EmbeddedFileProvider(
-					typeof(EmbeddedFileProviderContainer).GetTypeInfo().Assembly,
+					typeof(AdGroupStore).GetTypeInfo().Assembly,
 					"QuickFrame.Security.AccountControl.ActiveDirectory"));
 			return app;
 		}

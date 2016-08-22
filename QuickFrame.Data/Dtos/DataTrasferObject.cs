@@ -9,9 +9,10 @@ namespace QuickFrame.Data {
 	 where TSrc : IDataModelInt {
 	}
 
-	public class DataTransferObject<TDataType, TSrc, TDest>
+	public class DataTransferObject<TDataType, TSrc, TDest> 
 	: DataModel<TDataType>,
-	IDataTransferObject<TDataType, TSrc, TDest>
+	IDataTransferObject<TDataType, TSrc, TDest>,
+		IRegisterMapping<TSrc, TDest>
 	where TSrc : IDataModel<TDataType> {
 
 		public virtual void Register() {

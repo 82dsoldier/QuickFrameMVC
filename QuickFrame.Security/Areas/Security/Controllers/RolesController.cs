@@ -144,6 +144,11 @@ namespace QuickFrame.Security.Areas.Security.Controllers {
 			return View("CloseCurrentView");
 		}
 
+		[HttpGet]
+		public IActionResult GetRoles(string filter = "") {
+			var filterList = filter.Split(',').ToList();
+			return new ObjectResult(_roleManager.Roles.Where(r => !filterList.Contains(r.Name)));
+		}
 		public RolesController(QuickFrameRoleManager roleManager, UserManager<SiteUser> userManager, GroupManager<SiteGroup> groupManager) {
 			_roleManager = roleManager;
 			_userManager = userManager;

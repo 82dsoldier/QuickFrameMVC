@@ -1,0 +1,47 @@
+﻿@model UserRuleIndexModel
+@{
+	ViewBag.Title = "Users in Rule";
+	ViewBag.UseSearch = true;
+	ViewBag.UsePaging = true;
+	Layout = "_Layout";
+}
+@section menu {
+    @Html.Partial("MainMenu")
+}
+
+@section createbutton {
+    <a asp-controller="Rules" asp-action="AddUserToRule" asp-route-id="@Model.RuleId" class="btn btn-sm btn-default fancybox" data-width="640px" data-height="480px" dc-after="mainCtl.reloadMe();"><i class="fa fa-plus"></i>Add user to role</a>
+}
+@{
+	if(Model.UserList.Any() == true) {
+		<table class="table index table-striped table-bordered table-hover" style="border: 0;">
+			<thead>
+				<tr>
+					<th style="width:5%;"></th>
+					<th display-for="UserName"></th>
+					<th display-for="Email"></th>
+					<th display-for="Phone"></th>
+				</tr>
+			</thead>
+			<tbody>
+				@{
+					foreach(var obj in Model.UserList.OrderBy(u => u.UserName)) {
+						<tr>
+							<td>
+								<div class="dropdown">
+									<a href="#" class="dropdown-toggle" style="display:inline-block;width:100%;" data-toggle="dropdown"><i class="fa fa-lg fa-ellipsis-v"></i></a>
+									<ul class="dropdown-menu">
+										<li><a asp-controller="Rules" asp-action="RemoveUserFromRule" asp-route-id="@Model.RuleId" asp-route-userId="@obj.Id" class="remove-object"><i class="fa-fw fa fa-times red"></i>Delete</a></li>
+									</ul>
+								</div>
+							</td>
+							<td display-for="@obj.UserName"></td>
+							<td display-for="@obj.Email"></td>
+							<td display-for="@obj.PhoneNumber"></td>
+						</tr>
+					}
+				}
+			</tbody>
+		</table>
+	}
+}

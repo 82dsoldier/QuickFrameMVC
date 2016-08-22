@@ -1,4 +1,5 @@
 ﻿using Autofac.Extensions.DependencyInjection;
+using ExpressMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -104,6 +105,8 @@ namespace QuickFrame.Core.Mvc {
 				routes.MapRoute("defaultArea", "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 				routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
 			});
+
+			Mapper.Compile();
 		}
 	}
 }

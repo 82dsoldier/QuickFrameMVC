@@ -14,15 +14,15 @@ namespace QuickFrame.Security.AccountControl.Data {
 	/// <seealso cref="DcCommon.Data.TrackingContext"/>
 	[Export(typeof(SecurityContext))]
 	public class SecurityContext : TrackingContext {
-		public System.Data.Entity.DbSet<GroupRole> GroupRoles { get; set; }
-		public System.Data.Entity.DbSet<GroupRule> GroupRules { get; set; }
-		public System.Data.Entity.DbSet<SiteRole> SiteRoles { get; set; }
-		public System.Data.Entity.DbSet<SiteRoleClaim> SiteRoleClaims { get; set; }
-		public System.Data.Entity.DbSet<SiteRule> SiteRules { get; set; }
-		public System.Data.Entity.DbSet<SiteUserClaim> SiteUserClaims { get; set; }
-		public System.Data.Entity.DbSet<UserRole> UserRoles { get; set; }
-		public System.Data.Entity.DbSet<UserRule> UserRules { get; set; }
-
+		public DbSet<GroupRole> GroupRoles { get; set; }
+		public DbSet<GroupRule> GroupRules { get; set; }
+		public DbSet<SiteRole> SiteRoles { get; set; }
+		public DbSet<SiteRoleClaim> SiteRoleClaims { get; set; }
+		public DbSet<SiteRule> SiteRules { get; set; }
+		public DbSet<SiteUserClaim> SiteUserClaims { get; set; }
+		public DbSet<UserRole> UserRoles { get; set; }
+		public DbSet<UserRule> UserRules { get; set; }
+		public DbSet<RoleRule> RoleRules { get; set; }
 		public SecurityContext(IOptions<DataOptions> configOptions, IHttpContextAccessor contextAccessor)
 			: base(configOptions.Value.ConnectionString.Security, contextAccessor) {
 		}

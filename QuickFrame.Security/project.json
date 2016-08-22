@@ -2,7 +2,7 @@
   "title": "QuickFrame.Security",
   "description": "QuickFrame security base.",
   "language": "en-US",
-  "version": "1.0.0-beta-7",
+  "version": "1.0.0-beta-8",
   "authors": [ "Drew Burchett" ],
   "packOptions": {
     "licenseUrl": "https://github.com/82dsoldier/QuickFrameMVC/blob/master/LICENSE",

@@ -10,7 +10,7 @@
 }
 
 @section createbutton {
-    <a asp-controller="Roles" asp-action="Create" class="btn btn-sm btn-default" dc-fancybox data-width="1280px" data-height="768px" dc-after="mainCtl.reloadMe();"><i class="fa fa-plus"></i> Create a New Role</a>
+    <a asp-controller="Roles" asp-action="Create" class="btn btn-sm btn-default fancybox" data-width="1280px" data-height="768px" dc-after="mainCtl.reloadMe();"><i class="fa fa-plus"></i> Create a New Role</a>
 }
 @{
 	if(Model?.Any() == true) {

@@ -20,7 +20,7 @@ namespace QuickFrame.Security.AccountControl.ActiveDirectory {
 		public Task AddToRoleAsync(SiteUser user, string roleName, CancellationToken cancellationToken) {
 			using(var context = ComponentContainer.Component<SecurityContext>()) {
 				var userRole = new UserRole();
-				userRole.UserId = user.Id;
+				userRole.RoleId = user.Id;
 				userRole.RoleId = context.Component.SiteRoles.First(r => r.Name == roleName).Id;
 				context.Component.UserRoles.Add(userRole);
 				return Task.FromResult(context.Component.SaveChanges());

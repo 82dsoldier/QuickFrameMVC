@@ -69,16 +69,10 @@ namespace QuickFrame.Security {
 
 			using(var userManager = ComponentContainer.Component<UserManager<SiteUser>>()) {
 				var task = userManager.Component.GetUserAsync(principal);
-				if(!task.IsCompleted) {
-					task.Start();
-					task.Wait();
-				}
+				task.Wait();
 				var user = task.Result;
 				var roleTask = userManager.Component.GetRolesAsync(user);
-				if(!roleTask.IsCompleted) {
-					roleTask.Start();
-					roleTask.Wait();
-				}
+				roleTask.Wait();
 				var roleList = roleTask.Result;
 				foreach(var role in roleList)
 					(principal.Identity as ClaimsIdentity).AddClaim(new Claim(ClaimTypes.Role, role));
@@ -101,3 +95,4 @@ namespace QuickFrame.Security {
 		}
 	}
 }
+

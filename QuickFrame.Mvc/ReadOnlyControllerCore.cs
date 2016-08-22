@@ -1,7 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using iTextSharp.text;
+using iTextSharp.text.pdf;
+using iTextSharp.tool.xml;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using QuickFrame.Data.Interfaces;
+using QuickFrame.Di;
 using System;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using static QuickFrame.Security.AuthorizationExtensions;
@@ -38,7 +47,32 @@ namespace QuickFrame.Mvc {
 			});
 
 		protected virtual IActionResult Authorize(ClaimsPrincipal user, Func<IActionResult> func) => AuthorizeExecution(user, CurrentUrl, func);
-
+		protected virtual IActionResult Pdf(string viewName, object dataModel, Rectangle pageSize = null) {
+			using(var document = new Document()) {
+				if(pageSize == null)
+					pageSize = PageSize.LETTER;
+				document.SetPageSize(pageSize);
+				using(var ms = new MemoryStream()) {
+					PdfWriter writer = PdfWriter.GetInstance(document, ms);
+					writer.CloseStream = false;
+					document.Open();
+					using(var sw = new StringWriter()) {
+						ViewData.Model = dataModel;
+						var viewEngine = ComponentContainer.Component<ICompositeViewEngine>();
+						var contextAccessor = ComponentContainer.Component<IActionContextAccessor>();
+						var viewResult = viewEngine.Component.FindView(contextAccessor.Component.ActionContext, viewName, true);
+						var viewContext = new ViewContext(contextAccessor.Component.ActionContext, viewResult.View, ViewData, TempData, sw, new HtmlHelperOptions());
+						var viewTask = viewResult.View.RenderAsync(viewContext);
+						viewTask.Wait();
+						using(var reader = new StringReader(sw.ToString())) {
+							XMLWorkerHelper.GetInstance().ParseXHtml(writer, document, reader);
+							document.Close();
+							return new FileContentResult(ms.ToArray(), "application/pdf");
+						}
+					}
+				}
+			}
+		}
 		protected string CurrentUrl
 		{
 			get

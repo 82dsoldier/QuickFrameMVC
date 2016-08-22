@@ -1,7 +1,9 @@
 ﻿using ExpressMapper;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using QuickFrame.Di;
 using QuickFrame.Security.AccountControl.ActiveDirectory.AdLookup;
+using QuickFrame.Security.AccountControl.ActiveDirectory.Configuration;
 using QuickFrame.Security.AccountControl.Data;
 using QuickFrame.Security.AccountControl.Data.Models;
 using QuickFrame.Security.AccountControl.Interfaces;
@@ -19,7 +21,10 @@ namespace QuickFrame.Security.AccountControl.ActiveDirectory {
 		{
 			get
 			{
-				return Mapper.Map<IEnumerable<Group>, IEnumerable<SiteGroup>>(GroupService.GetGroups()).AsQueryable();
+				var returnList = new List<SiteGroup>();
+				foreach(var obj in GroupService.GetGroups())
+					returnList.Add(Mapper.Map<Group, SiteGroup>(obj));
+				return returnList.AsQueryable();
 			}
 		}
 
@@ -107,6 +112,10 @@ namespace QuickFrame.Security.AccountControl.ActiveDirectory {
 					yield return obj;
 				}
 			}
+		}
+
+		public AdGroupStore(IOptions<AdOptions> options) {
+			GroupService.SearchPath = options.Value.SearchPath;
 		}
 	}
 }

@@ -2,7 +2,7 @@
   "title": "QuickFrame",
   "description": "Base QuickFrame file for using the QuickFrameMVC framework",
   "language": "en-US",
-  "version": "1.0.0-beta-5",
+  "version": "1.0.0-beta-4",
   "authors": ["Drew Burchett"],
   "dependencies": {
     "Autofac": "4.0.0-rc2-240",

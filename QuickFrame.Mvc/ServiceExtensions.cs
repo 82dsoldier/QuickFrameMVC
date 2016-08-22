@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Configuration;
@@ -16,6 +17,8 @@ namespace QuickFrame.Mvc {
 		private static ContainerBuilder _builder => ComponentContainer.Builder;
 
 		public static IServiceCollection AddQuickFrameMvc(this IServiceCollection services, IConfigurationRoot configuration) {
+			services.AddTransient<IActionContextAccessor, ActionContextAccessor>();
+
 			services.Configure<ViewOptions>(viewOptions => {
 				viewOptions.PerPageDefault = configuration["ViewOptions:PerPageDefault"];
 

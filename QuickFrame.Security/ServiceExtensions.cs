@@ -11,6 +11,7 @@ using QuickFrame.Di;
 using QuickFrame.Security.AccountControl;
 using QuickFrame.Security.AccountControl.Data;
 using QuickFrame.Security.AccountControl.Data.Models;
+using QuickFrame.Security.Areas.Security.Controllers;
 using QuickFrame.Security.Policies;
 using System.ComponentModel.Composition;
 using System.Linq;
@@ -37,7 +38,7 @@ namespace QuickFrame.Security {
 			_builder.RegisterType(typeof(QuickFrameRoleStore)).As<IRoleStore<SiteRole>>();
 			services.Configure<RazorViewEngineOptions>(options => {
 				options.FileProviders.Add(new EmbeddedFileProvider(
-					typeof(EmbeddedFileProviderContainer).GetTypeInfo().Assembly,
+					typeof(RolesController).GetTypeInfo().Assembly,
 					"QuickFrame.Security"));
 			});
 			services.AddTransient<IAuthorizationHandler, RoleRequirement>();
@@ -51,7 +52,7 @@ namespace QuickFrame.Security {
 			IOptions<RazorViewEngineOptions> razorViewEngineOptions =
 				app.ApplicationServices.GetService<IOptions<RazorViewEngineOptions>>();
 			razorViewEngineOptions.Value.FileProviders.Add(new EmbeddedFileProvider(
-					typeof(EmbeddedFileProviderContainer).GetTypeInfo().Assembly,
+					typeof(RolesController).GetTypeInfo().Assembly,
 					"QuickFrame.Security"));
 
 			var userManager = ComponentContainer.Component<QuickFrameUserManager>();

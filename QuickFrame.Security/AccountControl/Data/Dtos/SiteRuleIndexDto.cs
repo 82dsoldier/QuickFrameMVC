@@ -5,16 +5,18 @@ using QuickFrame.Di;
 using QuickFrame.Security.AccountControl.Data.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace QuickFrame.Security.AccountControl.Data.Dtos {
 
 	public class SiteRuleIndexDto : DataTransferObject<SiteRule, SiteRuleIndexDto> {
 		public string Url { get; set; }
 		public int Priority { get; set; }
+		[Display(Name ="Is Allow")]
 		public bool IsAllow { get; set; }
+		[Display(Name ="Match Partial")]
 		public bool MatchPartial { get; set; }
 		public List<SiteRoleIndexDto> SiteRoles { get; set; }
-
 		public override void Register() {
 			Mapper.Register<SiteRule, SiteRuleIndexDto>()
 				.Function(dest => dest.Url, src => {

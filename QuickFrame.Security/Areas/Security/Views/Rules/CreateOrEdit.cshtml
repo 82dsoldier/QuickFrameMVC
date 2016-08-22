@@ -1,0 +1,33 @@
+﻿@model SiteRuleIndexDto
+@{
+	ViewBag.Title = "Roles";
+	ViewBag.UseSearch = true;
+	ViewBag.UsePaging = true;
+	Layout = "_PopupLayout";
+}
+
+<form qf-form>
+	<input type="hidden" value="Id" />
+	<div asp-validation-summary="All" class="text-danger"></div>
+	<div class="container">
+		<div class="col-md-2">
+			<label asp-for="Priority"></label>
+			<div>
+				<input asp-for="Priority" type="number"/>
+			</div>
+		</div>
+		<div class="col-md-10">
+			<label asp-for="Url"></label>
+			<div>
+				<input asp-for="Url" class="form-control" />
+			</div>
+		</div>
+		<div class="col-md-3">
+			<input asp-for="IsAllow" /><label asp-for="IsAllow"></label>
+		</div>
+		<div class="col-md-3">
+			<input asp-for="MatchPartial" /><label asp-for="MatchPartial"></label>
+		</div>
+	</div>
+	@Html.Partial("FormButtons");
+</form>

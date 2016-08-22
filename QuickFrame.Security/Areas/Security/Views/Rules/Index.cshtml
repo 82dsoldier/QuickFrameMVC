@@ -10,77 +10,43 @@
 }
 
 @section createbutton {
-    <a asp-controller="Rules" asp-action="Create" class="btn btn-sm btn-default" dc-fancybox data-width="1280px" data-height="768px" dc-after="mainCtl.reloadMe();"><i class="fa fa-plus"></i> Create a New Role</a>
+    <a asp-controller="Rules" asp-action="Create" class="btn btn-sm btn-default fancybox" data-width="640px" data-height="480px" dc-after="mainCtl.reloadMe();"><i class="fa fa-plus"></i> Create a New Role</a>
 }
 @{
 	if(Model?.Any() == true) {
-		<div class="container">
-			<div class="panel-group">
-				<div class="panel">
-					<div class="panel-heading">
-						<div class="panel-title">
-							<table  class="table index table-bordered">
-								<thead>
-									<tr>
-										<th style="width:5%"></th>
-										<th style="width:5%" display-for="Priority"></th>
-										<th style="width:60%" display-for="Url"></th>
-										<th style="width:15%" display-for="MatchPartial"></th>
-										<th style="width:15%" display-for="IsAllow"></th>
-									</tr>
-								</thead>
-							</table>
-						</div>
-						<div class="panel-body" style="padding:0">
-							@{
-								foreach(var obj in Model.OrderBy(rule => rule.Priority)) {
-									<table  class="table index table-bordered">
-										<tbody>
-											<tr>
-												<td style="width:5%"><a data-toggle="collapse" href="#collapse_@obj.Id" class="fa fa-caret-right"></a></td>
-												<td style="width:5%" display-for="@obj.Priority"></td>
-												<td style="width:60%" display-for="@obj.Url"></td>
-												<td style="width:15%" display-for="@obj.MatchPartial"></td>
-												<td style="width:15%" display-for="@obj.IsAllow"></td>
-											</tr>
-										</tbody>
-									</table>
-									if(obj.SiteRoles?.Any() == true) {
-										<div id="collapse_@obj.Id" class="panel-collapse collapse panel-primary">
-											<ul class="list-group">
-												@{
-													foreach(var role in obj.SiteRoles) {
-													<li class="list-group-item">@role.Name</li>
-														}
-													}
-											</ul>
-										</div>
-									}
-								}
-							}
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-						@*@{
-								<div class="panel panel-default">
-									<div class="panel-heading">
-										<div class="col-md-1"><a data-toggle="collapse" href="#collapse_@obj.Id" class="fa fa-caret-right"></a></div><div class="col-md-5">@obj.Url</div><div class="col-md-2"><input readonly asp-for="@obj.MatchPartial" /></div><div class="col-md-2">@obj.Priority</div><div class="col-md-2"><input readonly asp-for="@obj.IsAllow" /></div>
-									</div>
-									<div class="panel-body">
-										@{
-											if(obj.SiteRoles?.Any() == true) {
-												<div id="collapse_@obj.Id" class="panel-collapse collapse">
-												</div>
-											}
-										}
-									</div>
-								</div>
-							}
-						}
-					</div>
-				</div>
-			</div>*@
+		<table  class="table index table-bordered">
+			<thead>
+				<tr>
+					<th style="width:5%"></th>
+					<th style="width:5%" display-for="Priority"></th>
+					<th style="width:60%" display-for="Url"></th>
+					<th style="width:15%" display-for="MatchPartial"></th>
+					<th style="width:15%" display-for="IsAllow"></th>
+				</tr>
+			</thead>
+			<tbody>
+				@{
+					foreach(var obj in Model.OrderBy(rule => rule.Priority)) {
+						<tr>
+							<td style="text-align:center;">
+								<div class="dropodown">
+									<a href="#" class="dropdown-toggle" style="display:inline-block;width:100%;" data-toggle="dropdown"><i class="fa fa-lg fa-ellipsis-v"></i></a>
+									<ul class="dropdown-menu">
+										<li><a asp-controller="Rules" asp-action="Edit" asp-area="Security" asp-route-id="@obj.Id" class="fancybox"><i style="margin-right:15px;" class="fa fa-edit"></i>Edit</a></li>
+										<li><a asp-controller="Rules" asp-action="ListUsers" asp-area="Security" asp-route-id="@obj.Id" class="fancybox"><i style="margin-right:15px;" class="fa fa-user"></i>List Users</a></li>
+										<li><a asp-controller="Rules" asp-action="ListGroups" asp-area="Security" asp-route-id="@obj.Id" class="fancybox"><i style="margin-right:15px;" class="fa fa-group"></i>List Groups</a></li>
+										<li><a asp-controller="Rules" asp-action="ListRoles" asp-area="Security" asp-route-id="@obj.Id" class="fancybox"><i style="margin-right:15px;" class="fa fa-shield"></i>List Roles</a></li>
+									</ul>
+								</div>							
+							</td>
+							<td style="width:5%" display-for="@obj.Priority"></td>
+							<td style="width:60%" display-for="@obj.Url"></td>
+							<td style="width:15%" display-for="@obj.MatchPartial"></td>
+							<td style="width:15%" display-for="@obj.IsAllow"></td>
+						</tr>
+					}
+				}
+			</tbody>
+		</table>
 	}
 }

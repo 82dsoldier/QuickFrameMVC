@@ -5,7 +5,7 @@
 #        parent.$.fancybox.close()
 
 jQuery.extend
-    closeFancyboxAndRefreshParent: ()->
+    closeAndRefreshParent: ()->
         parent.$.fancybox.close()
         parent.$.reloadWindow()
 
