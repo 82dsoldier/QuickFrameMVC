@@ -2,7 +2,7 @@
   "title": "QuickFrame Core",
   "description": "Entry point for the QuickFrame framework.  Provides a base startup file with the most common options selected.",
   "language": "en-US",
-  "version": "1.0.0-beta-3",
+  "version": "1.0.0-beta-4",
   "authors": ["Drew Burchett"],
 
   "dependencies": {
@@ -12,8 +12,8 @@
     "Microsoft.AspNetCore.Razor.Runtime": "1.0.0",
     "Microsoft.Composition": "1.0.27",
     "NETStandard.Library": "1.6.0",
-    "QuickFrame": "1.0.0-beta-4",
-    "QuickFrame.Data": "1.0.0-beta-5",
+    "QuickFrame": "1.0.0-*",
+    "QuickFrame.Data": "1.0.0-*",
     "QuickFrame.Data.Attachments": "1.0.0-*",
     "QuickFrame.Data.Attachments.Ui": "1.0.0-*",
     "QuickFrame.Mvc": "1.0.0-*",

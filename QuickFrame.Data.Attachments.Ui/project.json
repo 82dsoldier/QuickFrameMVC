@@ -2,7 +2,7 @@
   "title": "QuickFrame.Data.Attachments.Ui",
   "description": "QuickFrame attachments user interface.",
   "language": "en-US",
-  "version": "1.0.0-beta-3",
+  "version": "1.0.0-beta-4",
   "authors": [ "Drew Burchett" ],
   "buildOptions": {
     "embed": [ "Views/**", "Areas/Attachments/Views/**" ]
@@ -16,11 +16,11 @@
     "Microsoft.AspNetCore.Razor.Runtime": "1.0.0",
     "Microsoft.Composition": "1.0.27",
     "NETStandard.Library": "1.6.0",
-    "QuickFrame": "1.0.0-beta-4",
-    "QuickFrame.Data": "1.0.0-beta-5",
-    "QuickFrame.Data.Attachments": "1.0.0-beta-2",
+    "QuickFrame": "1.0.0-*",
+    "QuickFrame.Data": "1.0.0-*",
+    "QuickFrame.Data.Attachments": "1.0.0-*",
     "QuickFrame.Mvc": "1.0.0-*",
-    "QuickFrame.Security": "1.0.0-beta-7",
+    "QuickFrame.Security": "1.0.0-*",
     "QuickFrame.Security.AccountControl.ActiveDirectory": "1.0.0-*",
     "System.Data.SqlClient": "4.1.0-rc2-24027"
   },
