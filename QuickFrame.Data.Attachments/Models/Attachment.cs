@@ -7,6 +7,7 @@ namespace QuickFrame.Data.Attachments.Models {
 	public class Attachment : DataModelGuid {
 		public byte[] Data { get; set; } // Data
 		public string FileName { get; set; } // Name (length: 256)
+		public string DocumentName { get; set; }
 		public string DocumentId { get; set; } // DocumentNumber (length: 128)
 		public string Description { get; set; } // Description (length: 2048)
 		public DateTime UploadDate { get; set; }

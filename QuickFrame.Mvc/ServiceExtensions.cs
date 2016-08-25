@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -9,6 +10,8 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using QuickFrame.Configuration;
 using QuickFrame.Di;
+using QuickFrame.Mvc;
+using QuickFrame.Mvc.Configuration;
 using System.Reflection;
 
 namespace QuickFrame.Mvc {
@@ -29,21 +32,27 @@ namespace QuickFrame.Mvc {
 						Selected = (viewOptions.PerPageDefault == child.Value)
 					});
 				}
+			});
 
-				services.Configure<RazorViewEngineOptions>(options => {
-					options.FileProviders.Add(new EmbeddedFileProvider(
-						typeof(EmbeddedFileProviderContainer).GetTypeInfo().Assembly,
-						"QuickFrame.Mvc"));
-				});
+			services.Configure<QuickFrameMvcOptions>(opts => {
+				foreach(var child in configuration.GetSection("QuickFrameMvcOptions:ExplorerBasePaths").GetChildren()) {
+					opts.ExplorerBasePaths.Add(child.Value);
+				}
+			});
+
+			services.Configure<RazorViewEngineOptions>(options => {
+				options.FileProviders.Add(new EmbeddedFileProvider(
+					typeof(FluentTagBuilder).GetTypeInfo().Assembly,
+					"QuickFrame.Mvc"));
 			});
 			return services;
 		}
 
-		public static IApplicationBuilder UseQuickFrameMVc(this IApplicationBuilder app) {
+		public static IApplicationBuilder UseQuickFrameMvc(this IApplicationBuilder app) {
 			IOptions<RazorViewEngineOptions> razorViewEngineOptions =
 				app.ApplicationServices.GetService<IOptions<RazorViewEngineOptions>>();
 			razorViewEngineOptions.Value.FileProviders.Add(new EmbeddedFileProvider(
-					typeof(EmbeddedFileProviderContainer).GetTypeInfo().Assembly,
+					typeof(FluentTagBuilder).GetTypeInfo().Assembly,
 					"QuickFrame.Mvc"));
 			return app;
 		}

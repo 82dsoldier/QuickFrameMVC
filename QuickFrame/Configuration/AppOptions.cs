@@ -1,6 +1,9 @@
-﻿namespace QuickFrame.Configuration {
+﻿using System.Collections.Generic;
+
+namespace QuickFrame.Configuration {
 
 	public class AppOptions {
-		public bool UseEmbeddedFileProviders { get; set; } = true;
+		public List<string> LoadExcludeList { get; } = new List<string>();
+		public bool SecurityIsLoaded { get; set; } = false;
 	}
 }

@@ -16,7 +16,6 @@ using QuickFrame.Data;
 using QuickFrame.Data.Attachments;
 
 //using static QuickFrame.Data.Attachments.Ui.ServiceExtensions;
-using QuickFrame.Data.Attachments.Ui;
 using QuickFrame.Di;
 using QuickFrame.Mvc;
 using QuickFrame.Security;
@@ -47,11 +46,6 @@ namespace QuickFrame.Core.Mvc {
 		public virtual IServiceProvider ConfigureServices(IServiceCollection services) {
 			services.AddOptions();
 
-			services.AddQuickFrameData(Configuration);
-			services.AddQuickFrameAttachments();
-			services.AddQuickFrameAttachmentsUi();
-			services.AddQuickFrameSecurity();
-			services.AddQuickFrameSecurityAd(Configuration);
 			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 			services.AddTransient<IUrlHelper, UrlHelper>();
 
@@ -93,10 +87,7 @@ namespace QuickFrame.Core.Mvc {
 
 			app.UseStatusCodePagesWithReExecute("/StatusCodes/StatusCode{0}");
 
-			app.UseQuickFrameAttachmentsUi();
-			app.UseQuickFrameMVc();
-			app.UseQuickFrameSecurity();
-			app.UseQuickFrameSecurityAd();
+			//app.UseQuickFrameAttachmentsUi();
 			app.UseStaticFiles();
 			app.UseEmbeddedFileProviders();
 			app.UseSession();

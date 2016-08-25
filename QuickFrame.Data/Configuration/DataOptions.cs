@@ -109,7 +109,10 @@ namespace QuickFrame.Data {
 			{
 				if(_connectionStringList == null)
 					_connectionStringList = new Dictionary<string, string>();
-				_connectionStringList.Add(index, value);
+				if(!_connectionStringList.ContainsKey(index))
+					_connectionStringList.Add(index, value);
+				else
+					_connectionStringList[index] = value;
 			}
 		}
 	}

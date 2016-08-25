@@ -1,0 +1,22 @@
+﻿@model QuickFrame.Mvc.Models.ExplorerNode
+
+@{
+	var style = "tree-node";
+	if(Model.HasChildren) {
+		style = $"{style} collapsed expandable";
+	}
+} 
+<li class="@style">
+	@Model.Name
+	@{
+		if(Model.Children != null && Model.Children.Count > 0) {
+			<ul>
+				@{
+					foreach(var child in Model.Children) {
+						@await Component.InvokeAsync(nameof(QuickFrame.Mvc.ViewComponents.TreeNodeComponent), new { model = child });
+					}
+				}
+			</ul>
+		}
+	}
+</li>

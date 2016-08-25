@@ -1,0 +1,15 @@
+﻿@model QuickFrame.Mvc.Interfaces.ITreeNode
+
+<li>@Model.Name
+	@{ 
+		<ul>
+			@{ 
+				if(Model.HasChildren) {
+					foreach(var child in Model.Children) {
+						@await Component.InvokeAsync(nameof(QuickFrame.Mvc.ViewComponents.TreeNodeComponent), new { model = child });
+					}
+				}
+			}
+		</ul>
+	}
+</li>

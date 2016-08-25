@@ -92,7 +92,7 @@ namespace QuickFrame.Mvc {
 				return View(modelName, model);
 			});
 
-		protected virtual IActionResult GetBase() => /*Authorize(User, () =>*/ new ObjectResult(_dataService.GetList<TIndex>());//);
+		protected virtual IActionResult GetBase() => Authorize(User, () => new ObjectResult(_dataService.GetList<TIndex>()));
 
 		protected virtual IActionResult IndexBase<TResult>
 			(int page = 1, int itemsPerPage = 25, string sortColumn = "Name", SortOrder sortOrder = SortOrder.Ascending)

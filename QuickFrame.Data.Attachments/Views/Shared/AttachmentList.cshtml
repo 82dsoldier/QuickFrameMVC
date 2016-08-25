@@ -1,0 +1,18 @@
+﻿@model QuickFrame.Data.Attachments.Ui.Areas.Attachments.Models.SelectedAttachmentDto
+@{
+	ViewBag.Title = "Attachments";
+	Layout = "_PopupLayout";
+}
+
+<form asp-controller="@Model.Controller" asp-action="@Model.Action" asp-area="@Model.Area">
+	<div class="container">
+		<div class="col-md-6">
+			<select asp-for="AttachmentId"
+					data-url="@Url.Action("Get", "Attachments", new { area = "Attachments" })"
+					data-text="description"></select>
+		</div>
+		<div>
+			@Html.Partial("FormButtons")
+		</div>
+	</div>
+</form>

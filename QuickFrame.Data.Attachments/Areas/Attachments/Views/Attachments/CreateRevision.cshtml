@@ -1,0 +1,16 @@
+﻿@model AttachmentCreateRevisionDto
+@{
+	ViewBag.Title = "File Extension";
+	Layout = "_PopupLayout";
+}
+<form qf-form>
+    <div asp-validation-summary="All" class="text-danger"></div>
+	<p>The uploaded file matches the name of a previously uploaded file.  Is this a new version of the previous file or a seperate attachment?</p>
+	<div class="container">
+		<div class="col-md-6">
+			<input type="radio" asp-for="IsRevision" value="true" /><label style="margin-left:15px">This is a new version of the previous file.</label>
+			<input type="radio" asp-for="IsRevision" value="false" /><label style="margin-left:15px">This is a seperate attachment.</label>
+		</div>
+		@Html.Partial("FormButtons");
+	</div>
+</form>

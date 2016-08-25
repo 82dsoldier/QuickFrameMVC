@@ -120,7 +120,9 @@ namespace QuickFrame.Mvc.Tags {
 
 			var modelMetadata = ViewContext.ViewData.ModelMetadata;
 
-			var props = GetProperties(modelMetadata);
+			var props = new List<ModelMetadata>(); //			GetProperties(modelMetadata);
+			props.AddRange(MetadataProvider.GetMetadataForProperties(modelMetadata.ElementType));
+
 			var columnName = string.Empty;
 
 			if(!DisplayFor.Contains(".")) {

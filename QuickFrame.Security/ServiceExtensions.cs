@@ -11,6 +11,8 @@ using QuickFrame.Di;
 using QuickFrame.Security.AccountControl;
 using QuickFrame.Security.AccountControl.Data;
 using QuickFrame.Security.AccountControl.Data.Models;
+using QuickFrame.Security.AccountControl.Interfaces;
+using QuickFrame.Security.AccountControl.Services;
 using QuickFrame.Security.Areas.Security.Controllers;
 using QuickFrame.Security.Policies;
 using System.ComponentModel.Composition;
@@ -33,9 +35,14 @@ namespace QuickFrame.Security {
 						_builder.RegisterType(obj).As(intf);
 				}
 			}
-			_builder.RegisterType(typeof(QuickFrameIdentityErrorDescriber));
-			_builder.RegisterType(typeof(GroupManager<SiteGroup>));
-			_builder.RegisterType(typeof(QuickFrameRoleStore)).As<IRoleStore<SiteRole>>();
+
+			_builder.RegisterType<RoleRequirement>().As<IAuthorizationHandler>();
+			_builder.RegisterType<SiteRulesDataService>().As<ISiteRulesDataService>();
+			_builder.RegisterType<QuickFrameIdentityErrorDescriber>(); 
+			_builder.RegisterType<GroupManager<SiteGroup>>();
+			_builder.RegisterType<QuickFrameRoleStore>().As<IRoleStore<SiteRole>>();
+			_builder.RegisterType<RoleRequirement>().As<IAuthorizationHandler>();
+
 			services.Configure<RazorViewEngineOptions>(options => {
 				options.FileProviders.Add(new EmbeddedFileProvider(
 					typeof(RolesController).GetTypeInfo().Assembly,
