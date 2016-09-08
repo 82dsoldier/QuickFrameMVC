@@ -1,10 +1,12 @@
 ﻿using ExpressMapper;
 using QuickFrame.Data.Interfaces;
+using System;
 using System.Data.Entity;
 using System.Threading.Tasks;
 
 namespace QuickFrame.Data.Services {
 
+	[Obsolete("Use DataService<TContext, TDataType, TEntity> instead")]
 	public abstract class GenericDataService<TContext, TDataType, TEntity>
 		: ReadOnlyDataService<TContext, TDataType, TEntity>, IGenericDataService<TDataType, TEntity>
 		where TContext : DbContext

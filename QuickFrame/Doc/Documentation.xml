@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<QuickFrame>
+	<documentation name="Configuration">
+		<summary>
+			The Configuration namespace holds configuration information for the different aspects of the QuickFrame framework.  The settings will be pulled from the appsettings.json and used to populate the verious options classes.
+		</summary>
+	</documentation>
+	<Configuration>
+		<documentation name="ViewOptions">
+			<summary>Settings that are used to affect the way an index view is displayed.</summary>
+		</documentation>
+		<ViewOptions>
+			<documentation name="ViewOptions">
+				<summary>Initializes a new instance of the ViewOptions class.</summary>
+			</documentation>
+			<documentation name="PerPageList">
+				<summary>Gets or sets a list of values that determine the number of items to appear on each page.</summary>
+			</documentation>
+			<documentation name="PerPageDefault">
+				<summary>Gets or sets a value indicating the default number of items per page.  This value should also appear in the <see cref="ViewOptions.PerPageList" /></summary>
+			</documentation>
+		</ViewOptions>
+	</Configuration>
+	<documentation name="Di">
+		<summary>The Di namespace contains classes used to access and configure the dependency container for the application.</summary>
+	</documentation>
+	<Di>
+		<documentation name="ComponentContainer">
+			<summary>The static class used to access and configure the component container.</summary>
+			<remarks>The component container holds information about how to instantiate any registered service.  It provides constructor dependency injection to the application.  It can also be used to request objects when necessary.  THe current implementation only supports <a href="https://autofac.org">Autofac</a>.  Other container implementations will be added as time permits.</remarks>
+		</documentation>
+		<ComponentContainer>
+			<documentation name="Builder">
+				<summary>Gives access to the internal ContainerBuilder object used to register services.</summary>
+			</documentation>
+			<documentation name="ServiceProvider">
+				<summary>Gives access to the IServiceProvier object.</summary>
+			</documentation>
+			<documentation name="Component{TObject}">
+				<summary>Used to instantiate an object of type TObject that will automatically be destroyed at the end of its lifetime.</summary>
+				<typeparam name="TObject">The type of object to instantiate.</typeparam>
+				<returns>An instance of an object of type TObject.  Whether the object is a new instance or not depends on how the object is registered.</returns>
+			</documentation>
+			<documentation name="Component">
+				<summary>Used to instantiate an object of a specified type when the type is not known at runtime.</summary>
+				<param name="typeToResolve">A <see cref="System.Type" />used to specify the type of object to resolve.</param>
+				<returns>An instance of an object of type typeToResolve.  Whether the object is a new instance or not depends on how the object is registered.</returns>
+			</documentation>
+			<documentation name="Register">
+				<summary>Used to register the services within an assembly.</summary>
+				<param name="assembly">An <see cref="System.Reflection.Assembly" /> in which to find the services to be registered.</param>
+				<remarks>
+					<para>There are two ways in which to register services within an assembly.  The first is to mark each class being registered with the <see cref="System.ComponentModel.Composition.ExportAttribute" />.  If used by itself, the <see cref="System.ComponentModel.ExportAttribute" /> registers the class as itself.  A type can also be passed into the  <see cref="System.ComponentModel.ExportAttribute" /> to specify what type the class will be registered as.  Note that if the class cannot be cast as the specified type, an exception will be thrown during registration.</para>
+					<para>The second method is by using a data module.  A class is created within the assembly that inherits from Autofac.Module.  Upon execution, all assemblies in the application are searched and the Load function of each found Autofac.Module class is called, passing in a ContainerBuilder object.  This ContainerBuilder can then be used to register any needed classes from that assembly.</para>
+				</remarks>
+			</documentation>
+		</ComponentContainer>
+		<documentation name="ComponentFactory{TObject}">
+			<summary>Wraps the return value of the <see cref="QuickFrame.Di.ComponentContainer.Component{TObject}">Component&lt;TObject&gt;</see>.</summary>
+			<typeparam name="TObject">The type of object the the ComponentFactory will wrap.</typeparam>
+			<remarks>Due to an issue with the way Autofac creates instances of objects, each object returned by <see cref="QuickFrame.Di.ComponentContainer.Component{TObject} method">Component&lt;TObject&gt;</see> is wrapped in a ComponentFactory upon return.  Doing this allows the object and the session used to create the object to be correctly disposed and all associated memory freed.</remarks>
+		</documentation>
+		<ComponentFactory>
+			<documentation name="Current">
+				<summary>Gets the current object that was created with this ComponentFactory.</summary>
+			</documentation>
+			<documentation name="ComponentFactory">
+				<summary>The constructor for the ComponentFactory class.</summary>
+				<param name="container">An <see cref="Autofac.IComponent">IComponent</see> container from which the requested object will be constructed.</param>
+			</documentation>
+			<documentation name="Component">
+				<summary>A synonym for <see cref="QuickFrame.Di.ComponentFactory.Current">Current</see>.</summary>
+			</documentation>
+			<documentation name="Dispose">
+				<summary>Disposes the ComponentFactory and associated objects.</summary>
+			</documentation>
+		</ComponentFactory>
+		<documentation name="ComponentFactoryEx">
+			<summary>Wraps the return value of the <see cref="QuickFrame.Di.ComponentContainer.Component">Component</see>.</summary>
+		</documentation>
+		<ComponentFactoryEx>
+			<documentation name="Current">
+				<summary>Gets the current object that was created with this ComponentFactory.</summary>
+			</documentation>
+		</ComponentFactoryEx>
+	</Di>
+</QuickFrame>

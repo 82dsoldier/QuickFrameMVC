@@ -1,6 +1,6 @@
 (function() {
   jQuery.extend({
-    closeFancyboxAndRefreshParent: function() {
+    closeAndRefreshParent: function() {
       parent.$.fancybox.close();
       return parent.$.reloadWindow();
     }
@@ -13,13 +13,15 @@
     $('.remove-object').each(function() {
       return $(this).on('click', function(e) {
         e.preventDefault();
-        return $.ajax({
-          url: $(this).attr('href'),
-          method: 'DELETE',
-          success: function() {
-            return window.location.reload();
-          }
-        });
+        if (confirm('Are you sure you wish to delete this object?')) {
+          return $.ajax({
+            url: $(this).attr('href'),
+            method: 'DELETE',
+            success: function() {
+              return window.location.reload();
+            }
+          });
+        }
       });
     });
     $('[email-src]').each(function() {
@@ -48,4 +50,5 @@
       return $(this).fancybox(opts);
     });
   });
+
 }).call(this);

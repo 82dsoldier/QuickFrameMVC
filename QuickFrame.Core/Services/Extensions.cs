@@ -6,7 +6,6 @@ using Microsoft.Extensions.DependencyModel;
 using Microsoft.Extensions.Options;
 using QuickFrame.Data;
 using QuickFrame.Di;
-using QuickFrame.Interfaces;
 using QuickFrame.Mapping;
 using System;
 using System.Collections.Generic;
@@ -33,32 +32,32 @@ namespace QuickFrame.Core.Services {
 						registerMethod.Invoke(obj, null);
 					}
 
-					foreach(var mod in assembly.GetTypes().Where(t => typeof(IEmbeddedFileProviderContainer).IsAssignableFrom(t) && !t.IsInterface)) {
-						serviceCollection.Configure<RazorViewEngineOptions>(options => {
-							var obj = Activator.CreateInstance(mod);
-							options.FileProviders.Add((obj as IEmbeddedFileProviderContainer).FileProvider);
-						});
-					}
+					//foreach(var mod in assembly.GetTypes().Where(t => typeof(IEmbeddedFileProviderContainer).IsAssignableFrom(t) && !t.IsInterface)) {
+					//	serviceCollection.Configure<RazorViewEngineOptions>(options => {
+					//		var obj = Activator.CreateInstance(mod);
+					//		options.FileProviders.Add((obj as IEmbeddedFileProviderContainer).FileProvider);
+					//	});
+					//}
 				} catch {
 				}
 			}
 			return serviceCollection;
 		}
 
-		public static IApplicationBuilder UseEmbeddedFileProviders(this IApplicationBuilder app) {
-			IOptions<RazorViewEngineOptions> razorViewEngineOptions =
-				app.ApplicationServices.GetService<IOptions<RazorViewEngineOptions>>();
+		//public static IApplicationBuilder UseEmbeddedFileProviders(this IApplicationBuilder app) {
+		//	IOptions<RazorViewEngineOptions> razorViewEngineOptions =
+		//		app.ApplicationServices.GetService<IOptions<RazorViewEngineOptions>>();
 
-			foreach(var assembly in GetAssemblyList()) {
-				if(assembly != null) {
-					foreach(var mod in assembly.GetTypes().Where(t => typeof(IEmbeddedFileProviderContainer).IsAssignableFrom(t) && !t.IsInterface)) {
-						var obj = Activator.CreateInstance(mod);
-						razorViewEngineOptions.Value.FileProviders.Add((obj as IEmbeddedFileProviderContainer).FileProvider);
-					}
-				}
-			}
-			return app;
-		}
+		//	foreach(var assembly in GetAssemblyList()) {
+		//		if(assembly != null) {
+		//			foreach(var mod in assembly.GetTypes().Where(t => typeof(IEmbeddedFileProviderContainer).IsAssignableFrom(t) && !t.IsInterface)) {
+		//				var obj = Activator.CreateInstance(mod);
+		//				razorViewEngineOptions.Value.FileProviders.Add((obj as IEmbeddedFileProviderContainer).FileProvider);
+		//			}
+		//		}
+		//	}
+		//	return app;
+		//}
 
 		private static IEnumerable<Assembly> GetAssemblyList() {
 			var deps = DependencyContext.Default;

@@ -9465,7 +9465,6 @@
 
 	return jQuery;
 }));
-
 /*!
  * Bootstrap v3.3.6 (http://getbootstrap.com)
  * Copyright 2011-2015 Twitter, Inc.
@@ -11770,2543 +11769,6 @@ if (typeof jQuery === 'undefined') {
 		})
 	})
 }(jQuery);
-
-/*!
- * jQuery Validation Plugin v1.15.0
- *
- * http://jqueryvalidation.org/
- *
- * Copyright (c) 2016 Jörn Zaefferer
- * Released under the MIT license
- */
-(function (factory) {
-	if (typeof define === "function" && define.amd) {
-		define(["jquery"], factory);
-	} else if (typeof module === "object" && module.exports) {
-		module.exports = factory(require("jquery"));
-	} else {
-		factory(jQuery);
-	}
-}(function ($) {
-	$.extend($.fn, {
-		// http://jqueryvalidation.org/validate/
-		validate: function (options) {
-			// If nothing is selected, return nothing; can't chain anyway
-			if (!this.length) {
-				if (options && options.debug && window.console) {
-					console.warn("Nothing selected, can't validate, returning nothing.");
-				}
-				return;
-			}
-
-			// Check if a validator for this form was already created
-			var validator = $.data(this[0], "validator");
-			if (validator) {
-				return validator;
-			}
-
-			// Add novalidate tag if HTML5.
-			this.attr("novalidate", "novalidate");
-
-			validator = new $.validator(options, this[0]);
-			$.data(this[0], "validator", validator);
-
-			if (validator.settings.onsubmit) {
-				this.on("click.validate", ":submit", function (event) {
-					if (validator.settings.submitHandler) {
-						validator.submitButton = event.target;
-					}
-
-					// Allow suppressing validation by adding a cancel class to the submit button
-					if ($(this).hasClass("cancel")) {
-						validator.cancelSubmit = true;
-					}
-
-					// Allow suppressing validation by adding the html5 formnovalidate attribute to the submit button
-					if ($(this).attr("formnovalidate") !== undefined) {
-						validator.cancelSubmit = true;
-					}
-				});
-
-				// Validate the form on submit
-				this.on("submit.validate", function (event) {
-					if (validator.settings.debug) {
-						// Prevent form submit to be able to see console output
-						event.preventDefault();
-					}
-					function handle() {
-						var hidden, result;
-						if (validator.settings.submitHandler) {
-							if (validator.submitButton) {
-								// Insert a hidden input as a replacement for the missing submit button
-								hidden = $("<input type='hidden'/>")
-									.attr("name", validator.submitButton.name)
-									.val($(validator.submitButton).val())
-									.appendTo(validator.currentForm);
-							}
-							result = validator.settings.submitHandler.call(validator, validator.currentForm, event);
-							if (validator.submitButton) {
-								// And clean up afterwards; thanks to no-block-scope, hidden can be referenced
-								hidden.remove();
-							}
-							if (result !== undefined) {
-								return result;
-							}
-							return false;
-						}
-						return true;
-					}
-
-					// Prevent submit for invalid forms or custom submit handlers
-					if (validator.cancelSubmit) {
-						validator.cancelSubmit = false;
-						return handle();
-					}
-					if (validator.form()) {
-						if (validator.pendingRequest) {
-							validator.formSubmitted = true;
-							return false;
-						}
-						return handle();
-					} else {
-						validator.focusInvalid();
-						return false;
-					}
-				});
-			}
-
-			return validator;
-		},
-
-		// http://jqueryvalidation.org/valid/
-		valid: function () {
-			var valid, validator, errorList;
-
-			if ($(this[0]).is("form")) {
-				valid = this.validate().form();
-			} else {
-				errorList = [];
-				valid = true;
-				validator = $(this[0].form).validate();
-				this.each(function () {
-					valid = validator.element(this) && valid;
-					if (!valid) {
-						errorList = errorList.concat(validator.errorList);
-					}
-				});
-				validator.errorList = errorList;
-			}
-			return valid;
-		},
-
-		// http://jqueryvalidation.org/rules/
-		rules: function (command, argument) {
-			// If nothing is selected, return nothing; can't chain anyway
-			if (!this.length) {
-				return;
-			}
-
-			var element = this[0],
-				settings, staticRules, existingRules, data, param, filtered;
-
-			if (command) {
-				settings = $.data(element.form, "validator").settings;
-				staticRules = settings.rules;
-				existingRules = $.validator.staticRules(element);
-				switch (command) {
-					case "add":
-						$.extend(existingRules, $.validator.normalizeRule(argument));
-
-						// Remove messages from rules, but allow them to be set separately
-						delete existingRules.messages;
-						staticRules[element.name] = existingRules;
-						if (argument.messages) {
-							settings.messages[element.name] = $.extend(settings.messages[element.name], argument.messages);
-						}
-						break;
-					case "remove":
-						if (!argument) {
-							delete staticRules[element.name];
-							return existingRules;
-						}
-						filtered = {};
-						$.each(argument.split(/\s/), function (index, method) {
-							filtered[method] = existingRules[method];
-							delete existingRules[method];
-							if (method === "required") {
-								$(element).removeAttr("aria-required");
-							}
-						});
-						return filtered;
-				}
-			}
-
-			data = $.validator.normalizeRules(
-			$.extend(
-				{},
-				$.validator.classRules(element),
-				$.validator.attributeRules(element),
-				$.validator.dataRules(element),
-				$.validator.staticRules(element)
-			), element);
-
-			// Make sure required is at front
-			if (data.required) {
-				param = data.required;
-				delete data.required;
-				data = $.extend({ required: param }, data);
-				$(element).attr("aria-required", "true");
-			}
-
-			// Make sure remote is at back
-			if (data.remote) {
-				param = data.remote;
-				delete data.remote;
-				data = $.extend(data, { remote: param });
-			}
-
-			return data;
-		}
-	});
-
-	// Custom selectors
-	$.extend($.expr[":"], {
-		// http://jqueryvalidation.org/blank-selector/
-		blank: function (a) {
-			return !$.trim("" + $(a).val());
-		},
-
-		// http://jqueryvalidation.org/filled-selector/
-		filled: function (a) {
-			var val = $(a).val();
-			return val !== null && !!$.trim("" + val);
-		},
-
-		// http://jqueryvalidation.org/unchecked-selector/
-		unchecked: function (a) {
-			return !$(a).prop("checked");
-		}
-	});
-
-	// Constructor for validator
-	$.validator = function (options, form) {
-		this.settings = $.extend(true, {}, $.validator.defaults, options);
-		this.currentForm = form;
-		this.init();
-	};
-
-	// http://jqueryvalidation.org/jQuery.validator.format/
-	$.validator.format = function (source, params) {
-		if (arguments.length === 1) {
-			return function () {
-				var args = $.makeArray(arguments);
-				args.unshift(source);
-				return $.validator.format.apply(this, args);
-			};
-		}
-		if (params === undefined) {
-			return source;
-		}
-		if (arguments.length > 2 && params.constructor !== Array) {
-			params = $.makeArray(arguments).slice(1);
-		}
-		if (params.constructor !== Array) {
-			params = [params];
-		}
-		$.each(params, function (i, n) {
-			source = source.replace(new RegExp("\\{" + i + "\\}", "g"), function () {
-				return n;
-			});
-		});
-		return source;
-	};
-
-	$.extend($.validator, {
-		defaults: {
-			messages: {},
-			groups: {},
-			rules: {},
-			errorClass: "error",
-			pendingClass: "pending",
-			validClass: "valid",
-			errorElement: "label",
-			focusCleanup: false,
-			focusInvalid: true,
-			errorContainer: $([]),
-			errorLabelContainer: $([]),
-			onsubmit: true,
-			ignore: ":hidden",
-			ignoreTitle: false,
-			onfocusin: function (element) {
-				this.lastActive = element;
-
-				// Hide error label and remove error class on focus if enabled
-				if (this.settings.focusCleanup) {
-					if (this.settings.unhighlight) {
-						this.settings.unhighlight.call(this, element, this.settings.errorClass, this.settings.validClass);
-					}
-					this.hideThese(this.errorsFor(element));
-				}
-			},
-			onfocusout: function (element) {
-				if (!this.checkable(element) && (element.name in this.submitted || !this.optional(element))) {
-					this.element(element);
-				}
-			},
-			onkeyup: function (element, event) {
-				// Avoid revalidate the field when pressing one of the following keys
-				// Shift       => 16
-				// Ctrl        => 17
-				// Alt         => 18
-				// Caps lock   => 20
-				// End         => 35
-				// Home        => 36
-				// Left arrow  => 37
-				// Up arrow    => 38
-				// Right arrow => 39
-				// Down arrow  => 40
-				// Insert      => 45
-				// Num lock    => 144
-				// AltGr key   => 225
-				var excludedKeys = [
-					16, 17, 18, 20, 35, 36, 37,
-					38, 39, 40, 45, 144, 225
-				];
-
-				if (event.which === 9 && this.elementValue(element) === "" || $.inArray(event.keyCode, excludedKeys) !== -1) {
-					return;
-				} else if (element.name in this.submitted || element.name in this.invalid) {
-					this.element(element);
-				}
-			},
-			onclick: function (element) {
-				// Click on selects, radiobuttons and checkboxes
-				if (element.name in this.submitted) {
-					this.element(element);
-
-					// Or option elements, check parent select in that case
-				} else if (element.parentNode.name in this.submitted) {
-					this.element(element.parentNode);
-				}
-			},
-			highlight: function (element, errorClass, validClass) {
-				if (element.type === "radio") {
-					this.findByName(element.name).addClass(errorClass).removeClass(validClass);
-				} else {
-					$(element).addClass(errorClass).removeClass(validClass);
-				}
-			},
-			unhighlight: function (element, errorClass, validClass) {
-				if (element.type === "radio") {
-					this.findByName(element.name).removeClass(errorClass).addClass(validClass);
-				} else {
-					$(element).removeClass(errorClass).addClass(validClass);
-				}
-			}
-		},
-
-		// http://jqueryvalidation.org/jQuery.validator.setDefaults/
-		setDefaults: function (settings) {
-			$.extend($.validator.defaults, settings);
-		},
-
-		messages: {
-			required: "This field is required.",
-			remote: "Please fix this field.",
-			email: "Please enter a valid email address.",
-			url: "Please enter a valid URL.",
-			date: "Please enter a valid date.",
-			dateISO: "Please enter a valid date ( ISO ).",
-			number: "Please enter a valid number.",
-			digits: "Please enter only digits.",
-			equalTo: "Please enter the same value again.",
-			maxlength: $.validator.format("Please enter no more than {0} characters."),
-			minlength: $.validator.format("Please enter at least {0} characters."),
-			rangelength: $.validator.format("Please enter a value between {0} and {1} characters long."),
-			range: $.validator.format("Please enter a value between {0} and {1}."),
-			max: $.validator.format("Please enter a value less than or equal to {0}."),
-			min: $.validator.format("Please enter a value greater than or equal to {0}."),
-			step: $.validator.format("Please enter a multiple of {0}.")
-		},
-
-		autoCreateRanges: false,
-
-		prototype: {
-			init: function () {
-				this.labelContainer = $(this.settings.errorLabelContainer);
-				this.errorContext = this.labelContainer.length && this.labelContainer || $(this.currentForm);
-				this.containers = $(this.settings.errorContainer).add(this.settings.errorLabelContainer);
-				this.submitted = {};
-				this.valueCache = {};
-				this.pendingRequest = 0;
-				this.pending = {};
-				this.invalid = {};
-				this.reset();
-
-				var groups = (this.groups = {}),
-					rules;
-				$.each(this.settings.groups, function (key, value) {
-					if (typeof value === "string") {
-						value = value.split(/\s/);
-					}
-					$.each(value, function (index, name) {
-						groups[name] = key;
-					});
-				});
-				rules = this.settings.rules;
-				$.each(rules, function (key, value) {
-					rules[key] = $.validator.normalizeRule(value);
-				});
-
-				function delegate(event) {
-					var validator = $.data(this.form, "validator"),
-						eventType = "on" + event.type.replace(/^validate/, ""),
-						settings = validator.settings;
-					if (settings[eventType] && !$(this).is(settings.ignore)) {
-						settings[eventType].call(validator, this, event);
-					}
-				}
-
-				$(this.currentForm)
-					.on("focusin.validate focusout.validate keyup.validate",
-						":text, [type='password'], [type='file'], select, textarea, [type='number'], [type='search'], " +
-						"[type='tel'], [type='url'], [type='email'], [type='datetime'], [type='date'], [type='month'], " +
-						"[type='week'], [type='time'], [type='datetime-local'], [type='range'], [type='color'], " +
-						"[type='radio'], [type='checkbox'], [contenteditable]", delegate)
-
-					// Support: Chrome, oldIE
-					// "select" is provided as event.target when clicking a option
-					.on("click.validate", "select, option, [type='radio'], [type='checkbox']", delegate);
-
-				if (this.settings.invalidHandler) {
-					$(this.currentForm).on("invalid-form.validate", this.settings.invalidHandler);
-				}
-
-				// Add aria-required to any Static/Data/Class required fields before first validation
-				// Screen readers require this attribute to be present before the initial submission http://www.w3.org/TR/WCAG-TECHS/ARIA2.html
-				$(this.currentForm).find("[required], [data-rule-required], .required").attr("aria-required", "true");
-			},
-
-			// http://jqueryvalidation.org/Validator.form/
-			form: function () {
-				this.checkForm();
-				$.extend(this.submitted, this.errorMap);
-				this.invalid = $.extend({}, this.errorMap);
-				if (!this.valid()) {
-					$(this.currentForm).triggerHandler("invalid-form", [this]);
-				}
-				this.showErrors();
-				return this.valid();
-			},
-
-			checkForm: function () {
-				this.prepareForm();
-				for (var i = 0, elements = (this.currentElements = this.elements()) ; elements[i]; i++) {
-					this.check(elements[i]);
-				}
-				return this.valid();
-			},
-
-			// http://jqueryvalidation.org/Validator.element/
-			element: function (element) {
-				var cleanElement = this.clean(element),
-					checkElement = this.validationTargetFor(cleanElement),
-					v = this,
-					result = true,
-					rs, group;
-
-				if (checkElement === undefined) {
-					delete this.invalid[cleanElement.name];
-				} else {
-					this.prepareElement(checkElement);
-					this.currentElements = $(checkElement);
-
-					// If this element is grouped, then validate all group elements already
-					// containing a value
-					group = this.groups[checkElement.name];
-					if (group) {
-						$.each(this.groups, function (name, testgroup) {
-							if (testgroup === group && name !== checkElement.name) {
-								cleanElement = v.validationTargetFor(v.clean(v.findByName(name)));
-								if (cleanElement && cleanElement.name in v.invalid) {
-									v.currentElements.push(cleanElement);
-									result = result && v.check(cleanElement);
-								}
-							}
-						});
-					}
-
-					rs = this.check(checkElement) !== false;
-					result = result && rs;
-					if (rs) {
-						this.invalid[checkElement.name] = false;
-					} else {
-						this.invalid[checkElement.name] = true;
-					}
-
-					if (!this.numberOfInvalids()) {
-						// Hide error containers on last error
-						this.toHide = this.toHide.add(this.containers);
-					}
-					this.showErrors();
-
-					// Add aria-invalid status for screen readers
-					$(element).attr("aria-invalid", !rs);
-				}
-
-				return result;
-			},
-
-			// http://jqueryvalidation.org/Validator.showErrors/
-			showErrors: function (errors) {
-				if (errors) {
-					var validator = this;
-
-					// Add items to error list and map
-					$.extend(this.errorMap, errors);
-					this.errorList = $.map(this.errorMap, function (message, name) {
-						return {
-							message: message,
-							element: validator.findByName(name)[0]
-						};
-					});
-
-					// Remove items from success list
-					this.successList = $.grep(this.successList, function (element) {
-						return !(element.name in errors);
-					});
-				}
-				if (this.settings.showErrors) {
-					this.settings.showErrors.call(this, this.errorMap, this.errorList);
-				} else {
-					this.defaultShowErrors();
-				}
-			},
-
-			// http://jqueryvalidation.org/Validator.resetForm/
-			resetForm: function () {
-				if ($.fn.resetForm) {
-					$(this.currentForm).resetForm();
-				}
-				this.invalid = {};
-				this.submitted = {};
-				this.prepareForm();
-				this.hideErrors();
-				var elements = this.elements()
-					.removeData("previousValue")
-					.removeAttr("aria-invalid");
-
-				this.resetElements(elements);
-			},
-
-			resetElements: function (elements) {
-				var i;
-
-				if (this.settings.unhighlight) {
-					for (i = 0; elements[i]; i++) {
-						this.settings.unhighlight.call(this, elements[i],
-							this.settings.errorClass, "");
-						this.findByName(elements[i].name).removeClass(this.settings.validClass);
-					}
-				} else {
-					elements
-						.removeClass(this.settings.errorClass)
-						.removeClass(this.settings.validClass);
-				}
-			},
-
-			numberOfInvalids: function () {
-				return this.objectLength(this.invalid);
-			},
-
-			objectLength: function (obj) {
-				/* jshint unused: false */
-				var count = 0,
-					i;
-				for (i in obj) {
-					if (obj[i]) {
-						count++;
-					}
-				}
-				return count;
-			},
-
-			hideErrors: function () {
-				this.hideThese(this.toHide);
-			},
-
-			hideThese: function (errors) {
-				errors.not(this.containers).text("");
-				this.addWrapper(errors).hide();
-			},
-
-			valid: function () {
-				return this.size() === 0;
-			},
-
-			size: function () {
-				return this.errorList.length;
-			},
-
-			focusInvalid: function () {
-				if (this.settings.focusInvalid) {
-					try {
-						$(this.findLastActive() || this.errorList.length && this.errorList[0].element || [])
-						.filter(":visible")
-						.focus()
-
-						// Manually trigger focusin event; without it, focusin handler isn't called, findLastActive won't have anything to find
-						.trigger("focusin");
-					} catch (e) {
-						// Ignore IE throwing errors when focusing hidden elements
-					}
-				}
-			},
-
-			findLastActive: function () {
-				var lastActive = this.lastActive;
-				return lastActive && $.grep(this.errorList, function (n) {
-					return n.element.name === lastActive.name;
-				}).length === 1 && lastActive;
-			},
-
-			elements: function () {
-				var validator = this,
-					rulesCache = {};
-
-				// Select all valid inputs inside the form (no submit or reset buttons)
-				return $(this.currentForm)
-				.find("input, select, textarea, [contenteditable]")
-				.not(":submit, :reset, :image, :disabled")
-				.not(this.settings.ignore)
-				.filter(function () {
-					var name = this.name || $(this).attr("name"); // For contenteditable
-					if (!name && validator.settings.debug && window.console) {
-						console.error("%o has no name assigned", this);
-					}
-
-					// Set form expando on contenteditable
-					if (this.hasAttribute("contenteditable")) {
-						this.form = $(this).closest("form")[0];
-					}
-
-					// Select only the first element for each name, and only those with rules specified
-					if (name in rulesCache || !validator.objectLength($(this).rules())) {
-						return false;
-					}
-
-					rulesCache[name] = true;
-					return true;
-				});
-			},
-
-			clean: function (selector) {
-				return $(selector)[0];
-			},
-
-			errors: function () {
-				var errorClass = this.settings.errorClass.split(" ").join(".");
-				return $(this.settings.errorElement + "." + errorClass, this.errorContext);
-			},
-
-			resetInternals: function () {
-				this.successList = [];
-				this.errorList = [];
-				this.errorMap = {};
-				this.toShow = $([]);
-				this.toHide = $([]);
-			},
-
-			reset: function () {
-				this.resetInternals();
-				this.currentElements = $([]);
-			},
-
-			prepareForm: function () {
-				this.reset();
-				this.toHide = this.errors().add(this.containers);
-			},
-
-			prepareElement: function (element) {
-				this.reset();
-				this.toHide = this.errorsFor(element);
-			},
-
-			elementValue: function (element) {
-				var $element = $(element),
-					type = element.type,
-					val, idx;
-
-				if (type === "radio" || type === "checkbox") {
-					return this.findByName(element.name).filter(":checked").val();
-				} else if (type === "number" && typeof element.validity !== "undefined") {
-					return element.validity.badInput ? "NaN" : $element.val();
-				}
-
-				if (element.hasAttribute("contenteditable")) {
-					val = $element.text();
-				} else {
-					val = $element.val();
-				}
-
-				if (type === "file") {
-					// Modern browser (chrome & safari)
-					if (val.substr(0, 12) === "C:\\fakepath\\") {
-						return val.substr(12);
-					}
-
-					// Legacy browsers
-					// Unix-based path
-					idx = val.lastIndexOf("/");
-					if (idx >= 0) {
-						return val.substr(idx + 1);
-					}
-
-					// Windows-based path
-					idx = val.lastIndexOf("\\");
-					if (idx >= 0) {
-						return val.substr(idx + 1);
-					}
-
-					// Just the file name
-					return val;
-				}
-
-				if (typeof val === "string") {
-					return val.replace(/\r/g, "");
-				}
-				return val;
-			},
-
-			check: function (element) {
-				element = this.validationTargetFor(this.clean(element));
-
-				var rules = $(element).rules(),
-					rulesCount = $.map(rules, function (n, i) {
-						return i;
-					}).length,
-					dependencyMismatch = false,
-					val = this.elementValue(element),
-					result, method, rule;
-
-				// If a normalizer is defined for this element, then
-				// call it to retreive the changed value instead
-				// of using the real one.
-				// Note that `this` in the normalizer is `element`.
-				if (typeof rules.normalizer === "function") {
-					val = rules.normalizer.call(element, val);
-
-					if (typeof val !== "string") {
-						throw new TypeError("The normalizer should return a string value.");
-					}
-
-					// Delete the normalizer from rules to avoid treating
-					// it as a pre-defined method.
-					delete rules.normalizer;
-				}
-
-				for (method in rules) {
-					rule = { method: method, parameters: rules[method] };
-					try {
-						result = $.validator.methods[method].call(this, val, element, rule.parameters);
-
-						// If a method indicates that the field is optional and therefore valid,
-						// don't mark it as valid when there are no other rules
-						if (result === "dependency-mismatch" && rulesCount === 1) {
-							dependencyMismatch = true;
-							continue;
-						}
-						dependencyMismatch = false;
-
-						if (result === "pending") {
-							this.toHide = this.toHide.not(this.errorsFor(element));
-							return;
-						}
-
-						if (!result) {
-							this.formatAndAdd(element, rule);
-							return false;
-						}
-					} catch (e) {
-						if (this.settings.debug && window.console) {
-							console.log("Exception occurred when checking element " + element.id + ", check the '" + rule.method + "' method.", e);
-						}
-						if (e instanceof TypeError) {
-							e.message += ".  Exception occurred when checking element " + element.id + ", check the '" + rule.method + "' method.";
-						}
-
-						throw e;
-					}
-				}
-				if (dependencyMismatch) {
-					return;
-				}
-				if (this.objectLength(rules)) {
-					this.successList.push(element);
-				}
-				return true;
-			},
-
-			// Return the custom message for the given element and validation method
-			// specified in the element's HTML5 data attribute
-			// return the generic message if present and no method specific message is present
-			customDataMessage: function (element, method) {
-				return $(element).data("msg" + method.charAt(0).toUpperCase() +
-					method.substring(1).toLowerCase()) || $(element).data("msg");
-			},
-
-			// Return the custom message for the given element name and validation method
-			customMessage: function (name, method) {
-				var m = this.settings.messages[name];
-				return m && (m.constructor === String ? m : m[method]);
-			},
-
-			// Return the first defined argument, allowing empty strings
-			findDefined: function () {
-				for (var i = 0; i < arguments.length; i++) {
-					if (arguments[i] !== undefined) {
-						return arguments[i];
-					}
-				}
-				return undefined;
-			},
-
-			defaultMessage: function (element, rule) {
-				var message = this.findDefined(
-						this.customMessage(element.name, rule.method),
-						this.customDataMessage(element, rule.method),
-
-						// 'title' is never undefined, so handle empty string as undefined
-						!this.settings.ignoreTitle && element.title || undefined,
-						$.validator.messages[rule.method],
-						"<strong>Warning: No message defined for " + element.name + "</strong>"
-					),
-					theregex = /\$?\{(\d+)\}/g;
-				if (typeof message === "function") {
-					message = message.call(this, rule.parameters, element);
-				} else if (theregex.test(message)) {
-					message = $.validator.format(message.replace(theregex, "{$1}"), rule.parameters);
-				}
-
-				return message;
-			},
-
-			formatAndAdd: function (element, rule) {
-				var message = this.defaultMessage(element, rule);
-
-				this.errorList.push({
-					message: message,
-					element: element,
-					method: rule.method
-				});
-
-				this.errorMap[element.name] = message;
-				this.submitted[element.name] = message;
-			},
-
-			addWrapper: function (toToggle) {
-				if (this.settings.wrapper) {
-					toToggle = toToggle.add(toToggle.parent(this.settings.wrapper));
-				}
-				return toToggle;
-			},
-
-			defaultShowErrors: function () {
-				var i, elements, error;
-				for (i = 0; this.errorList[i]; i++) {
-					error = this.errorList[i];
-					if (this.settings.highlight) {
-						this.settings.highlight.call(this, error.element, this.settings.errorClass, this.settings.validClass);
-					}
-					this.showLabel(error.element, error.message);
-				}
-				if (this.errorList.length) {
-					this.toShow = this.toShow.add(this.containers);
-				}
-				if (this.settings.success) {
-					for (i = 0; this.successList[i]; i++) {
-						this.showLabel(this.successList[i]);
-					}
-				}
-				if (this.settings.unhighlight) {
-					for (i = 0, elements = this.validElements() ; elements[i]; i++) {
-						this.settings.unhighlight.call(this, elements[i], this.settings.errorClass, this.settings.validClass);
-					}
-				}
-				this.toHide = this.toHide.not(this.toShow);
-				this.hideErrors();
-				this.addWrapper(this.toShow).show();
-			},
-
-			validElements: function () {
-				return this.currentElements.not(this.invalidElements());
-			},
-
-			invalidElements: function () {
-				return $(this.errorList).map(function () {
-					return this.element;
-				});
-			},
-
-			showLabel: function (element, message) {
-				var place, group, errorID, v,
-					error = this.errorsFor(element),
-					elementID = this.idOrName(element),
-					describedBy = $(element).attr("aria-describedby");
-
-				if (error.length) {
-					// Refresh error/success class
-					error.removeClass(this.settings.validClass).addClass(this.settings.errorClass);
-
-					// Replace message on existing label
-					error.html(message);
-				} else {
-					// Create error element
-					error = $("<" + this.settings.errorElement + ">")
-						.attr("id", elementID + "-error")
-						.addClass(this.settings.errorClass)
-						.html(message || "");
-
-					// Maintain reference to the element to be placed into the DOM
-					place = error;
-					if (this.settings.wrapper) {
-						// Make sure the element is visible, even in IE
-						// actually showing the wrapped element is handled elsewhere
-						place = error.hide().show().wrap("<" + this.settings.wrapper + "/>").parent();
-					}
-					if (this.labelContainer.length) {
-						this.labelContainer.append(place);
-					} else if (this.settings.errorPlacement) {
-						this.settings.errorPlacement(place, $(element));
-					} else {
-						place.insertAfter(element);
-					}
-
-					// Link error back to the element
-					if (error.is("label")) {
-						// If the error is a label, then associate using 'for'
-						error.attr("for", elementID);
-
-						// If the element is not a child of an associated label, then it's necessary
-						// to explicitly apply aria-describedby
-					} else if (error.parents("label[for='" + this.escapeCssMeta(elementID) + "']").length === 0) {
-						errorID = error.attr("id");
-
-						// Respect existing non-error aria-describedby
-						if (!describedBy) {
-							describedBy = errorID;
-						} else if (!describedBy.match(new RegExp("\\b" + this.escapeCssMeta(errorID) + "\\b"))) {
-							// Add to end of list if not already present
-							describedBy += " " + errorID;
-						}
-						$(element).attr("aria-describedby", describedBy);
-
-						// If this element is grouped, then assign to all elements in the same group
-						group = this.groups[element.name];
-						if (group) {
-							v = this;
-							$.each(v.groups, function (name, testgroup) {
-								if (testgroup === group) {
-									$("[name='" + v.escapeCssMeta(name) + "']", v.currentForm)
-										.attr("aria-describedby", error.attr("id"));
-								}
-							});
-						}
-					}
-				}
-				if (!message && this.settings.success) {
-					error.text("");
-					if (typeof this.settings.success === "string") {
-						error.addClass(this.settings.success);
-					} else {
-						this.settings.success(error, element);
-					}
-				}
-				this.toShow = this.toShow.add(error);
-			},
-
-			errorsFor: function (element) {
-				var name = this.escapeCssMeta(this.idOrName(element)),
-					describer = $(element).attr("aria-describedby"),
-					selector = "label[for='" + name + "'], label[for='" + name + "'] *";
-
-				// 'aria-describedby' should directly reference the error element
-				if (describer) {
-					selector = selector + ", #" + this.escapeCssMeta(describer)
-						.replace(/\s+/g, ", #");
-				}
-
-				return this
-					.errors()
-					.filter(selector);
-			},
-
-			// See https://api.jquery.com/category/selectors/, for CSS
-			// meta-characters that should be escaped in order to be used with JQuery
-			// as a literal part of a name/id or any selector.
-			escapeCssMeta: function (string) {
-				return string.replace(/([\\!"#$%&'()*+,./:;<=>?@\[\]^`{|}~])/g, "\\$1");
-			},
-
-			idOrName: function (element) {
-				return this.groups[element.name] || (this.checkable(element) ? element.name : element.id || element.name);
-			},
-
-			validationTargetFor: function (element) {
-				// If radio/checkbox, validate first element in group instead
-				if (this.checkable(element)) {
-					element = this.findByName(element.name);
-				}
-
-				// Always apply ignore filter
-				return $(element).not(this.settings.ignore)[0];
-			},
-
-			checkable: function (element) {
-				return (/radio|checkbox/i).test(element.type);
-			},
-
-			findByName: function (name) {
-				return $(this.currentForm).find("[name='" + this.escapeCssMeta(name) + "']");
-			},
-
-			getLength: function (value, element) {
-				switch (element.nodeName.toLowerCase()) {
-					case "select":
-						return $("option:selected", element).length;
-					case "input":
-						if (this.checkable(element)) {
-							return this.findByName(element.name).filter(":checked").length;
-						}
-				}
-				return value.length;
-			},
-
-			depend: function (param, element) {
-				return this.dependTypes[typeof param] ? this.dependTypes[typeof param](param, element) : true;
-			},
-
-			dependTypes: {
-				"boolean": function (param) {
-					return param;
-				},
-				"string": function (param, element) {
-					return !!$(param, element.form).length;
-				},
-				"function": function (param, element) {
-					return param(element);
-				}
-			},
-
-			optional: function (element) {
-				var val = this.elementValue(element);
-				return !$.validator.methods.required.call(this, val, element) && "dependency-mismatch";
-			},
-
-			startRequest: function (element) {
-				if (!this.pending[element.name]) {
-					this.pendingRequest++;
-					$(element).addClass(this.settings.pendingClass);
-					this.pending[element.name] = true;
-				}
-			},
-
-			stopRequest: function (element, valid) {
-				this.pendingRequest--;
-
-				// Sometimes synchronization fails, make sure pendingRequest is never < 0
-				if (this.pendingRequest < 0) {
-					this.pendingRequest = 0;
-				}
-				delete this.pending[element.name];
-				$(element).removeClass(this.settings.pendingClass);
-				if (valid && this.pendingRequest === 0 && this.formSubmitted && this.form()) {
-					$(this.currentForm).submit();
-					this.formSubmitted = false;
-				} else if (!valid && this.pendingRequest === 0 && this.formSubmitted) {
-					$(this.currentForm).triggerHandler("invalid-form", [this]);
-					this.formSubmitted = false;
-				}
-			},
-
-			previousValue: function (element, method) {
-				return $.data(element, "previousValue") || $.data(element, "previousValue", {
-					old: null,
-					valid: true,
-					message: this.defaultMessage(element, { method: method })
-				});
-			},
-
-			// Cleans up all forms and elements, removes validator-specific events
-			destroy: function () {
-				this.resetForm();
-
-				$(this.currentForm)
-					.off(".validate")
-					.removeData("validator")
-					.find(".validate-equalTo-blur")
-						.off(".validate-equalTo")
-						.removeClass("validate-equalTo-blur");
-			}
-		},
-
-		classRuleSettings: {
-			required: { required: true },
-			email: { email: true },
-			url: { url: true },
-			date: { date: true },
-			dateISO: { dateISO: true },
-			number: { number: true },
-			digits: { digits: true },
-			creditcard: { creditcard: true }
-		},
-
-		addClassRules: function (className, rules) {
-			if (className.constructor === String) {
-				this.classRuleSettings[className] = rules;
-			} else {
-				$.extend(this.classRuleSettings, className);
-			}
-		},
-
-		classRules: function (element) {
-			var rules = {},
-				classes = $(element).attr("class");
-
-			if (classes) {
-				$.each(classes.split(" "), function () {
-					if (this in $.validator.classRuleSettings) {
-						$.extend(rules, $.validator.classRuleSettings[this]);
-					}
-				});
-			}
-			return rules;
-		},
-
-		normalizeAttributeRule: function (rules, type, method, value) {
-			// Convert the value to a number for number inputs, and for text for backwards compability
-			// allows type="date" and others to be compared as strings
-			if (/min|max|step/.test(method) && (type === null || /number|range|text/.test(type))) {
-				value = Number(value);
-
-				// Support Opera Mini, which returns NaN for undefined minlength
-				if (isNaN(value)) {
-					value = undefined;
-				}
-			}
-
-			if (value || value === 0) {
-				rules[method] = value;
-			} else if (type === method && type !== "range") {
-				// Exception: the jquery validate 'range' method
-				// does not test for the html5 'range' type
-				rules[method] = true;
-			}
-		},
-
-		attributeRules: function (element) {
-			var rules = {},
-				$element = $(element),
-				type = element.getAttribute("type"),
-				method, value;
-
-			for (method in $.validator.methods) {
-				// Support for <input required> in both html5 and older browsers
-				if (method === "required") {
-					value = element.getAttribute(method);
-
-					// Some browsers return an empty string for the required attribute
-					// and non-HTML5 browsers might have required="" markup
-					if (value === "") {
-						value = true;
-					}
-
-					// Force non-HTML5 browsers to return bool
-					value = !!value;
-				} else {
-					value = $element.attr(method);
-				}
-
-				this.normalizeAttributeRule(rules, type, method, value);
-			}
-
-			// 'maxlength' may be returned as -1, 2147483647 ( IE ) and 524288 ( safari ) for text inputs
-			if (rules.maxlength && /-1|2147483647|524288/.test(rules.maxlength)) {
-				delete rules.maxlength;
-			}
-
-			return rules;
-		},
-
-		dataRules: function (element) {
-			var rules = {},
-				$element = $(element),
-				type = element.getAttribute("type"),
-				method, value;
-
-			for (method in $.validator.methods) {
-				value = $element.data("rule" + method.charAt(0).toUpperCase() + method.substring(1).toLowerCase());
-				this.normalizeAttributeRule(rules, type, method, value);
-			}
-			return rules;
-		},
-
-		staticRules: function (element) {
-			var rules = {},
-				validator = $.data(element.form, "validator");
-
-			if (validator.settings.rules) {
-				rules = $.validator.normalizeRule(validator.settings.rules[element.name]) || {};
-			}
-			return rules;
-		},
-
-		normalizeRules: function (rules, element) {
-			// Handle dependency check
-			$.each(rules, function (prop, val) {
-				// Ignore rule when param is explicitly false, eg. required:false
-				if (val === false) {
-					delete rules[prop];
-					return;
-				}
-				if (val.param || val.depends) {
-					var keepRule = true;
-					switch (typeof val.depends) {
-						case "string":
-							keepRule = !!$(val.depends, element.form).length;
-							break;
-						case "function":
-							keepRule = val.depends.call(element, element);
-							break;
-					}
-					if (keepRule) {
-						rules[prop] = val.param !== undefined ? val.param : true;
-					} else {
-						$.data(element.form, "validator").resetElements($(element));
-						delete rules[prop];
-					}
-				}
-			});
-
-			// Evaluate parameters
-			$.each(rules, function (rule, parameter) {
-				rules[rule] = $.isFunction(parameter) && rule !== "normalizer" ? parameter(element) : parameter;
-			});
-
-			// Clean number parameters
-			$.each(["minlength", "maxlength"], function () {
-				if (rules[this]) {
-					rules[this] = Number(rules[this]);
-				}
-			});
-			$.each(["rangelength", "range"], function () {
-				var parts;
-				if (rules[this]) {
-					if ($.isArray(rules[this])) {
-						rules[this] = [Number(rules[this][0]), Number(rules[this][1])];
-					} else if (typeof rules[this] === "string") {
-						parts = rules[this].replace(/[\[\]]/g, "").split(/[\s,]+/);
-						rules[this] = [Number(parts[0]), Number(parts[1])];
-					}
-				}
-			});
-
-			if ($.validator.autoCreateRanges) {
-				// Auto-create ranges
-				if (rules.min != null && rules.max != null) {
-					rules.range = [rules.min, rules.max];
-					delete rules.min;
-					delete rules.max;
-				}
-				if (rules.minlength != null && rules.maxlength != null) {
-					rules.rangelength = [rules.minlength, rules.maxlength];
-					delete rules.minlength;
-					delete rules.maxlength;
-				}
-			}
-
-			return rules;
-		},
-
-		// Converts a simple string to a {string: true} rule, e.g., "required" to {required:true}
-		normalizeRule: function (data) {
-			if (typeof data === "string") {
-				var transformed = {};
-				$.each(data.split(/\s/), function () {
-					transformed[this] = true;
-				});
-				data = transformed;
-			}
-			return data;
-		},
-
-		// http://jqueryvalidation.org/jQuery.validator.addMethod/
-		addMethod: function (name, method, message) {
-			$.validator.methods[name] = method;
-			$.validator.messages[name] = message !== undefined ? message : $.validator.messages[name];
-			if (method.length < 3) {
-				$.validator.addClassRules(name, $.validator.normalizeRule(name));
-			}
-		},
-
-		// http://jqueryvalidation.org/jQuery.validator.methods/
-		methods: {
-			// http://jqueryvalidation.org/required-method/
-			required: function (value, element, param) {
-				// Check if dependency is met
-				if (!this.depend(param, element)) {
-					return "dependency-mismatch";
-				}
-				if (element.nodeName.toLowerCase() === "select") {
-					// Could be an array for select-multiple or a string, both are fine this way
-					var val = $(element).val();
-					return val && val.length > 0;
-				}
-				if (this.checkable(element)) {
-					return this.getLength(value, element) > 0;
-				}
-				return value.length > 0;
-			},
-
-			// http://jqueryvalidation.org/email-method/
-			email: function (value, element) {
-				// From https://html.spec.whatwg.org/multipage/forms.html#valid-e-mail-address
-				// Retrieved 2014-01-14
-				// If you have a problem with this implementation, report a bug against the above spec
-				// Or use custom methods to implement your own email validation
-				return this.optional(element) || /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/.test(value);
-			},
-
-			// http://jqueryvalidation.org/url-method/
-			url: function (value, element) {
-				// Copyright (c) 2010-2013 Diego Perini, MIT licensed
-				// https://gist.github.com/dperini/729294
-				// see also https://mathiasbynens.be/demo/url-regex
-				// modified to allow protocol-relative URLs
-				return this.optional(element) || /^(?:(?:(?:https?|ftp):)?\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})).?)(?::\d{2,5})?(?:[/?#]\S*)?$/i.test(value);
-			},
-
-			// http://jqueryvalidation.org/date-method/
-			date: function (value, element) {
-				return this.optional(element) || !/Invalid|NaN/.test(new Date(value).toString());
-			},
-
-			// http://jqueryvalidation.org/dateISO-method/
-			dateISO: function (value, element) {
-				return this.optional(element) || /^\d{4}[\/\-](0?[1-9]|1[012])[\/\-](0?[1-9]|[12][0-9]|3[01])$/.test(value);
-			},
-
-			// http://jqueryvalidation.org/number-method/
-			number: function (value, element) {
-				return this.optional(element) || /^(?:-?\d+|-?\d{1,3}(?:,\d{3})+)?(?:\.\d+)?$/.test(value);
-			},
-
-			// http://jqueryvalidation.org/digits-method/
-			digits: function (value, element) {
-				return this.optional(element) || /^\d+$/.test(value);
-			},
-
-			// http://jqueryvalidation.org/minlength-method/
-			minlength: function (value, element, param) {
-				var length = $.isArray(value) ? value.length : this.getLength(value, element);
-				return this.optional(element) || length >= param;
-			},
-
-			// http://jqueryvalidation.org/maxlength-method/
-			maxlength: function (value, element, param) {
-				var length = $.isArray(value) ? value.length : this.getLength(value, element);
-				return this.optional(element) || length <= param;
-			},
-
-			// http://jqueryvalidation.org/rangelength-method/
-			rangelength: function (value, element, param) {
-				var length = $.isArray(value) ? value.length : this.getLength(value, element);
-				return this.optional(element) || (length >= param[0] && length <= param[1]);
-			},
-
-			// http://jqueryvalidation.org/min-method/
-			min: function (value, element, param) {
-				return this.optional(element) || value >= param;
-			},
-
-			// http://jqueryvalidation.org/max-method/
-			max: function (value, element, param) {
-				return this.optional(element) || value <= param;
-			},
-
-			// http://jqueryvalidation.org/range-method/
-			range: function (value, element, param) {
-				return this.optional(element) || (value >= param[0] && value <= param[1]);
-			},
-
-			// http://jqueryvalidation.org/step-method/
-			step: function (value, element, param) {
-				var type = $(element).attr("type"),
-					errorMessage = "Step attribute on input type " + type + " is not supported.",
-					supportedTypes = ["text", "number", "range"],
-					re = new RegExp("\\b" + type + "\\b"),
-					notSupported = type && !re.test(supportedTypes.join());
-
-				// Works only for text, number and range input types
-				// TODO find a way to support input types date, datetime, datetime-local, month, time and week
-				if (notSupported) {
-					throw new Error(errorMessage);
-				}
-				return this.optional(element) || (value % param === 0);
-			},
-
-			// http://jqueryvalidation.org/equalTo-method/
-			equalTo: function (value, element, param) {
-				// Bind to the blur event of the target in order to revalidate whenever the target field is updated
-				var target = $(param);
-				if (this.settings.onfocusout && target.not(".validate-equalTo-blur").length) {
-					target.addClass("validate-equalTo-blur").on("blur.validate-equalTo", function () {
-						$(element).valid();
-					});
-				}
-				return value === target.val();
-			},
-
-			// http://jqueryvalidation.org/remote-method/
-			remote: function (value, element, param, method) {
-				if (this.optional(element)) {
-					return "dependency-mismatch";
-				}
-
-				method = typeof method === "string" && method || "remote";
-
-				var previous = this.previousValue(element, method),
-					validator, data, optionDataString;
-
-				if (!this.settings.messages[element.name]) {
-					this.settings.messages[element.name] = {};
-				}
-				previous.originalMessage = previous.originalMessage || this.settings.messages[element.name][method];
-				this.settings.messages[element.name][method] = previous.message;
-
-				param = typeof param === "string" && { url: param } || param;
-				optionDataString = $.param($.extend({ data: value }, param.data));
-				if (previous.old === optionDataString) {
-					return previous.valid;
-				}
-
-				previous.old = optionDataString;
-				validator = this;
-				this.startRequest(element);
-				data = {};
-				data[element.name] = value;
-				$.ajax($.extend(true, {
-					mode: "abort",
-					port: "validate" + element.name,
-					dataType: "json",
-					data: data,
-					context: validator.currentForm,
-					success: function (response) {
-						var valid = response === true || response === "true",
-							errors, message, submitted;
-
-						validator.settings.messages[element.name][method] = previous.originalMessage;
-						if (valid) {
-							submitted = validator.formSubmitted;
-							validator.resetInternals();
-							validator.toHide = validator.errorsFor(element);
-							validator.formSubmitted = submitted;
-							validator.successList.push(element);
-							validator.invalid[element.name] = false;
-							validator.showErrors();
-						} else {
-							errors = {};
-							message = response || validator.defaultMessage(element, { method: method, parameters: value });
-							errors[element.name] = previous.message = message;
-							validator.invalid[element.name] = true;
-							validator.showErrors(errors);
-						}
-						previous.valid = valid;
-						validator.stopRequest(element, valid);
-					}
-				}, param));
-				return "pending";
-			}
-		}
-	});
-
-	// Ajax mode: abort
-	// usage: $.ajax({ mode: "abort"[, port: "uniqueport"]});
-	// if mode:"abort" is used, the previous request on that port (port can be undefined) is aborted via XMLHttpRequest.abort()
-
-	var pendingRequests = {},
-		ajax;
-
-	// Use a prefilter if available (1.5+)
-	if ($.ajaxPrefilter) {
-		$.ajaxPrefilter(function (settings, _, xhr) {
-			var port = settings.port;
-			if (settings.mode === "abort") {
-				if (pendingRequests[port]) {
-					pendingRequests[port].abort();
-				}
-				pendingRequests[port] = xhr;
-			}
-		});
-	} else {
-		// Proxy ajax
-		ajax = $.ajax;
-		$.ajax = function (settings) {
-			var mode = ("mode" in settings ? settings : $.ajaxSettings).mode,
-				port = ("port" in settings ? settings : $.ajaxSettings).port;
-			if (mode === "abort") {
-				if (pendingRequests[port]) {
-					pendingRequests[port].abort();
-				}
-				pendingRequests[port] = ajax.apply(this, arguments);
-				return pendingRequests[port];
-			}
-			return ajax.apply(this, arguments);
-		};
-	}
-}));
-/*!
- * jQuery Validation Plugin v1.15.0
- *
- * http://jqueryvalidation.org/
- *
- * Copyright (c) 2016 Jörn Zaefferer
- * Released under the MIT license
- */
-(function (factory) {
-	if (typeof define === "function" && define.amd) {
-		define(["jquery", "./jquery.validate"], factory);
-	} else if (typeof module === "object" && module.exports) {
-		module.exports = factory(require("jquery"));
-	} else {
-		factory(jQuery);
-	}
-}(function ($) {
-	(function () {
-		function stripHtml(value) {
-			// Remove html tags and space chars
-			return value.replace(/<.[^<>]*?>/g, " ").replace(/&nbsp;|&#160;/gi, " ")
-
-			// Remove punctuation
-			.replace(/[.(),;:!?%#$'\"_+=\/\-“”’]*/g, "");
-		}
-
-		$.validator.addMethod("maxWords", function (value, element, params) {
-			return this.optional(element) || stripHtml(value).match(/\b\w+\b/g).length <= params;
-		}, $.validator.format("Please enter {0} words or less."));
-
-		$.validator.addMethod("minWords", function (value, element, params) {
-			return this.optional(element) || stripHtml(value).match(/\b\w+\b/g).length >= params;
-		}, $.validator.format("Please enter at least {0} words."));
-
-		$.validator.addMethod("rangeWords", function (value, element, params) {
-			var valueStripped = stripHtml(value),
-				regex = /\b\w+\b/g;
-			return this.optional(element) || valueStripped.match(regex).length >= params[0] && valueStripped.match(regex).length <= params[1];
-		}, $.validator.format("Please enter between {0} and {1} words."));
-	}());
-
-	// Accept a value from a file input based on a required mimetype
-	$.validator.addMethod("accept", function (value, element, param) {
-		// Split mime on commas in case we have multiple types we can accept
-		var typeParam = typeof param === "string" ? param.replace(/\s/g, "") : "image/*",
-		optionalValue = this.optional(element),
-		i, file, regex;
-
-		// Element is optional
-		if (optionalValue) {
-			return optionalValue;
-		}
-
-		if ($(element).attr("type") === "file") {
-			// Escape string to be used in the regex
-			// see: http://stackoverflow.com/questions/3446170/escape-string-for-use-in-javascript-regex
-			// Escape also "/*" as "/.*" as a wildcard
-			typeParam = typeParam.replace(/[\-\[\]\/\{\}\(\)\+\?\.\\\^\$\|]/g, "\\$&").replace(/,/g, "|").replace("\/*", "/.*");
-
-			// Check if the element has a FileList before checking each file
-			if (element.files && element.files.length) {
-				regex = new RegExp(".?(" + typeParam + ")$", "i");
-				for (i = 0; i < element.files.length; i++) {
-					file = element.files[i];
-
-					// Grab the mimetype from the loaded file, verify it matches
-					if (!file.type.match(regex)) {
-						return false;
-					}
-				}
-			}
-		}
-
-		// Either return true because we've validated each file, or because the
-		// browser does not support element.files and the FileList feature
-		return true;
-	}, $.validator.format("Please enter a value with a valid mimetype."));
-
-	$.validator.addMethod("alphanumeric", function (value, element) {
-		return this.optional(element) || /^\w+$/i.test(value);
-	}, "Letters, numbers, and underscores only please");
-
-	/*
-	 * Dutch bank account numbers (not 'giro' numbers) have 9 digits
-	 * and pass the '11 check'.
-	 * We accept the notation with spaces, as that is common.
-	 * acceptable: 123456789 or 12 34 56 789
-	 */
-	$.validator.addMethod("bankaccountNL", function (value, element) {
-		if (this.optional(element)) {
-			return true;
-		}
-		if (!(/^[0-9]{9}|([0-9]{2} ){3}[0-9]{3}$/.test(value))) {
-			return false;
-		}
-
-		// Now '11 check'
-		var account = value.replace(/ /g, ""), // Remove spaces
-			sum = 0,
-			len = account.length,
-			pos, factor, digit;
-		for (pos = 0; pos < len; pos++) {
-			factor = len - pos;
-			digit = account.substring(pos, pos + 1);
-			sum = sum + factor * digit;
-		}
-		return sum % 11 === 0;
-	}, "Please specify a valid bank account number");
-
-	$.validator.addMethod("bankorgiroaccountNL", function (value, element) {
-		return this.optional(element) ||
-				($.validator.methods.bankaccountNL.call(this, value, element)) ||
-				($.validator.methods.giroaccountNL.call(this, value, element));
-	}, "Please specify a valid bank or giro account number");
-
-	/**
-	 * BIC is the business identifier code (ISO 9362). This BIC check is not a guarantee for authenticity.
-	 *
-	 * BIC pattern: BBBBCCLLbbb (8 or 11 characters long; bbb is optional)
-	 *
-	 * Validation is case-insensitive. Please make sure to normalize input yourself.
-	 *
-	 * BIC definition in detail:
-	 * - First 4 characters - bank code (only letters)
-	 * - Next 2 characters - ISO 3166-1 alpha-2 country code (only letters)
-	 * - Next 2 characters - location code (letters and digits)
-	 *   a. shall not start with '0' or '1'
-	 *   b. second character must be a letter ('O' is not allowed) or digit ('0' for test (therefore not allowed), '1' denoting passive participant, '2' typically reverse-billing)
-	 * - Last 3 characters - branch code, optional (shall not start with 'X' except in case of 'XXX' for primary office) (letters and digits)
-	 */
-	$.validator.addMethod("bic", function (value, element) {
-		return this.optional(element) || /^([A-Z]{6}[A-Z2-9][A-NP-Z1-9])(X{3}|[A-WY-Z0-9][A-Z0-9]{2})?$/.test(value.toUpperCase());
-	}, "Please specify a valid BIC code");
-
-	/*
-	 * Código de identificación fiscal ( CIF ) is the tax identification code for Spanish legal entities
-	 * Further rules can be found in Spanish on http://es.wikipedia.org/wiki/C%C3%B3digo_de_identificaci%C3%B3n_fiscal
-	 */
-	$.validator.addMethod("cifES", function (value) {
-		"use strict";
-
-		var num = [],
-			controlDigit, sum, i, count, tmp, secondDigit;
-
-		value = value.toUpperCase();
-
-		// Quick format test
-		if (!value.match("((^[A-Z]{1}[0-9]{7}[A-Z0-9]{1}$|^[T]{1}[A-Z0-9]{8}$)|^[0-9]{8}[A-Z]{1}$)")) {
-			return false;
-		}
-
-		for (i = 0; i < 9; i++) {
-			num[i] = parseInt(value.charAt(i), 10);
-		}
-
-		// Algorithm for checking CIF codes
-		sum = num[2] + num[4] + num[6];
-		for (count = 1; count < 8; count += 2) {
-			tmp = (2 * num[count]).toString();
-			secondDigit = tmp.charAt(1);
-
-			sum += parseInt(tmp.charAt(0), 10) + (secondDigit === "" ? 0 : parseInt(secondDigit, 10));
-		}
-
-		/* The first (position 1) is a letter following the following criteria:
-		 *	A. Corporations
-		 *	B. LLCs
-		 *	C. General partnerships
-		 *	D. Companies limited partnerships
-		 *	E. Communities of goods
-		 *	F. Cooperative Societies
-		 *	G. Associations
-		 *	H. Communities of homeowners in horizontal property regime
-		 *	J. Civil Societies
-		 *	K. Old format
-		 *	L. Old format
-		 *	M. Old format
-		 *	N. Nonresident entities
-		 *	P. Local authorities
-		 *	Q. Autonomous bodies, state or not, and the like, and congregations and religious institutions
-		 *	R. Congregations and religious institutions (since 2008 ORDER EHA/451/2008)
-		 *	S. Organs of State Administration and regions
-		 *	V. Agrarian Transformation
-		 *	W. Permanent establishments of non-resident in Spain
-		 */
-		if (/^[ABCDEFGHJNPQRSUVW]{1}/.test(value)) {
-			sum += "";
-			controlDigit = 10 - parseInt(sum.charAt(sum.length - 1), 10);
-			value += controlDigit;
-			return (num[8].toString() === String.fromCharCode(64 + controlDigit) || num[8].toString() === value.charAt(value.length - 1));
-		}
-
-		return false;
-	}, "Please specify a valid CIF number.");
-
-	/*
-	 * Brazillian CPF number (Cadastrado de Pessoas Físicas) is the equivalent of a Brazilian tax registration number.
-	 * CPF numbers have 11 digits in total: 9 numbers followed by 2 check numbers that are being used for validation.
-	 */
-	$.validator.addMethod("cpfBR", function (value) {
-		// Removing special characters from value
-		value = value.replace(/([~!@#$%^&*()_+=`{}\[\]\-|\\:;'<>,.\/? ])+/g, "");
-
-		// Checking value to have 11 digits only
-		if (value.length !== 11) {
-			return false;
-		}
-
-		var sum = 0,
-			firstCN, secondCN, checkResult, i;
-
-		firstCN = parseInt(value.substring(9, 10), 10);
-		secondCN = parseInt(value.substring(10, 11), 10);
-
-		checkResult = function (sum, cn) {
-			var result = (sum * 10) % 11;
-			if ((result === 10) || (result === 11)) {
-				result = 0;
-			}
-			return (result === cn);
-		};
-
-		// Checking for dump data
-		if (value === "" ||
-			value === "00000000000" ||
-			value === "11111111111" ||
-			value === "22222222222" ||
-			value === "33333333333" ||
-			value === "44444444444" ||
-			value === "55555555555" ||
-			value === "66666666666" ||
-			value === "77777777777" ||
-			value === "88888888888" ||
-			value === "99999999999"
-		) {
-			return false;
-		}
-
-		// Step 1 - using first Check Number:
-		for (i = 1; i <= 9; i++) {
-			sum = sum + parseInt(value.substring(i - 1, i), 10) * (11 - i);
-		}
-
-		// If first Check Number (CN) is valid, move to Step 2 - using second Check Number:
-		if (checkResult(sum, firstCN)) {
-			sum = 0;
-			for (i = 1; i <= 10; i++) {
-				sum = sum + parseInt(value.substring(i - 1, i), 10) * (12 - i);
-			}
-			return checkResult(sum, secondCN);
-		}
-		return false;
-	}, "Please specify a valid CPF number");
-
-	// http://jqueryvalidation.org/creditcard-method/
-	// based on http://en.wikipedia.org/wiki/Luhn_algorithm
-	$.validator.addMethod("creditcard", function (value, element) {
-		if (this.optional(element)) {
-			return "dependency-mismatch";
-		}
-
-		// Accept only spaces, digits and dashes
-		if (/[^0-9 \-]+/.test(value)) {
-			return false;
-		}
-
-		var nCheck = 0,
-			nDigit = 0,
-			bEven = false,
-			n, cDigit;
-
-		value = value.replace(/\D/g, "");
-
-		// Basing min and max length on
-		// http://developer.ean.com/general_info/Valid_Credit_Card_Types
-		if (value.length < 13 || value.length > 19) {
-			return false;
-		}
-
-		for (n = value.length - 1; n >= 0; n--) {
-			cDigit = value.charAt(n);
-			nDigit = parseInt(cDigit, 10);
-			if (bEven) {
-				if ((nDigit *= 2) > 9) {
-					nDigit -= 9;
-				}
-			}
-
-			nCheck += nDigit;
-			bEven = !bEven;
-		}
-
-		return (nCheck % 10) === 0;
-	}, "Please enter a valid credit card number.");
-
-	/* NOTICE: Modified version of Castle.Components.Validator.CreditCardValidator
-	 * Redistributed under the the Apache License 2.0 at http://www.apache.org/licenses/LICENSE-2.0
-	 * Valid Types: mastercard, visa, amex, dinersclub, enroute, discover, jcb, unknown, all (overrides all other settings)
-	 */
-	$.validator.addMethod("creditcardtypes", function (value, element, param) {
-		if (/[^0-9\-]+/.test(value)) {
-			return false;
-		}
-
-		value = value.replace(/\D/g, "");
-
-		var validTypes = 0x0000;
-
-		if (param.mastercard) {
-			validTypes |= 0x0001;
-		}
-		if (param.visa) {
-			validTypes |= 0x0002;
-		}
-		if (param.amex) {
-			validTypes |= 0x0004;
-		}
-		if (param.dinersclub) {
-			validTypes |= 0x0008;
-		}
-		if (param.enroute) {
-			validTypes |= 0x0010;
-		}
-		if (param.discover) {
-			validTypes |= 0x0020;
-		}
-		if (param.jcb) {
-			validTypes |= 0x0040;
-		}
-		if (param.unknown) {
-			validTypes |= 0x0080;
-		}
-		if (param.all) {
-			validTypes = 0x0001 | 0x0002 | 0x0004 | 0x0008 | 0x0010 | 0x0020 | 0x0040 | 0x0080;
-		}
-		if (validTypes & 0x0001 && /^(5[12345])/.test(value)) { // Mastercard
-			return value.length === 16;
-		}
-		if (validTypes & 0x0002 && /^(4)/.test(value)) { // Visa
-			return value.length === 16;
-		}
-		if (validTypes & 0x0004 && /^(3[47])/.test(value)) { // Amex
-			return value.length === 15;
-		}
-		if (validTypes & 0x0008 && /^(3(0[012345]|[68]))/.test(value)) { // Dinersclub
-			return value.length === 14;
-		}
-		if (validTypes & 0x0010 && /^(2(014|149))/.test(value)) { // Enroute
-			return value.length === 15;
-		}
-		if (validTypes & 0x0020 && /^(6011)/.test(value)) { // Discover
-			return value.length === 16;
-		}
-		if (validTypes & 0x0040 && /^(3)/.test(value)) { // Jcb
-			return value.length === 16;
-		}
-		if (validTypes & 0x0040 && /^(2131|1800)/.test(value)) { // Jcb
-			return value.length === 15;
-		}
-		if (validTypes & 0x0080) { // Unknown
-			return true;
-		}
-		return false;
-	}, "Please enter a valid credit card number.");
-
-	/**
-	 * Validates currencies with any given symbols by @jameslouiz
-	 * Symbols can be optional or required. Symbols required by default
-	 *
-	 * Usage examples:
-	 *  currency: ["£", false] - Use false for soft currency validation
-	 *  currency: ["$", false]
-	 *  currency: ["RM", false] - also works with text based symbols such as "RM" - Malaysia Ringgit etc
-	 *
-	 *  <input class="currencyInput" name="currencyInput">
-	 *
-	 * Soft symbol checking
-	 *  currencyInput: {
-	 *     currency: ["$", false]
-	 *  }
-	 *
-	 * Strict symbol checking (default)
-	 *  currencyInput: {
-	 *     currency: "$"
-	 *     //OR
-	 *     currency: ["$", true]
-	 *  }
-	 *
-	 * Multiple Symbols
-	 *  currencyInput: {
-	 *     currency: "$,£,¢"
-	 *  }
-	 */
-	$.validator.addMethod("currency", function (value, element, param) {
-		var isParamString = typeof param === "string",
-			symbol = isParamString ? param : param[0],
-			soft = isParamString ? true : param[1],
-			regex;
-
-		symbol = symbol.replace(/,/g, "");
-		symbol = soft ? symbol + "]" : symbol + "]?";
-		regex = "^[" + symbol + "([1-9]{1}[0-9]{0,2}(\\,[0-9]{3})*(\\.[0-9]{0,2})?|[1-9]{1}[0-9]{0,}(\\.[0-9]{0,2})?|0(\\.[0-9]{0,2})?|(\\.[0-9]{1,2})?)$";
-		regex = new RegExp(regex);
-		return this.optional(element) || regex.test(value);
-	}, "Please specify a valid currency");
-
-	$.validator.addMethod("dateFA", function (value, element) {
-		return this.optional(element) || /^[1-4]\d{3}\/((0?[1-6]\/((3[0-1])|([1-2][0-9])|(0?[1-9])))|((1[0-2]|(0?[7-9]))\/(30|([1-2][0-9])|(0?[1-9]))))$/.test(value);
-	}, $.validator.messages.date);
-
-	/**
-	 * Return true, if the value is a valid date, also making this formal check dd/mm/yyyy.
-	 *
-	 * @example $.validator.methods.date("01/01/1900")
-	 * @result true
-	 *
-	 * @example $.validator.methods.date("01/13/1990")
-	 * @result false
-	 *
-	 * @example $.validator.methods.date("01.01.1900")
-	 * @result false
-	 *
-	 * @example <input name="pippo" class="{dateITA:true}" />
-	 * @desc Declares an optional input element whose value must be a valid date.
-	 *
-	 * @name $.validator.methods.dateITA
-	 * @type Boolean
-	 * @cat Plugins/Validate/Methods
-	 */
-	$.validator.addMethod("dateITA", function (value, element) {
-		var check = false,
-			re = /^\d{1,2}\/\d{1,2}\/\d{4}$/,
-			adata, gg, mm, aaaa, xdata;
-		if (re.test(value)) {
-			adata = value.split("/");
-			gg = parseInt(adata[0], 10);
-			mm = parseInt(adata[1], 10);
-			aaaa = parseInt(adata[2], 10);
-			xdata = new Date(Date.UTC(aaaa, mm - 1, gg, 12, 0, 0, 0));
-			if ((xdata.getUTCFullYear() === aaaa) && (xdata.getUTCMonth() === mm - 1) && (xdata.getUTCDate() === gg)) {
-				check = true;
-			} else {
-				check = false;
-			}
-		} else {
-			check = false;
-		}
-		return this.optional(element) || check;
-	}, $.validator.messages.date);
-
-	$.validator.addMethod("dateNL", function (value, element) {
-		return this.optional(element) || /^(0?[1-9]|[12]\d|3[01])[\.\/\-](0?[1-9]|1[012])[\.\/\-]([12]\d)?(\d\d)$/.test(value);
-	}, $.validator.messages.date);
-
-	// Older "accept" file extension method. Old docs: http://docs.jquery.com/Plugins/Validation/Methods/accept
-	$.validator.addMethod("extension", function (value, element, param) {
-		param = typeof param === "string" ? param.replace(/,/g, "|") : "png|jpe?g|gif";
-		return this.optional(element) || value.match(new RegExp("\\.(" + param + ")$", "i"));
-	}, $.validator.format("Please enter a value with a valid extension."));
-
-	/**
-	 * Dutch giro account numbers (not bank numbers) have max 7 digits
-	 */
-	$.validator.addMethod("giroaccountNL", function (value, element) {
-		return this.optional(element) || /^[0-9]{1,7}$/.test(value);
-	}, "Please specify a valid giro account number");
-
-	/**
-	 * IBAN is the international bank account number.
-	 * It has a country - specific format, that is checked here too
-	 *
-	 * Validation is case-insensitive. Please make sure to normalize input yourself.
-	 */
-	$.validator.addMethod("iban", function (value, element) {
-		// Some quick simple tests to prevent needless work
-		if (this.optional(element)) {
-			return true;
-		}
-
-		// Remove spaces and to upper case
-		var iban = value.replace(/ /g, "").toUpperCase(),
-			ibancheckdigits = "",
-			leadingZeroes = true,
-			cRest = "",
-			cOperator = "",
-			countrycode, ibancheck, charAt, cChar, bbanpattern, bbancountrypatterns, ibanregexp, i, p;
-
-		// Check the country code and find the country specific format
-		countrycode = iban.substring(0, 2);
-		bbancountrypatterns = {
-			"AL": "\\d{8}[\\dA-Z]{16}",
-			"AD": "\\d{8}[\\dA-Z]{12}",
-			"AT": "\\d{16}",
-			"AZ": "[\\dA-Z]{4}\\d{20}",
-			"BE": "\\d{12}",
-			"BH": "[A-Z]{4}[\\dA-Z]{14}",
-			"BA": "\\d{16}",
-			"BR": "\\d{23}[A-Z][\\dA-Z]",
-			"BG": "[A-Z]{4}\\d{6}[\\dA-Z]{8}",
-			"CR": "\\d{17}",
-			"HR": "\\d{17}",
-			"CY": "\\d{8}[\\dA-Z]{16}",
-			"CZ": "\\d{20}",
-			"DK": "\\d{14}",
-			"DO": "[A-Z]{4}\\d{20}",
-			"EE": "\\d{16}",
-			"FO": "\\d{14}",
-			"FI": "\\d{14}",
-			"FR": "\\d{10}[\\dA-Z]{11}\\d{2}",
-			"GE": "[\\dA-Z]{2}\\d{16}",
-			"DE": "\\d{18}",
-			"GI": "[A-Z]{4}[\\dA-Z]{15}",
-			"GR": "\\d{7}[\\dA-Z]{16}",
-			"GL": "\\d{14}",
-			"GT": "[\\dA-Z]{4}[\\dA-Z]{20}",
-			"HU": "\\d{24}",
-			"IS": "\\d{22}",
-			"IE": "[\\dA-Z]{4}\\d{14}",
-			"IL": "\\d{19}",
-			"IT": "[A-Z]\\d{10}[\\dA-Z]{12}",
-			"KZ": "\\d{3}[\\dA-Z]{13}",
-			"KW": "[A-Z]{4}[\\dA-Z]{22}",
-			"LV": "[A-Z]{4}[\\dA-Z]{13}",
-			"LB": "\\d{4}[\\dA-Z]{20}",
-			"LI": "\\d{5}[\\dA-Z]{12}",
-			"LT": "\\d{16}",
-			"LU": "\\d{3}[\\dA-Z]{13}",
-			"MK": "\\d{3}[\\dA-Z]{10}\\d{2}",
-			"MT": "[A-Z]{4}\\d{5}[\\dA-Z]{18}",
-			"MR": "\\d{23}",
-			"MU": "[A-Z]{4}\\d{19}[A-Z]{3}",
-			"MC": "\\d{10}[\\dA-Z]{11}\\d{2}",
-			"MD": "[\\dA-Z]{2}\\d{18}",
-			"ME": "\\d{18}",
-			"NL": "[A-Z]{4}\\d{10}",
-			"NO": "\\d{11}",
-			"PK": "[\\dA-Z]{4}\\d{16}",
-			"PS": "[\\dA-Z]{4}\\d{21}",
-			"PL": "\\d{24}",
-			"PT": "\\d{21}",
-			"RO": "[A-Z]{4}[\\dA-Z]{16}",
-			"SM": "[A-Z]\\d{10}[\\dA-Z]{12}",
-			"SA": "\\d{2}[\\dA-Z]{18}",
-			"RS": "\\d{18}",
-			"SK": "\\d{20}",
-			"SI": "\\d{15}",
-			"ES": "\\d{20}",
-			"SE": "\\d{20}",
-			"CH": "\\d{5}[\\dA-Z]{12}",
-			"TN": "\\d{20}",
-			"TR": "\\d{5}[\\dA-Z]{17}",
-			"AE": "\\d{3}\\d{16}",
-			"GB": "[A-Z]{4}\\d{14}",
-			"VG": "[\\dA-Z]{4}\\d{16}"
-		};
-
-		bbanpattern = bbancountrypatterns[countrycode];
-
-		// As new countries will start using IBAN in the
-		// future, we only check if the countrycode is known.
-		// This prevents false negatives, while almost all
-		// false positives introduced by this, will be caught
-		// by the checksum validation below anyway.
-		// Strict checking should return FALSE for unknown
-		// countries.
-		if (typeof bbanpattern !== "undefined") {
-			ibanregexp = new RegExp("^[A-Z]{2}\\d{2}" + bbanpattern + "$", "");
-			if (!(ibanregexp.test(iban))) {
-				return false; // Invalid country specific format
-			}
-		}
-
-		// Now check the checksum, first convert to digits
-		ibancheck = iban.substring(4, iban.length) + iban.substring(0, 4);
-		for (i = 0; i < ibancheck.length; i++) {
-			charAt = ibancheck.charAt(i);
-			if (charAt !== "0") {
-				leadingZeroes = false;
-			}
-			if (!leadingZeroes) {
-				ibancheckdigits += "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".indexOf(charAt);
-			}
-		}
-
-		// Calculate the result of: ibancheckdigits % 97
-		for (p = 0; p < ibancheckdigits.length; p++) {
-			cChar = ibancheckdigits.charAt(p);
-			cOperator = "" + cRest + "" + cChar;
-			cRest = cOperator % 97;
-		}
-		return cRest === 1;
-	}, "Please specify a valid IBAN");
-
-	$.validator.addMethod("integer", function (value, element) {
-		return this.optional(element) || /^-?\d+$/.test(value);
-	}, "A positive or negative non-decimal number please");
-
-	$.validator.addMethod("ipv4", function (value, element) {
-		return this.optional(element) || /^(25[0-5]|2[0-4]\d|[01]?\d\d?)\.(25[0-5]|2[0-4]\d|[01]?\d\d?)\.(25[0-5]|2[0-4]\d|[01]?\d\d?)\.(25[0-5]|2[0-4]\d|[01]?\d\d?)$/i.test(value);
-	}, "Please enter a valid IP v4 address.");
-
-	$.validator.addMethod("ipv6", function (value, element) {
-		return this.optional(element) || /^((([0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}:[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){5}:([0-9A-Fa-f]{1,4}:)?[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){4}:([0-9A-Fa-f]{1,4}:){0,2}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){3}:([0-9A-Fa-f]{1,4}:){0,3}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){2}:([0-9A-Fa-f]{1,4}:){0,4}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(([0-9A-Fa-f]{1,4}:){0,5}:((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(::([0-9A-Fa-f]{1,4}:){0,5}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|([0-9A-Fa-f]{1,4}::([0-9A-Fa-f]{1,4}:){0,5}[0-9A-Fa-f]{1,4})|(::([0-9A-Fa-f]{1,4}:){0,6}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){1,7}:))$/i.test(value);
-	}, "Please enter a valid IP v6 address.");
-
-	$.validator.addMethod("lettersonly", function (value, element) {
-		return this.optional(element) || /^[a-z]+$/i.test(value);
-	}, "Letters only please");
-
-	$.validator.addMethod("letterswithbasicpunc", function (value, element) {
-		return this.optional(element) || /^[a-z\-.,()'"\s]+$/i.test(value);
-	}, "Letters or punctuation only please");
-
-	$.validator.addMethod("mobileNL", function (value, element) {
-		return this.optional(element) || /^((\+|00(\s|\s?\-\s?)?)31(\s|\s?\-\s?)?(\(0\)[\-\s]?)?|0)6((\s|\s?\-\s?)?[0-9]){8}$/.test(value);
-	}, "Please specify a valid mobile number");
-
-	/* For UK phone functions, do the following server side processing:
-	 * Compare original input with this RegEx pattern:
-	 * ^\(?(?:(?:00\)?[\s\-]?\(?|\+)(44)\)?[\s\-]?\(?(?:0\)?[\s\-]?\(?)?|0)([1-9]\d{1,4}\)?[\s\d\-]+)$
-	 * Extract $1 and set $prefix to '+44<space>' if $1 is '44', otherwise set $prefix to '0'
-	 * Extract $2 and remove hyphens, spaces and parentheses. Phone number is combined $prefix and $2.
-	 * A number of very detailed GB telephone number RegEx patterns can also be found at:
-	 * http://www.aa-asterisk.org.uk/index.php/Regular_Expressions_for_Validating_and_Formatting_GB_Telephone_Numbers
-	 */
-	$.validator.addMethod("mobileUK", function (phone_number, element) {
-		phone_number = phone_number.replace(/\(|\)|\s+|-/g, "");
-		return this.optional(element) || phone_number.length > 9 &&
-			phone_number.match(/^(?:(?:(?:00\s?|\+)44\s?|0)7(?:[1345789]\d{2}|624)\s?\d{3}\s?\d{3})$/);
-	}, "Please specify a valid mobile number");
-
-	/*
-	 * The número de identidad de extranjero ( NIE )is a code used to identify the non-nationals in Spain
-	 */
-	$.validator.addMethod("nieES", function (value) {
-		"use strict";
-
-		value = value.toUpperCase();
-
-		// Basic format test
-		if (!value.match("((^[A-Z]{1}[0-9]{7}[A-Z0-9]{1}$|^[T]{1}[A-Z0-9]{8}$)|^[0-9]{8}[A-Z]{1}$)")) {
-			return false;
-		}
-
-		// Test NIE
-		//T
-		if (/^[T]{1}/.test(value)) {
-			return (value[8] === /^[T]{1}[A-Z0-9]{8}$/.test(value));
-		}
-
-		//XYZ
-		if (/^[XYZ]{1}/.test(value)) {
-			return (
-				value[8] === "TRWAGMYFPDXBNJZSQVHLCKE".charAt(
-					value.replace("X", "0")
-						.replace("Y", "1")
-						.replace("Z", "2")
-						.substring(0, 8) % 23
-				)
-			);
-		}
-
-		return false;
-	}, "Please specify a valid NIE number.");
-
-	/*
-	 * The Número de Identificación Fiscal ( NIF ) is the way tax identification used in Spain for individuals
-	 */
-	$.validator.addMethod("nifES", function (value) {
-		"use strict";
-
-		value = value.toUpperCase();
-
-		// Basic format test
-		if (!value.match("((^[A-Z]{1}[0-9]{7}[A-Z0-9]{1}$|^[T]{1}[A-Z0-9]{8}$)|^[0-9]{8}[A-Z]{1}$)")) {
-			return false;
-		}
-
-		// Test NIF
-		if (/^[0-9]{8}[A-Z]{1}$/.test(value)) {
-			return ("TRWAGMYFPDXBNJZSQVHLCKE".charAt(value.substring(8, 0) % 23) === value.charAt(8));
-		}
-
-		// Test specials NIF (starts with K, L or M)
-		if (/^[KLM]{1}/.test(value)) {
-			return (value[8] === String.fromCharCode(64));
-		}
-
-		return false;
-	}, "Please specify a valid NIF number.");
-
-	jQuery.validator.addMethod("notEqualTo", function (value, element, param) {
-		return this.optional(element) || !$.validator.methods.equalTo.call(this, value, element, param);
-	}, "Please enter a different value, values must not be the same.");
-
-	$.validator.addMethod("nowhitespace", function (value, element) {
-		return this.optional(element) || /^\S+$/i.test(value);
-	}, "No white space please");
-
-	/**
-	* Return true if the field value matches the given format RegExp
-	*
-	* @example $.validator.methods.pattern("AR1004",element,/^AR\d{4}$/)
-	* @result true
-	*
-	* @example $.validator.methods.pattern("BR1004",element,/^AR\d{4}$/)
-	* @result false
-	*
-	* @name $.validator.methods.pattern
-	* @type Boolean
-	* @cat Plugins/Validate/Methods
-	*/
-	$.validator.addMethod("pattern", function (value, element, param) {
-		if (this.optional(element)) {
-			return true;
-		}
-		if (typeof param === "string") {
-			param = new RegExp("^(?:" + param + ")$");
-		}
-		return param.test(value);
-	}, "Invalid format.");
-
-	/**
-	 * Dutch phone numbers have 10 digits (or 11 and start with +31).
-	 */
-	$.validator.addMethod("phoneNL", function (value, element) {
-		return this.optional(element) || /^((\+|00(\s|\s?\-\s?)?)31(\s|\s?\-\s?)?(\(0\)[\-\s]?)?|0)[1-9]((\s|\s?\-\s?)?[0-9]){8}$/.test(value);
-	}, "Please specify a valid phone number.");
-
-	/* For UK phone functions, do the following server side processing:
-	 * Compare original input with this RegEx pattern:
-	 * ^\(?(?:(?:00\)?[\s\-]?\(?|\+)(44)\)?[\s\-]?\(?(?:0\)?[\s\-]?\(?)?|0)([1-9]\d{1,4}\)?[\s\d\-]+)$
-	 * Extract $1 and set $prefix to '+44<space>' if $1 is '44', otherwise set $prefix to '0'
-	 * Extract $2 and remove hyphens, spaces and parentheses. Phone number is combined $prefix and $2.
-	 * A number of very detailed GB telephone number RegEx patterns can also be found at:
-	 * http://www.aa-asterisk.org.uk/index.php/Regular_Expressions_for_Validating_and_Formatting_GB_Telephone_Numbers
-	 */
-	$.validator.addMethod("phoneUK", function (phone_number, element) {
-		phone_number = phone_number.replace(/\(|\)|\s+|-/g, "");
-		return this.optional(element) || phone_number.length > 9 &&
-			phone_number.match(/^(?:(?:(?:00\s?|\+)44\s?)|(?:\(?0))(?:\d{2}\)?\s?\d{4}\s?\d{4}|\d{3}\)?\s?\d{3}\s?\d{3,4}|\d{4}\)?\s?(?:\d{5}|\d{3}\s?\d{3})|\d{5}\)?\s?\d{4,5})$/);
-	}, "Please specify a valid phone number");
-
-	/**
-	 * Matches US phone number format
-	 *
-	 * where the area code may not start with 1 and the prefix may not start with 1
-	 * allows '-' or ' ' as a separator and allows parens around area code
-	 * some people may want to put a '1' in front of their number
-	 *
-	 * 1(212)-999-2345 or
-	 * 212 999 2344 or
-	 * 212-999-0983
-	 *
-	 * but not
-	 * 111-123-5434
-	 * and not
-	 * 212 123 4567
-	 */
-	$.validator.addMethod("phoneUS", function (phone_number, element) {
-		phone_number = phone_number.replace(/\s+/g, "");
-		return this.optional(element) || phone_number.length > 9 &&
-			phone_number.match(/^(\+?1-?)?(\([2-9]([02-9]\d|1[02-9])\)|[2-9]([02-9]\d|1[02-9]))-?[2-9]([02-9]\d|1[02-9])-?\d{4}$/);
-	}, "Please specify a valid phone number");
-
-	/* For UK phone functions, do the following server side processing:
-	 * Compare original input with this RegEx pattern:
-	 * ^\(?(?:(?:00\)?[\s\-]?\(?|\+)(44)\)?[\s\-]?\(?(?:0\)?[\s\-]?\(?)?|0)([1-9]\d{1,4}\)?[\s\d\-]+)$
-	 * Extract $1 and set $prefix to '+44<space>' if $1 is '44', otherwise set $prefix to '0'
-	 * Extract $2 and remove hyphens, spaces and parentheses. Phone number is combined $prefix and $2.
-	 * A number of very detailed GB telephone number RegEx patterns can also be found at:
-	 * http://www.aa-asterisk.org.uk/index.php/Regular_Expressions_for_Validating_and_Formatting_GB_Telephone_Numbers
-	 */
-
-	// Matches UK landline + mobile, accepting only 01-3 for landline or 07 for mobile to exclude many premium numbers
-	$.validator.addMethod("phonesUK", function (phone_number, element) {
-		phone_number = phone_number.replace(/\(|\)|\s+|-/g, "");
-		return this.optional(element) || phone_number.length > 9 &&
-			phone_number.match(/^(?:(?:(?:00\s?|\+)44\s?|0)(?:1\d{8,9}|[23]\d{9}|7(?:[1345789]\d{8}|624\d{6})))$/);
-	}, "Please specify a valid uk phone number");
-
-	/**
-	 * Matches a valid Canadian Postal Code
-	 *
-	 * @example jQuery.validator.methods.postalCodeCA( "H0H 0H0", element )
-	 * @result true
-	 *
-	 * @example jQuery.validator.methods.postalCodeCA( "H0H0H0", element )
-	 * @result false
-	 *
-	 * @name jQuery.validator.methods.postalCodeCA
-	 * @type Boolean
-	 * @cat Plugins/Validate/Methods
-	 */
-	$.validator.addMethod("postalCodeCA", function (value, element) {
-		return this.optional(element) || /^[ABCEGHJKLMNPRSTVXY]\d[ABCEGHJKLMNPRSTVWXYZ] *\d[ABCEGHJKLMNPRSTVWXYZ]\d$/i.test(value);
-	}, "Please specify a valid postal code");
-
-	/*
-	* Valida CEPs do brasileiros:
-	*
-	* Formatos aceitos:
-	* 99999-999
-	* 99.999-999
-	* 99999999
-	*/
-	$.validator.addMethod("postalcodeBR", function (cep_value, element) {
-		return this.optional(element) || /^\d{2}.\d{3}-\d{3}?$|^\d{5}-?\d{3}?$/.test(cep_value);
-	}, "Informe um CEP válido.");
-
-	/* Matches Italian postcode (CAP) */
-	$.validator.addMethod("postalcodeIT", function (value, element) {
-		return this.optional(element) || /^\d{5}$/.test(value);
-	}, "Please specify a valid postal code");
-
-	$.validator.addMethod("postalcodeNL", function (value, element) {
-		return this.optional(element) || /^[1-9][0-9]{3}\s?[a-zA-Z]{2}$/.test(value);
-	}, "Please specify a valid postal code");
-
-	// Matches UK postcode. Does not match to UK Channel Islands that have their own postcodes (non standard UK)
-	$.validator.addMethod("postcodeUK", function (value, element) {
-		return this.optional(element) || /^((([A-PR-UWYZ][0-9])|([A-PR-UWYZ][0-9][0-9])|([A-PR-UWYZ][A-HK-Y][0-9])|([A-PR-UWYZ][A-HK-Y][0-9][0-9])|([A-PR-UWYZ][0-9][A-HJKSTUW])|([A-PR-UWYZ][A-HK-Y][0-9][ABEHMNPRVWXY]))\s?([0-9][ABD-HJLNP-UW-Z]{2})|(GIR)\s?(0AA))$/i.test(value);
-	}, "Please specify a valid UK postcode");
-
-	/*
-	 * Lets you say "at least X inputs that match selector Y must be filled."
-	 *
-	 * The end result is that neither of these inputs:
-	 *
-	 *	<input class="productinfo" name="partnumber">
-	 *	<input class="productinfo" name="description">
-	 *
-	 *	...will validate unless at least one of them is filled.
-	 *
-	 * partnumber:	{require_from_group: [1,".productinfo"]},
-	 * description: {require_from_group: [1,".productinfo"]}
-	 *
-	 * options[0]: number of fields that must be filled in the group
-	 * options[1]: CSS selector that defines the group of conditionally required fields
-	 */
-	$.validator.addMethod("require_from_group", function (value, element, options) {
-		var $fields = $(options[1], element.form),
-			$fieldsFirst = $fields.eq(0),
-			validator = $fieldsFirst.data("valid_req_grp") ? $fieldsFirst.data("valid_req_grp") : $.extend({}, this),
-			isValid = $fields.filter(function () {
-				return validator.elementValue(this);
-			}).length >= options[0];
-
-		// Store the cloned validator for future validation
-		$fieldsFirst.data("valid_req_grp", validator);
-
-		// If element isn't being validated, run each require_from_group field's validation rules
-		if (!$(element).data("being_validated")) {
-			$fields.data("being_validated", true);
-			$fields.each(function () {
-				validator.element(this);
-			});
-			$fields.data("being_validated", false);
-		}
-		return isValid;
-	}, $.validator.format("Please fill at least {0} of these fields."));
-
-	/*
-	 * Lets you say "either at least X inputs that match selector Y must be filled,
-	 * OR they must all be skipped (left blank)."
-	 *
-	 * The end result, is that none of these inputs:
-	 *
-	 *	<input class="productinfo" name="partnumber">
-	 *	<input class="productinfo" name="description">
-	 *	<input class="productinfo" name="color">
-	 *
-	 *	...will validate unless either at least two of them are filled,
-	 *	OR none of them are.
-	 *
-	 * partnumber:	{skip_or_fill_minimum: [2,".productinfo"]},
-	 * description: {skip_or_fill_minimum: [2,".productinfo"]},
-	 * color:		{skip_or_fill_minimum: [2,".productinfo"]}
-	 *
-	 * options[0]: number of fields that must be filled in the group
-	 * options[1]: CSS selector that defines the group of conditionally required fields
-	 *
-	 */
-	$.validator.addMethod("skip_or_fill_minimum", function (value, element, options) {
-		var $fields = $(options[1], element.form),
-			$fieldsFirst = $fields.eq(0),
-			validator = $fieldsFirst.data("valid_skip") ? $fieldsFirst.data("valid_skip") : $.extend({}, this),
-			numberFilled = $fields.filter(function () {
-				return validator.elementValue(this);
-			}).length,
-			isValid = numberFilled === 0 || numberFilled >= options[0];
-
-		// Store the cloned validator for future validation
-		$fieldsFirst.data("valid_skip", validator);
-
-		// If element isn't being validated, run each skip_or_fill_minimum field's validation rules
-		if (!$(element).data("being_validated")) {
-			$fields.data("being_validated", true);
-			$fields.each(function () {
-				validator.element(this);
-			});
-			$fields.data("being_validated", false);
-		}
-		return isValid;
-	}, $.validator.format("Please either skip these fields or fill at least {0} of them."));
-
-	/* Validates US States and/or Territories by @jdforsythe
-	 * Can be case insensitive or require capitalization - default is case insensitive
-	 * Can include US Territories or not - default does not
-	 * Can include US Military postal abbreviations (AA, AE, AP) - default does not
-	 *
-	 * Note: "States" always includes DC (District of Colombia)
-	 *
-	 * Usage examples:
-	 *
-	 *  This is the default - case insensitive, no territories, no military zones
-	 *  stateInput: {
-	 *     caseSensitive: false,
-	 *     includeTerritories: false,
-	 *     includeMilitary: false
-	 *  }
-	 *
-	 *  Only allow capital letters, no territories, no military zones
-	 *  stateInput: {
-	 *     caseSensitive: false
-	 *  }
-	 *
-	 *  Case insensitive, include territories but not military zones
-	 *  stateInput: {
-	 *     includeTerritories: true
-	 *  }
-	 *
-	 *  Only allow capital letters, include territories and military zones
-	 *  stateInput: {
-	 *     caseSensitive: true,
-	 *     includeTerritories: true,
-	 *     includeMilitary: true
-	 *  }
-	 *
-	 */
-	$.validator.addMethod("stateUS", function (value, element, options) {
-		var isDefault = typeof options === "undefined",
-			caseSensitive = (isDefault || typeof options.caseSensitive === "undefined") ? false : options.caseSensitive,
-			includeTerritories = (isDefault || typeof options.includeTerritories === "undefined") ? false : options.includeTerritories,
-			includeMilitary = (isDefault || typeof options.includeMilitary === "undefined") ? false : options.includeMilitary,
-			regex;
-
-		if (!includeTerritories && !includeMilitary) {
-			regex = "^(A[KLRZ]|C[AOT]|D[CE]|FL|GA|HI|I[ADLN]|K[SY]|LA|M[ADEINOST]|N[CDEHJMVY]|O[HKR]|PA|RI|S[CD]|T[NX]|UT|V[AT]|W[AIVY])$";
-		} else if (includeTerritories && includeMilitary) {
-			regex = "^(A[AEKLPRSZ]|C[AOT]|D[CE]|FL|G[AU]|HI|I[ADLN]|K[SY]|LA|M[ADEINOPST]|N[CDEHJMVY]|O[HKR]|P[AR]|RI|S[CD]|T[NX]|UT|V[AIT]|W[AIVY])$";
-		} else if (includeTerritories) {
-			regex = "^(A[KLRSZ]|C[AOT]|D[CE]|FL|G[AU]|HI|I[ADLN]|K[SY]|LA|M[ADEINOPST]|N[CDEHJMVY]|O[HKR]|P[AR]|RI|S[CD]|T[NX]|UT|V[AIT]|W[AIVY])$";
-		} else {
-			regex = "^(A[AEKLPRZ]|C[AOT]|D[CE]|FL|GA|HI|I[ADLN]|K[SY]|LA|M[ADEINOST]|N[CDEHJMVY]|O[HKR]|PA|RI|S[CD]|T[NX]|UT|V[AT]|W[AIVY])$";
-		}
-
-		regex = caseSensitive ? new RegExp(regex) : new RegExp(regex, "i");
-		return this.optional(element) || regex.test(value);
-	}, "Please specify a valid state");
-
-	// TODO check if value starts with <, otherwise don't try stripping anything
-	$.validator.addMethod("strippedminlength", function (value, element, param) {
-		return $(value).text().length >= param;
-	}, $.validator.format("Please enter at least {0} characters"));
-
-	$.validator.addMethod("time", function (value, element) {
-		return this.optional(element) || /^([01]\d|2[0-3]|[0-9])(:[0-5]\d){1,2}$/.test(value);
-	}, "Please enter a valid time, between 00:00 and 23:59");
-
-	$.validator.addMethod("time12h", function (value, element) {
-		return this.optional(element) || /^((0?[1-9]|1[012])(:[0-5]\d){1,2}(\ ?[AP]M))$/i.test(value);
-	}, "Please enter a valid time in 12-hour am/pm format");
-
-	// Same as url, but TLD is optional
-	$.validator.addMethod("url2", function (value, element) {
-		return this.optional(element) || /^(https?|ftp):\/\/(((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:)*@)?(((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)*(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?)(:\d*)?)(\/((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)+(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)*)*)?)?(\?((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|[\uE000-\uF8FF]|\/|\?)*)?(#((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|\/|\?)*)?$/i.test(value);
-	}, $.validator.messages.url);
-
-	/**
-	 * Return true, if the value is a valid vehicle identification number (VIN).
-	 *
-	 * Works with all kind of text inputs.
-	 *
-	 * @example <input type="text" size="20" name="VehicleID" class="{required:true,vinUS:true}" />
-	 * @desc Declares a required input element whose value must be a valid vehicle identification number.
-	 *
-	 * @name $.validator.methods.vinUS
-	 * @type Boolean
-	 * @cat Plugins/Validate/Methods
-	 */
-	$.validator.addMethod("vinUS", function (v) {
-		if (v.length !== 17) {
-			return false;
-		}
-
-		var LL = ["A", "B", "C", "D", "E", "F", "G", "H", "J", "K", "L", "M", "N", "P", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"],
-			VL = [1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 7, 9, 2, 3, 4, 5, 6, 7, 8, 9],
-			FL = [8, 7, 6, 5, 4, 3, 2, 10, 0, 9, 8, 7, 6, 5, 4, 3, 2],
-			rs = 0,
-			i, n, d, f, cd, cdv;
-
-		for (i = 0; i < 17; i++) {
-			f = FL[i];
-			d = v.slice(i, i + 1);
-			if (i === 8) {
-				cdv = d;
-			}
-			if (!isNaN(d)) {
-				d *= f;
-			} else {
-				for (n = 0; n < LL.length; n++) {
-					if (d.toUpperCase() === LL[n]) {
-						d = VL[n];
-						d *= f;
-						if (isNaN(cdv) && n === 8) {
-							cdv = LL[n];
-						}
-						break;
-					}
-				}
-			}
-			rs += d;
-		}
-		cd = rs % 11;
-		if (cd === 10) {
-			cd = "X";
-		}
-		if (cd === cdv) {
-			return true;
-		}
-		return false;
-	}, "The specified vehicle identification number (VIN) is invalid.");
-
-	$.validator.addMethod("zipcodeUS", function (value, element) {
-		return this.optional(element) || /^\d{5}(-\d{4})?$/.test(value);
-	}, "The specified US ZIP Code is invalid");
-
-	$.validator.addMethod("ziprange", function (value, element) {
-		return this.optional(element) || /^90[2-5]\d\{2\}-\d{4}$/.test(value);
-	}, "Your ZIP-code must be in the range 902xx-xxxx to 905xx-xxxx");
-}));
 /*!
  * fancyBox - jQuery Plugin
  * version: 2.1.5 (Fri, 14 Jun 2013)
@@ -14326,34 +11788,34 @@ if (typeof jQuery === 'undefined') {
 		W = $(window),
 		D = $(document),
 		F = $.fancybox = function () {
-			F.open.apply(this, arguments);
+			F.open.apply( this, arguments );
 		},
-		IE = navigator.userAgent.match(/msie/i),
-		didUpdate = null,
-		isTouch = document.createTouch !== undefined,
+		IE =  navigator.userAgent.match(/msie/i),
+		didUpdate	= null,
+		isTouch		= document.createTouch !== undefined,
 
-		isQuery = function (obj) {
+		isQuery	= function(obj) {
 			return obj && obj.hasOwnProperty && obj instanceof $;
 		},
-		isString = function (str) {
+		isString = function(str) {
 			return str && $.type(str) === "string";
 		},
-		isPercentage = function (str) {
+		isPercentage = function(str) {
 			return isString(str) && str.indexOf('%') > 0;
 		},
-		isScrollable = function (el) {
+		isScrollable = function(el) {
 			return (el && !(el.style.overflow && el.style.overflow === 'hidden') && ((el.clientWidth && el.scrollWidth > el.clientWidth) || (el.clientHeight && el.scrollHeight > el.clientHeight)));
 		},
-		getScalar = function (orig, dim) {
+		getScalar = function(orig, dim) {
 			var value = parseInt(orig, 10) || 0;
 
 			if (dim && isPercentage(orig)) {
-				value = F.getViewport()[dim] / 100 * value;
+				value = F.getViewport()[ dim ] / 100 * value;
 			}
 
 			return Math.ceil(value);
 		},
-		getValue = function (value, dim) {
+		getValue = function(value, dim) {
 			return getScalar(value, dim) + 'px';
 		};
 
@@ -14362,170 +11824,170 @@ if (typeof jQuery === 'undefined') {
 		version: '2.1.5',
 
 		defaults: {
-			padding: 15,
-			margin: 20,
+			padding : 15,
+			margin  : 20,
 
-			width: 800,
-			height: 600,
-			minWidth: 100,
-			minHeight: 100,
-			maxWidth: 9999,
-			maxHeight: 9999,
+			width     : 800,
+			height    : 600,
+			minWidth  : 100,
+			minHeight : 100,
+			maxWidth  : 9999,
+			maxHeight : 9999,
 			pixelRatio: 1, // Set to 2 for retina display support
 
-			autoSize: true,
-			autoHeight: false,
-			autoWidth: false,
+			autoSize   : true,
+			autoHeight : false,
+			autoWidth  : false,
 
-			autoResize: true,
-			autoCenter: !isTouch,
-			fitToView: true,
-			aspectRatio: false,
-			topRatio: 0.5,
-			leftRatio: 0.5,
+			autoResize  : true,
+			autoCenter  : !isTouch,
+			fitToView   : true,
+			aspectRatio : false,
+			topRatio    : 0.5,
+			leftRatio   : 0.5,
 
-			scrolling: 'auto', // 'auto', 'yes' or 'no'
-			wrapCSS: '',
+			scrolling : 'auto', // 'auto', 'yes' or 'no'
+			wrapCSS   : '',
 
-			arrows: true,
-			closeBtn: true,
-			closeClick: false,
-			nextClick: false,
-			mouseWheel: true,
-			autoPlay: false,
-			playSpeed: 3000,
-			preload: 3,
-			modal: false,
-			loop: true,
+			arrows     : true,
+			closeBtn   : true,
+			closeClick : false,
+			nextClick  : false,
+			mouseWheel : true,
+			autoPlay   : false,
+			playSpeed  : 3000,
+			preload    : 3,
+			modal      : false,
+			loop       : true,
 
-			ajax: {
-				dataType: 'html',
-				headers: { 'X-fancyBox': true }
+			ajax  : {
+				dataType : 'html',
+				headers  : { 'X-fancyBox': true }
 			},
-			iframe: {
-				scrolling: 'auto',
-				preload: true
+			iframe : {
+				scrolling : 'auto',
+				preload   : true
 			},
-			swf: {
+			swf : {
 				wmode: 'transparent',
-				allowfullscreen: 'true',
-				allowscriptaccess: 'always'
+				allowfullscreen   : 'true',
+				allowscriptaccess : 'always'
 			},
 
-			keys: {
-				next: {
-					13: 'left', // enter
-					34: 'up',   // page down
-					39: 'left', // right arrow
-					40: 'up'    // down arrow
+			keys  : {
+				next : {
+					13 : 'left', // enter
+					34 : 'up',   // page down
+					39 : 'left', // right arrow
+					40 : 'up'    // down arrow
 				},
-				prev: {
-					8: 'right',  // backspace
-					33: 'down',   // page up
-					37: 'right',  // left arrow
-					38: 'down'    // up arrow
+				prev : {
+					8  : 'right',  // backspace
+					33 : 'down',   // page up
+					37 : 'right',  // left arrow
+					38 : 'down'    // up arrow
 				},
-				close: [27], // escape key
-				play: [32], // space - start/stop slideshow
-				toggle: [70]  // letter "f" - toggle fullscreen
+				close  : [27], // escape key
+				play   : [32], // space - start/stop slideshow
+				toggle : [70]  // letter "f" - toggle fullscreen
 			},
 
-			direction: {
-				next: 'left',
-				prev: 'right'
+			direction : {
+				next : 'left',
+				prev : 'right'
 			},
 
-			scrollOutside: true,
+			scrollOutside  : true,
 
 			// Override some properties
-			index: 0,
-			type: null,
-			href: null,
-			content: null,
-			title: null,
+			index   : 0,
+			type    : null,
+			href    : null,
+			content : null,
+			title   : null,
 
 			// HTML templates
 			tpl: {
-				wrap: '<div class="fancybox-wrap" tabIndex="-1"><div class="fancybox-skin"><div class="fancybox-outer"><div class="fancybox-inner"></div></div></div></div>',
-				image: '<img class="fancybox-image" src="{href}" alt="" />',
-				iframe: '<iframe id="fancybox-frame{rnd}" name="fancybox-frame{rnd}" class="fancybox-iframe" frameborder="0" vspace="0" hspace="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen' + (IE ? ' allowtransparency="true"' : '') + '></iframe>',
-				error: '<p class="fancybox-error">The requested content cannot be loaded.<br/>Please try again later.</p>',
-				closeBtn: '<a title="Close" class="fancybox-item fancybox-close" href="javascript:;"></a>',
-				next: '<a title="Next" class="fancybox-nav fancybox-next" href="javascript:;"><span></span></a>',
-				prev: '<a title="Previous" class="fancybox-nav fancybox-prev" href="javascript:;"><span></span></a>'
+				wrap     : '<div class="fancybox-wrap" tabIndex="-1"><div class="fancybox-skin"><div class="fancybox-outer"><div class="fancybox-inner"></div></div></div></div>',
+				image    : '<img class="fancybox-image" src="{href}" alt="" />',
+				iframe   : '<iframe id="fancybox-frame{rnd}" name="fancybox-frame{rnd}" class="fancybox-iframe" frameborder="0" vspace="0" hspace="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen' + (IE ? ' allowtransparency="true"' : '') + '></iframe>',
+				error    : '<p class="fancybox-error">The requested content cannot be loaded.<br/>Please try again later.</p>',
+				closeBtn : '<a title="Close" class="fancybox-item fancybox-close" href="javascript:;"></a>',
+				next     : '<a title="Next" class="fancybox-nav fancybox-next" href="javascript:;"><span></span></a>',
+				prev     : '<a title="Previous" class="fancybox-nav fancybox-prev" href="javascript:;"><span></span></a>'
 			},
 
 			// Properties for each animation type
 			// Opening fancyBox
-			openEffect: 'fade', // 'elastic', 'fade' or 'none'
-			openSpeed: 250,
-			openEasing: 'swing',
-			openOpacity: true,
-			openMethod: 'zoomIn',
+			openEffect  : 'fade', // 'elastic', 'fade' or 'none'
+			openSpeed   : 250,
+			openEasing  : 'swing',
+			openOpacity : true,
+			openMethod  : 'zoomIn',
 
 			// Closing fancyBox
-			closeEffect: 'fade', // 'elastic', 'fade' or 'none'
-			closeSpeed: 250,
-			closeEasing: 'swing',
-			closeOpacity: true,
-			closeMethod: 'zoomOut',
+			closeEffect  : 'fade', // 'elastic', 'fade' or 'none'
+			closeSpeed   : 250,
+			closeEasing  : 'swing',
+			closeOpacity : true,
+			closeMethod  : 'zoomOut',
 
 			// Changing next gallery item
-			nextEffect: 'elastic', // 'elastic', 'fade' or 'none'
-			nextSpeed: 250,
-			nextEasing: 'swing',
-			nextMethod: 'changeIn',
+			nextEffect : 'elastic', // 'elastic', 'fade' or 'none'
+			nextSpeed  : 250,
+			nextEasing : 'swing',
+			nextMethod : 'changeIn',
 
 			// Changing previous gallery item
-			prevEffect: 'elastic', // 'elastic', 'fade' or 'none'
-			prevSpeed: 250,
-			prevEasing: 'swing',
-			prevMethod: 'changeOut',
+			prevEffect : 'elastic', // 'elastic', 'fade' or 'none'
+			prevSpeed  : 250,
+			prevEasing : 'swing',
+			prevMethod : 'changeOut',
 
 			// Enable default helpers
-			helpers: {
-				overlay: true,
-				title: true
+			helpers : {
+				overlay : true,
+				title   : true
 			},
 
 			// Callbacks
-			onCancel: $.noop, // If canceling
-			beforeLoad: $.noop, // Before loading
-			afterLoad: $.noop, // After loading
-			beforeShow: $.noop, // Before changing in current item
-			afterShow: $.noop, // After opening
-			beforeChange: $.noop, // Before changing gallery item
-			beforeClose: $.noop, // Before closing
-			afterClose: $.noop  // After closing
+			onCancel     : $.noop, // If canceling
+			beforeLoad   : $.noop, // Before loading
+			afterLoad    : $.noop, // After loading
+			beforeShow   : $.noop, // Before changing in current item
+			afterShow    : $.noop, // After opening
+			beforeChange : $.noop, // Before changing gallery item
+			beforeClose  : $.noop, // Before closing
+			afterClose   : $.noop  // After closing
 		},
 
 		//Current state
-		group: {}, // Selected group
-		opts: {}, // Group options
-		previous: null,  // Previous element
-		coming: null,  // Element being loaded
-		current: null,  // Currently loaded element
-		isActive: false, // Is activated
-		isOpen: false, // Is currently open
-		isOpened: false, // Have been fully opened at least once
+		group    : {}, // Selected group
+		opts     : {}, // Group options
+		previous : null,  // Previous element
+		coming   : null,  // Element being loaded
+		current  : null,  // Currently loaded element
+		isActive : false, // Is activated
+		isOpen   : false, // Is currently open
+		isOpened : false, // Have been fully opened at least once
 
-		wrap: null,
-		skin: null,
-		outer: null,
-		inner: null,
+		wrap  : null,
+		skin  : null,
+		outer : null,
+		inner : null,
 
-		player: {
-			timer: null,
-			isActive: false
+		player : {
+			timer    : null,
+			isActive : false
 		},
 
 		// Loaders
-		ajaxLoad: null,
-		imgPreload: null,
+		ajaxLoad   : null,
+		imgPreload : null,
 
 		// Some collections
-		transitions: {},
-		helpers: {},
+		transitions : {},
+		helpers     : {},
 
 		/*
 		 *	Static methods
@@ -14551,7 +12013,7 @@ if (typeof jQuery === 'undefined') {
 			}
 
 			// Recheck if the type of each element is `object` and set content type (image, ajax, etc)
-			$.each(group, function (i, element) {
+			$.each(group, function(i, element) {
 				var obj = {},
 					href,
 					title,
@@ -14569,10 +12031,10 @@ if (typeof jQuery === 'undefined') {
 
 					if (isQuery(element)) {
 						obj = {
-							href: element.data('fancybox-href') || element.attr('href'),
-							title: element.data('fancybox-title') || element.attr('title'),
-							isDom: true,
-							element: element
+							href    : element.data('fancybox-href') || element.attr('href'),
+							title   : element.data('fancybox-title') || element.attr('title'),
+							isDom   : true,
+							element : element
 						};
 
 						if ($.metadata) {
@@ -14583,17 +12045,17 @@ if (typeof jQuery === 'undefined') {
 					}
 				}
 
-				href = opts.href || obj.href || (isString(element) ? element : null);
+				href  = opts.href  || obj.href || (isString(element) ? element : null);
 				title = opts.title !== undefined ? opts.title : obj.title || '';
 
 				content = opts.content || obj.content;
-				type = content ? 'html' : (opts.type || obj.type);
+				type    = content ? 'html' : (opts.type  || obj.type);
 
 				if (!type && obj.isDom) {
 					type = element.data('fancybox-type');
 
 					if (!type) {
-						rez = element.prop('class').match(/fancybox\.(\w+)/);
+						rez  = element.prop('class').match(/fancybox\.(\w+)/);
 						type = rez ? rez[1] : null;
 					}
 				}
@@ -14608,7 +12070,7 @@ if (typeof jQuery === 'undefined') {
 						} else if (href.charAt(0) === '#') {
 							type = 'inline';
 						} else if (isString(element)) {
-							type = 'html';
+							type    = 'html';
 							content = element;
 						}
 					}
@@ -14617,35 +12079,35 @@ if (typeof jQuery === 'undefined') {
 					// "/mypage.html #my_id" will load "/mypage.html" and display element having id "my_id"
 					if (type === 'ajax') {
 						hrefParts = href.split(/\s+/, 2);
-						href = hrefParts.shift();
-						selector = hrefParts.shift();
+						href      = hrefParts.shift();
+						selector  = hrefParts.shift();
 					}
 				}
 
 				if (!content) {
 					if (type === 'inline') {
 						if (href) {
-							content = $(isString(href) ? href.replace(/.*(?=#[^\s]+$)/, '') : href); //strip for ie7
+							content = $( isString(href) ? href.replace(/.*(?=#[^\s]+$)/, '') : href ); //strip for ie7
 						} else if (obj.isDom) {
 							content = element;
 						}
 					} else if (type === 'html') {
 						content = href;
 					} else if (!type && !href && obj.isDom) {
-						type = 'inline';
+						type    = 'inline';
 						content = element;
 					}
 				}
 
 				$.extend(obj, {
-					href: href,
-					type: type,
-					content: content,
-					title: title,
-					selector: selector
+					href     : href,
+					type     : type,
+					content  : content,
+					title    : title,
+					selector : selector
 				});
 
-				group[i] = obj;
+				group[ i ] = obj;
 			});
 
 			// Extend the defaults
@@ -14689,7 +12151,7 @@ if (typeof jQuery === 'undefined') {
 
 			// If the first item has been canceled, then clear everything
 			if (!F.current) {
-				F._afterZoomOut(coming);
+				F._afterZoomOut( coming );
 			}
 		},
 
@@ -14719,7 +12181,7 @@ if (typeof jQuery === 'undefined') {
 
 				F.wrap.stop(true, true).removeClass('fancybox-opened');
 
-				F.transitions[F.current.closeMethod]();
+				F.transitions[ F.current.closeMethod ]();
 			}
 		},
 
@@ -14727,10 +12189,10 @@ if (typeof jQuery === 'undefined') {
 		//   $.fancybox.play(); - toggle slideshow
 		//   $.fancybox.play( true ); - start
 		//   $.fancybox.play( false ); - stop
-		play: function (action) {
+		play: function ( action ) {
 			var clear = function () {
-				clearTimeout(F.player.timer);
-			},
+					clearTimeout(F.player.timer);
+				},
 				set = function () {
 					clear();
 
@@ -14752,9 +12214,9 @@ if (typeof jQuery === 'undefined') {
 						F.player.isActive = true;
 
 						D.bind({
-							'onCancel.player beforeClose.player': stop,
-							'onUpdate.player': set,
-							'beforeLoad.player': clear
+							'onCancel.player beforeClose.player' : stop,
+							'onUpdate.player'   : set,
+							'beforeLoad.player' : clear
 						});
 
 						set();
@@ -14771,7 +12233,7 @@ if (typeof jQuery === 'undefined') {
 		},
 
 		// Navigate to next gallery item
-		next: function (direction) {
+		next: function ( direction ) {
 			var current = F.current;
 
 			if (current) {
@@ -14784,7 +12246,7 @@ if (typeof jQuery === 'undefined') {
 		},
 
 		// Navigate to previous gallery item
-		prev: function (direction) {
+		prev: function ( direction ) {
 			var current = F.current;
 
 			if (current) {
@@ -14797,7 +12259,7 @@ if (typeof jQuery === 'undefined') {
 		},
 
 		// Navigate to gallery item by index
-		jumpto: function (index, direction, router) {
+		jumpto: function ( index, direction, router ) {
 			var current = F.current;
 
 			if (!current) {
@@ -14806,8 +12268,8 @@ if (typeof jQuery === 'undefined') {
 
 			index = getScalar(index);
 
-			F.direction = direction || current.direction[(index >= current.index ? 'next' : 'prev')];
-			F.router = router || 'jumpto';
+			F.direction = direction || current.direction[ (index >= current.index ? 'next' : 'prev') ];
+			F.router    = router || 'jumpto';
 
 			if (current.loop) {
 				if (index < 0) {
@@ -14817,7 +12279,7 @@ if (typeof jQuery === 'undefined') {
 				index = index % current.group.length;
 			}
 
-			if (current.group[index] !== undefined) {
+			if (current.group[ index ] !== undefined) {
 				F.cancel();
 
 				F._start(index);
@@ -14827,7 +12289,7 @@ if (typeof jQuery === 'undefined') {
 		// Center inside viewport and toggle position type to fixed or absolute if needed
 		reposition: function (e, onlyAbsolute) {
 			var current = F.current,
-				wrap = current ? current.wrap : null,
+				wrap    = current ? current.wrap : null,
 				pos;
 
 			if (wrap) {
@@ -14859,7 +12321,7 @@ if (typeof jQuery === 'undefined') {
 				return;
 			}
 
-			didUpdate = setTimeout(function () {
+			didUpdate = setTimeout(function() {
 				var current = F.current;
 
 				if (!current || F.isClosing) {
@@ -14883,7 +12345,7 @@ if (typeof jQuery === 'undefined') {
 		},
 
 		// Shrink content to fit inside viewport or restore if resized
-		toggle: function (action) {
+		toggle: function ( action ) {
 			if (F.isOpen) {
 				F.current.fitToView = $.type(action) === "boolean" ? action : !F.current.fitToView;
 
@@ -14912,7 +12374,7 @@ if (typeof jQuery === 'undefined') {
 			el = $('<div id="fancybox-loading"><div></div></div>').click(F.cancel).appendTo('body');
 
 			// If user will press the escape-button, the request will be canceled
-			D.bind('keydown.loading', function (e) {
+			D.bind('keydown.loading', function(e) {
 				if ((e.which || e.keyCode) === 27) {
 					e.preventDefault();
 
@@ -14924,16 +12386,16 @@ if (typeof jQuery === 'undefined') {
 				viewport = F.getViewport();
 
 				el.css({
-					position: 'absolute',
-					top: (viewport.h * 0.5) + viewport.y,
-					left: (viewport.w * 0.5) + viewport.x
+					position : 'absolute',
+					top  : (viewport.h * 0.5) + viewport.y,
+					left : (viewport.w * 0.5) + viewport.x
 				});
 			}
 		},
 
 		getViewport: function () {
 			var locked = (F.current && F.current.locked) || false,
-				rez = {
+				rez    = {
 					x: W.scrollLeft(),
 					y: W.scrollTop()
 				};
@@ -14943,7 +12405,7 @@ if (typeof jQuery === 'undefined') {
 				rez.h = locked[0].clientHeight;
 			} else {
 				// See http://bugs.jquery.com/ticket/6724
-				rez.w = isTouch && window.innerWidth ? window.innerWidth : W.width();
+				rez.w = isTouch && window.innerWidth  ? window.innerWidth  : W.width();
 				rez.h = isTouch && window.innerHeight ? window.innerHeight : W.height();
 			}
 
@@ -14976,7 +12438,7 @@ if (typeof jQuery === 'undefined') {
 
 			if (keys) {
 				D.bind('keydown.fb', function (e) {
-					var code = e.which || e.keyCode,
+					var code   = e.which || e.keyCode,
 						target = e.target || e.srcElement;
 
 					// Skip esc key if loading, because showLoading will cancel preloading
@@ -14986,16 +12448,16 @@ if (typeof jQuery === 'undefined') {
 
 					// Ignore key combinations and key events within form elements
 					if (!e.ctrlKey && !e.altKey && !e.shiftKey && !e.metaKey && !(target && (target.type || $(target).is('[contenteditable]')))) {
-						$.each(keys, function (i, val) {
-							if (current.group.length > 1 && val[code] !== undefined) {
-								F[i](val[code]);
+						$.each(keys, function(i, val) {
+							if (current.group.length > 1 && val[ code ] !== undefined) {
+								F[ i ]( val[ code ] );
 
 								e.preventDefault();
 								return false;
 							}
 
 							if ($.inArray(code, val) > -1) {
-								F[i]();
+								F[ i ] ();
 
 								e.preventDefault();
 								return false;
@@ -15016,16 +12478,16 @@ if (typeof jQuery === 'undefined') {
 							break;
 						}
 
-						canScroll = isScrollable(parent[0]);
-						parent = $(parent).parent();
+						canScroll = isScrollable( parent[0] );
+						parent    = $(parent).parent();
 					}
 
 					if (delta !== 0 && !canScroll) {
 						if (F.group.length > 1 && !current.canShrink) {
 							if (deltaY > 0 || deltaX > 0) {
-								F.prev(deltaY > 0 ? 'down' : 'left');
+								F.prev( deltaY > 0 ? 'down' : 'left' );
 							} else if (deltaY < 0 || deltaX < 0) {
-								F.next(deltaY < 0 ? 'up' : 'right');
+								F.next( deltaY < 0 ? 'up' : 'right' );
 							}
 
 							e.preventDefault();
@@ -15042,7 +12504,7 @@ if (typeof jQuery === 'undefined') {
 				return;
 			}
 
-			if ($.isFunction(obj[event])) {
+			if ($.isFunction( obj[event] )) {
 				ret = obj[event].apply(obj, Array.prototype.slice.call(arguments, 1));
 			}
 
@@ -15077,8 +12539,8 @@ if (typeof jQuery === 'undefined') {
 				margin,
 				padding;
 
-			index = getScalar(index);
-			obj = F.group[index] || null;
+			index = getScalar( index );
+			obj   = F.group[ index ] || null;
 
 			if (!obj) {
 				return false;
@@ -15087,7 +12549,7 @@ if (typeof jQuery === 'undefined') {
 			coming = $.extend(true, {}, F.opts, obj);
 
 			// Convert margin and padding properties to array - top, right, bottom, left
-			margin = coming.margin;
+			margin  = coming.margin;
 			padding = coming.padding;
 
 			if ($.type(margin) === 'number') {
@@ -15101,15 +12563,15 @@ if (typeof jQuery === 'undefined') {
 			// 'modal' propery is just a shortcut
 			if (coming.modal) {
 				$.extend(true, coming, {
-					closeBtn: false,
-					closeClick: false,
-					nextClick: false,
-					arrows: false,
-					mouseWheel: false,
-					keys: null,
+					closeBtn   : false,
+					closeClick : false,
+					nextClick  : false,
+					arrows     : false,
+					mouseWheel : false,
+					keys       : null,
 					helpers: {
-						overlay: {
-							closeClick: false
+						overlay : {
+							closeClick : false
 						}
 					}
 				});
@@ -15135,8 +12597,8 @@ if (typeof jQuery === 'undefined') {
 			 * }
 			 */
 
-			coming.group = F.group;
-			coming.index = index;
+			coming.group  = F.group;
+			coming.index  = index;
 
 			// Give a chance for callback or helpers to update coming item (type, title, etc)
 			F.coming = coming;
@@ -15157,7 +12619,7 @@ if (typeof jQuery === 'undefined') {
 				if (F.current && F.router && F.router !== 'jumpto') {
 					F.current.index = index;
 
-					return F[F.router](F.direction);
+					return F[ F.router ]( F.direction );
 				}
 
 				return false;
@@ -15167,7 +12629,7 @@ if (typeof jQuery === 'undefined') {
 
 			if (type === 'image' || type === 'swf') {
 				coming.autoHeight = coming.autoWidth = false;
-				coming.scrolling = 'visible';
+				coming.scrolling  = 'visible';
 			}
 
 			if (type === 'image') {
@@ -15179,16 +12641,16 @@ if (typeof jQuery === 'undefined') {
 			}
 
 			// Build the neccessary markup
-			coming.wrap = $(coming.tpl.wrap).addClass('fancybox-' + (isTouch ? 'mobile' : 'desktop') + ' fancybox-type-' + type + ' fancybox-tmp ' + coming.wrapCSS).appendTo(coming.parent || 'body');
+			coming.wrap = $(coming.tpl.wrap).addClass('fancybox-' + (isTouch ? 'mobile' : 'desktop') + ' fancybox-type-' + type + ' fancybox-tmp ' + coming.wrapCSS).appendTo( coming.parent || 'body' );
 
 			$.extend(coming, {
-				skin: $('.fancybox-skin', coming.wrap),
-				outer: $('.fancybox-outer', coming.wrap),
-				inner: $('.fancybox-inner', coming.wrap)
+				skin  : $('.fancybox-skin',  coming.wrap),
+				outer : $('.fancybox-outer', coming.wrap),
+				inner : $('.fancybox-inner', coming.wrap)
 			});
 
-			$.each(["Top", "Right", "Bottom", "Left"], function (i, v) {
-				coming.skin.css('padding' + v, getValue(coming.padding[i]));
+			$.each(["Top", "Right", "Bottom", "Left"], function(i, v) {
+				coming.skin.css('padding' + v, getValue(coming.padding[ i ]));
 			});
 
 			F.trigger('onReady');
@@ -15196,10 +12658,10 @@ if (typeof jQuery === 'undefined') {
 			// Check before try to load; 'inline' and 'html' types need content, others - href
 			if (type === 'inline' || type === 'html') {
 				if (!coming.content || !coming.content.length) {
-					return F._error('content');
+					return F._error( 'content' );
 				}
 			} else if (!href) {
-				return F._error('href');
+				return F._error( 'href' );
 			}
 
 			if (type === 'image') {
@@ -15213,16 +12675,16 @@ if (typeof jQuery === 'undefined') {
 			}
 		},
 
-		_error: function (type) {
+		_error: function ( type ) {
 			$.extend(F.coming, {
-				type: 'html',
-				autoWidth: true,
-				autoHeight: true,
-				minWidth: 0,
-				minHeight: 0,
-				scrolling: 'no',
-				hasError: type,
-				content: F.coming.tpl.error
+				type       : 'html',
+				autoWidth  : true,
+				autoHeight : true,
+				minWidth   : 0,
+				minHeight  : 0,
+				scrolling  : 'no',
+				hasError   : type,
+				content    : F.coming.tpl.error
 			});
 
 			F._afterLoad();
@@ -15235,7 +12697,7 @@ if (typeof jQuery === 'undefined') {
 			img.onload = function () {
 				this.onload = this.onerror = null;
 
-				F.coming.width = this.width / F.opts.pixelRatio;
+				F.coming.width  = this.width / F.opts.pixelRatio;
 				F.coming.height = this.height / F.opts.pixelRatio;
 
 				F._afterLoad();
@@ -15244,7 +12706,7 @@ if (typeof jQuery === 'undefined') {
 			img.onerror = function () {
 				this.onload = this.onerror = null;
 
-				F._error('image');
+				F._error( 'image' );
 			};
 
 			img.src = F.coming.href;
@@ -15263,7 +12725,7 @@ if (typeof jQuery === 'undefined') {
 				url: coming.href,
 				error: function (jqXHR, textStatus) {
 					if (F.coming && textStatus !== 'abort') {
-						F._error('ajax', jqXHR);
+						F._error( 'ajax', jqXHR );
 					} else {
 						F.hideLoading();
 					}
@@ -15278,7 +12740,7 @@ if (typeof jQuery === 'undefined') {
 			}));
 		},
 
-		_loadIframe: function () {
+		_loadIframe: function() {
 			var coming = F.coming,
 				iframe = $(coming.tpl.iframe.replace(/\{rnd\}/g, new Date().getTime()))
 					.attr('scrolling', isTouch ? 'auto' : coming.iframe.scrolling)
@@ -15288,13 +12750,13 @@ if (typeof jQuery === 'undefined') {
 			$(coming.wrap).bind('onReset', function () {
 				try {
 					$(this).find('iframe').hide().attr('src', '//about:blank').end().empty();
-				} catch (e) { }
+				} catch (e) {}
 			});
 
 			if (coming.iframe.preload) {
 				F.showLoading();
 
-				iframe.one('load', function () {
+				iframe.one('load', function() {
 					$(this).data('ready', 1);
 
 					// iOS will lose scrolling if we resize
@@ -15311,23 +12773,23 @@ if (typeof jQuery === 'undefined') {
 				});
 			}
 
-			coming.content = iframe.appendTo(coming.inner);
+			coming.content = iframe.appendTo( coming.inner );
 
 			if (!coming.iframe.preload) {
 				F._afterLoad();
 			}
 		},
 
-		_preloadImages: function () {
-			var group = F.group,
+		_preloadImages: function() {
+			var group   = F.group,
 				current = F.current,
-				len = group.length,
-				cnt = current.preload ? Math.min(current.preload, len - 1) : 0,
+				len     = group.length,
+				cnt     = current.preload ? Math.min(current.preload, len - 1) : 0,
 				item,
 				i;
 
 			for (i = 1; i <= cnt; i += 1) {
-				item = group[(current.index + i) % len];
+				item = group[ (current.index + i ) % len ];
 
 				if (item.type === 'image' && item.href) {
 					new Image().src = item.href;
@@ -15336,7 +12798,7 @@ if (typeof jQuery === 'undefined') {
 		},
 
 		_afterLoad: function () {
-			var coming = F.coming,
+			var coming   = F.coming,
 				previous = F.current,
 				placeholder = 'fancybox-placeholder',
 				current,
@@ -15370,18 +12832,18 @@ if (typeof jQuery === 'undefined') {
 
 			F.unbindEvents();
 
-			current = coming;
-			content = coming.content;
-			type = coming.type;
+			current   = coming;
+			content   = coming.content;
+			type      = coming.type;
 			scrolling = coming.scrolling;
 
 			$.extend(F, {
-				wrap: current.wrap,
-				skin: current.skin,
-				outer: current.outer,
-				inner: current.inner,
-				current: current,
-				previous: previous
+				wrap  : current.wrap,
+				skin  : current.skin,
+				outer : current.outer,
+				inner : current.inner,
+				current  : current,
+				previous : previous
 			});
 
 			href = current.href;
@@ -15394,38 +12856,38 @@ if (typeof jQuery === 'undefined') {
 						content = $('<div>').html(content).find(current.selector);
 					} else if (isQuery(content)) {
 						if (!content.data(placeholder)) {
-							content.data(placeholder, $('<div class="' + placeholder + '"></div>').insertAfter(content).hide());
+							content.data(placeholder, $('<div class="' + placeholder + '"></div>').insertAfter( content ).hide() );
 						}
 
 						content = content.show().detach();
 
 						current.wrap.bind('onReset', function () {
 							if ($(this).find(content).length) {
-								content.hide().replaceAll(content.data(placeholder)).data(placeholder, false);
+								content.hide().replaceAll( content.data(placeholder) ).data(placeholder, false);
 							}
 						});
 					}
-					break;
+				break;
 
 				case 'image':
 					content = current.tpl.image.replace('{href}', href);
-					break;
+				break;
 
 				case 'swf':
 					content = '<object id="fancybox-swf" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="100%" height="100%"><param name="movie" value="' + href + '"></param>';
-					embed = '';
+					embed   = '';
 
-					$.each(current.swf, function (name, val) {
+					$.each(current.swf, function(name, val) {
 						content += '<param name="' + name + '" value="' + val + '"></param>';
-						embed += ' ' + name + '="' + val + '"';
+						embed   += ' ' + name + '="' + val + '"';
 					});
 
 					content += '<embed src="' + href + '" type="application/x-shockwave-flash" width="100%" height="100%"' + embed + '></embed></object>';
-					break;
+				break;
 			}
 
 			if (!(isQuery(content) && content.parent().is(current.inner))) {
-				current.inner.append(content);
+				current.inner.append( content );
 			}
 
 			// Give a chance for helpers or callbacks to update elements
@@ -15445,36 +12907,36 @@ if (typeof jQuery === 'undefined') {
 			F.bindEvents();
 
 			if (!F.isOpened) {
-				$('.fancybox-wrap').not(current.wrap).stop(true).trigger('onReset').remove();
+				$('.fancybox-wrap').not( current.wrap ).stop(true).trigger('onReset').remove();
 			} else if (previous.prevMethod) {
-				F.transitions[previous.prevMethod]();
+				F.transitions[ previous.prevMethod ]();
 			}
 
-			F.transitions[F.isOpened ? current.nextMethod : current.openMethod]();
+			F.transitions[ F.isOpened ? current.nextMethod : current.openMethod ]();
 
 			F._preloadImages();
 		},
 
 		_setDimension: function () {
-			var viewport = F.getViewport(),
-				steps = 0,
-				canShrink = false,
-				canExpand = false,
-				wrap = F.wrap,
-				skin = F.skin,
-				inner = F.inner,
-				current = F.current,
-				width = current.width,
-				height = current.height,
-				minWidth = current.minWidth,
-				minHeight = current.minHeight,
-				maxWidth = current.maxWidth,
-				maxHeight = current.maxHeight,
-				scrolling = current.scrolling,
-				scrollOut = current.scrollOutside ? current.scrollbarWidth : 0,
-				margin = current.margin,
-				wMargin = getScalar(margin[1] + margin[3]),
-				hMargin = getScalar(margin[0] + margin[2]),
+			var viewport   = F.getViewport(),
+				steps      = 0,
+				canShrink  = false,
+				canExpand  = false,
+				wrap       = F.wrap,
+				skin       = F.skin,
+				inner      = F.inner,
+				current    = F.current,
+				width      = current.width,
+				height     = current.height,
+				minWidth   = current.minWidth,
+				minHeight  = current.minHeight,
+				maxWidth   = current.maxWidth,
+				maxHeight  = current.maxHeight,
+				scrolling  = current.scrolling,
+				scrollOut  = current.scrollOutside ? current.scrollbarWidth : 0,
+				margin     = current.margin,
+				wMargin    = getScalar(margin[1] + margin[3]),
+				hMargin    = getScalar(margin[0] + margin[2]),
 				wPadding,
 				hPadding,
 				wSpace,
@@ -15494,14 +12956,14 @@ if (typeof jQuery === 'undefined') {
 			// Reset dimensions so we could re-check actual size
 			wrap.add(skin).add(inner).width('auto').height('auto').removeClass('fancybox-tmp');
 
-			wPadding = getScalar(skin.outerWidth(true) - skin.width());
+			wPadding = getScalar(skin.outerWidth(true)  - skin.width());
 			hPadding = getScalar(skin.outerHeight(true) - skin.height());
 
 			// Any space between content and viewport (margin, padding, border, title)
 			wSpace = wMargin + wPadding;
 			hSpace = hMargin + hPadding;
 
-			origWidth = isPercentage(width) ? (viewport.w - wSpace) * getScalar(width) / 100 : width;
+			origWidth  = isPercentage(width)  ? (viewport.w - wSpace) * getScalar(width)  / 100 : width;
 			origHeight = isPercentage(height) ? (viewport.h - hSpace) * getScalar(height) / 100 : height;
 
 			if (current.type === 'iframe') {
@@ -15510,7 +12972,7 @@ if (typeof jQuery === 'undefined') {
 				if (current.autoHeight && iframe.data('ready') === 1) {
 					try {
 						if (iframe[0].contentWindow.document.location) {
-							inner.width(origWidth).height(9999);
+							inner.width( origWidth ).height(9999);
 
 							body = iframe.contents().find('body');
 
@@ -15520,18 +12982,18 @@ if (typeof jQuery === 'undefined') {
 
 							origHeight = body.outerHeight(true);
 						}
-					} catch (e) { }
+					} catch (e) {}
 				}
 			} else if (current.autoWidth || current.autoHeight) {
-				inner.addClass('fancybox-tmp');
+				inner.addClass( 'fancybox-tmp' );
 
 				// Set width or height in case we need to calculate only one dimension
 				if (!current.autoWidth) {
-					inner.width(origWidth);
+					inner.width( origWidth );
 				}
 
 				if (!current.autoHeight) {
-					inner.height(origHeight);
+					inner.height( origHeight );
 				}
 
 				if (current.autoWidth) {
@@ -15542,58 +13004,58 @@ if (typeof jQuery === 'undefined') {
 					origHeight = inner.height();
 				}
 
-				inner.removeClass('fancybox-tmp');
+				inner.removeClass( 'fancybox-tmp' );
 			}
 
-			width = getScalar(origWidth);
-			height = getScalar(origHeight);
+			width  = getScalar( origWidth );
+			height = getScalar( origHeight );
 
-			ratio = origWidth / origHeight;
+			ratio  = origWidth / origHeight;
 
 			// Calculations for the content
-			minWidth = getScalar(isPercentage(minWidth) ? getScalar(minWidth, 'w') - wSpace : minWidth);
-			maxWidth = getScalar(isPercentage(maxWidth) ? getScalar(maxWidth, 'w') - wSpace : maxWidth);
+			minWidth  = getScalar(isPercentage(minWidth) ? getScalar(minWidth, 'w') - wSpace : minWidth);
+			maxWidth  = getScalar(isPercentage(maxWidth) ? getScalar(maxWidth, 'w') - wSpace : maxWidth);
 
 			minHeight = getScalar(isPercentage(minHeight) ? getScalar(minHeight, 'h') - hSpace : minHeight);
 			maxHeight = getScalar(isPercentage(maxHeight) ? getScalar(maxHeight, 'h') - hSpace : maxHeight);
 
 			// These will be used to determine if wrap can fit in the viewport
-			origMaxWidth = maxWidth;
+			origMaxWidth  = maxWidth;
 			origMaxHeight = maxHeight;
 
 			if (current.fitToView) {
-				maxWidth = Math.min(viewport.w - wSpace, maxWidth);
+				maxWidth  = Math.min(viewport.w - wSpace, maxWidth);
 				maxHeight = Math.min(viewport.h - hSpace, maxHeight);
 			}
 
-			maxWidth_ = viewport.w - wMargin;
+			maxWidth_  = viewport.w - wMargin;
 			maxHeight_ = viewport.h - hMargin;
 
 			if (current.aspectRatio) {
 				if (width > maxWidth) {
-					width = maxWidth;
+					width  = maxWidth;
 					height = getScalar(width / ratio);
 				}
 
 				if (height > maxHeight) {
 					height = maxHeight;
-					width = getScalar(height * ratio);
+					width  = getScalar(height * ratio);
 				}
 
 				if (width < minWidth) {
-					width = minWidth;
+					width  = minWidth;
 					height = getScalar(width / ratio);
 				}
 
 				if (height < minHeight) {
 					height = minHeight;
-					width = getScalar(height * ratio);
+					width  = getScalar(height * ratio);
 				}
 			} else {
 				width = Math.max(minWidth, Math.min(width, maxWidth));
 
 				if (current.autoHeight && current.type !== 'iframe') {
-					inner.width(width);
+					inner.width( width );
 
 					height = inner.height();
 				}
@@ -15603,12 +13065,12 @@ if (typeof jQuery === 'undefined') {
 
 			// Try to fit inside viewport (including the title)
 			if (current.fitToView) {
-				inner.width(width).height(height);
+				inner.width( width ).height( height );
 
-				wrap.width(width + wPadding);
+				wrap.width( width + wPadding );
 
 				// Real wrap dimensions
-				width_ = wrap.width();
+				width_  = wrap.width();
 				height_ = wrap.height();
 
 				if (current.aspectRatio) {
@@ -15618,27 +13080,27 @@ if (typeof jQuery === 'undefined') {
 						}
 
 						height = Math.max(minHeight, Math.min(maxHeight, height - 10));
-						width = getScalar(height * ratio);
+						width  = getScalar(height * ratio);
 
 						if (width < minWidth) {
-							width = minWidth;
+							width  = minWidth;
 							height = getScalar(width / ratio);
 						}
 
 						if (width > maxWidth) {
-							width = maxWidth;
+							width  = maxWidth;
 							height = getScalar(width / ratio);
 						}
 
-						inner.width(width).height(height);
+						inner.width( width ).height( height );
 
-						wrap.width(width + wPadding);
+						wrap.width( width + wPadding );
 
-						width_ = wrap.width();
+						width_  = wrap.width();
 						height_ = wrap.height();
 					}
 				} else {
-					width = Math.max(minWidth, Math.min(width, width - (width_ - maxWidth_)));
+					width  = Math.max(minWidth,  Math.min(width,  width  - (width_  - maxWidth_)));
 					height = Math.max(minHeight, Math.min(height, height - (height_ - maxHeight_)));
 				}
 			}
@@ -15647,29 +13109,29 @@ if (typeof jQuery === 'undefined') {
 				width += scrollOut;
 			}
 
-			inner.width(width).height(height);
+			inner.width( width ).height( height );
 
-			wrap.width(width + wPadding);
+			wrap.width( width + wPadding );
 
-			width_ = wrap.width();
+			width_  = wrap.width();
 			height_ = wrap.height();
 
 			canShrink = (width_ > maxWidth_ || height_ > maxHeight_) && width > minWidth && height > minHeight;
 			canExpand = current.aspectRatio ? (width < origMaxWidth && height < origMaxHeight && width < origWidth && height < origHeight) : ((width < origMaxWidth || height < origMaxHeight) && (width < origWidth || height < origHeight));
 
 			$.extend(current, {
-				dim: {
-					width: getValue(width_),
-					height: getValue(height_)
+				dim : {
+					width	: getValue( width_ ),
+					height	: getValue( height_ )
 				},
-				origWidth: origWidth,
-				origHeight: origHeight,
-				canShrink: canShrink,
-				canExpand: canExpand,
-				wPadding: wPadding,
-				hPadding: hPadding,
-				wrapSpace: height_ - skin.outerHeight(true),
-				skinSpace: skin.height() - height
+				origWidth  : origWidth,
+				origHeight : origHeight,
+				canShrink  : canShrink,
+				canExpand  : canExpand,
+				wPadding   : wPadding,
+				hPadding   : hPadding,
+				wrapSpace  : height_ - skin.outerHeight(true),
+				skinSpace  : skin.height() - height
 			});
 
 			if (!iframe && current.autoHeight && height > minHeight && height < maxHeight && !canExpand) {
@@ -15678,26 +13140,26 @@ if (typeof jQuery === 'undefined') {
 		},
 
 		_getPosition: function (onlyAbsolute) {
-			var current = F.current,
+			var current  = F.current,
 				viewport = F.getViewport(),
-				margin = current.margin,
-				width = F.wrap.width() + margin[1] + margin[3],
-				height = F.wrap.height() + margin[0] + margin[2],
-				rez = {
+				margin   = current.margin,
+				width    = F.wrap.width()  + margin[1] + margin[3],
+				height   = F.wrap.height() + margin[0] + margin[2],
+				rez      = {
 					position: 'absolute',
-					top: margin[0],
-					left: margin[3]
+					top  : margin[0],
+					left : margin[3]
 				};
 
 			if (current.autoCenter && current.fixed && !onlyAbsolute && height <= viewport.h && width <= viewport.w) {
 				rez.position = 'fixed';
 			} else if (!current.locked) {
-				rez.top += viewport.y;
+				rez.top  += viewport.y;
 				rez.left += viewport.x;
 			}
 
-			rez.top = getValue(Math.max(rez.top, rez.top + ((viewport.h - height) * current.topRatio)));
-			rez.left = getValue(Math.max(rez.left, rez.left + ((viewport.w - width) * current.leftRatio)));
+			rez.top  = getValue(Math.max(rez.top,  rez.top  + ((viewport.h - height) * current.topRatio)));
+			rez.left = getValue(Math.max(rez.left, rez.left + ((viewport.w - width)  * current.leftRatio)));
 
 			return rez;
 		},
@@ -15716,19 +13178,19 @@ if (typeof jQuery === 'undefined') {
 			F.update();
 
 			// Assign a click event
-			if (current.closeClick || (current.nextClick && F.group.length > 1)) {
-				F.inner.css('cursor', 'pointer').bind('click.fb', function (e) {
+			if ( current.closeClick || (current.nextClick && F.group.length > 1) ) {
+				F.inner.css('cursor', 'pointer').bind('click.fb', function(e) {
 					if (!$(e.target).is('a') && !$(e.target).parent().is('a')) {
 						e.preventDefault();
 
-						F[current.closeClick ? 'close' : 'next']();
+						F[ current.closeClick ? 'close' : 'next' ]();
 					}
 				});
 			}
 
 			// Create a close button
 			if (current.closeBtn) {
-				$(current.tpl.closeBtn).appendTo(F.skin).bind('click.fb', function (e) {
+				$(current.tpl.closeBtn).appendTo(F.skin).bind('click.fb', function(e) {
 					e.preventDefault();
 
 					F.close();
@@ -15750,7 +13212,7 @@ if (typeof jQuery === 'undefined') {
 
 			// Stop the slideshow if this is the last item
 			if (!current.loop && current.index === current.group.length - 1) {
-				F.play(false);
+				F.play( false );
 			} else if (F.opts.autoPlay && !F.player.isActive) {
 				F.opts.autoPlay = false;
 
@@ -15758,24 +13220,24 @@ if (typeof jQuery === 'undefined') {
 			}
 		},
 
-		_afterZoomOut: function (obj) {
+		_afterZoomOut: function ( obj ) {
 			obj = obj || F.current;
 
 			$('.fancybox-wrap').trigger('onReset').remove();
 
 			$.extend(F, {
-				group: {},
-				opts: {},
-				router: false,
-				current: null,
-				isActive: false,
-				isOpened: false,
-				isOpen: false,
-				isClosing: false,
-				wrap: null,
-				skin: null,
-				outer: null,
-				inner: null
+				group  : {},
+				opts   : {},
+				router : false,
+				current   : null,
+				isActive  : false,
+				isOpened  : false,
+				isOpen    : false,
+				isClosing : false,
+				wrap   : null,
+				skin   : null,
+				outer  : null,
+				inner  : null
 			});
 
 			F.trigger('afterClose', obj);
@@ -15788,12 +13250,12 @@ if (typeof jQuery === 'undefined') {
 
 	F.transitions = {
 		getOrigPosition: function () {
-			var current = F.current,
-				element = current.element,
-				orig = current.orig,
-				pos = {},
-				width = 50,
-				height = 50,
+			var current  = F.current,
+				element  = current.element,
+				orig     = current.orig,
+				pos      = {},
+				width    = 50,
+				height   = 50,
 				hPadding = current.hPadding,
 				wPadding = current.wPadding,
 				viewport = F.getViewport();
@@ -15810,24 +13272,24 @@ if (typeof jQuery === 'undefined') {
 				pos = orig.offset();
 
 				if (orig.is('img')) {
-					width = orig.outerWidth();
+					width  = orig.outerWidth();
 					height = orig.outerHeight();
 				}
 			} else {
-				pos.top = viewport.y + (viewport.h - height) * current.topRatio;
-				pos.left = viewport.x + (viewport.w - width) * current.leftRatio;
+				pos.top  = viewport.y + (viewport.h - height) * current.topRatio;
+				pos.left = viewport.x + (viewport.w - width)  * current.leftRatio;
 			}
 
 			if (F.wrap.css('position') === 'fixed' || current.locked) {
-				pos.top -= viewport.y;
+				pos.top  -= viewport.y;
 				pos.left -= viewport.x;
 			}
 
 			pos = {
-				top: getValue(pos.top - hPadding * current.topRatio),
-				left: getValue(pos.left - wPadding * current.leftRatio),
-				width: getValue(width + wPadding),
-				height: getValue(height + hPadding)
+				top     : getValue(pos.top  - hPadding * current.topRatio),
+				left    : getValue(pos.left - wPadding * current.leftRatio),
+				width   : getValue(width  + wPadding),
+				height  : getValue(height + hPadding)
 			};
 
 			return pos;
@@ -15837,10 +13299,10 @@ if (typeof jQuery === 'undefined') {
 			var ratio,
 				padding,
 				value,
-				prop = fx.prop,
-				current = F.current,
-				wrapSpace = current.wrapSpace,
-				skinSpace = current.skinSpace;
+				prop       = fx.prop,
+				current    = F.current,
+				wrapSpace  = current.wrapSpace,
+				skinSpace  = current.skinSpace;
 
 			if (prop === 'width' || prop === 'height') {
 				ratio = fx.end === fx.start ? 1 : (now - fx.start) / (fx.end - fx.start);
@@ -15850,19 +13312,19 @@ if (typeof jQuery === 'undefined') {
 				}
 
 				padding = prop === 'width' ? current.wPadding : current.hPadding;
-				value = now - padding;
+				value   = now - padding;
 
-				F.skin[prop](getScalar(prop === 'width' ? value : value - (wrapSpace * ratio)));
-				F.inner[prop](getScalar(prop === 'width' ? value : value - (wrapSpace * ratio) - (skinSpace * ratio)));
+				F.skin[ prop ](  getScalar( prop === 'width' ?  value : value - (wrapSpace * ratio) ) );
+				F.inner[ prop ]( getScalar( prop === 'width' ?  value : value - (wrapSpace * ratio) - (skinSpace * ratio) ) );
 			}
 		},
 
 		zoomIn: function () {
-			var current = F.current,
+			var current  = F.current,
 				startPos = current.pos,
-				effect = current.openEffect,
-				elastic = effect === 'elastic',
-				endPos = $.extend({ opacity: 1 }, startPos);
+				effect   = current.openEffect,
+				elastic  = effect === 'elastic',
+				endPos   = $.extend({opacity : 1}, startPos);
 
 			// Remove "position" property that breaks older IE
 			delete endPos.position;
@@ -15878,18 +13340,18 @@ if (typeof jQuery === 'undefined') {
 			}
 
 			F.wrap.css(startPos).animate(endPos, {
-				duration: effect === 'none' ? 0 : current.openSpeed,
-				easing: current.openEasing,
-				step: elastic ? this.step : null,
-				complete: F._afterZoomIn
+				duration : effect === 'none' ? 0 : current.openSpeed,
+				easing   : current.openEasing,
+				step     : elastic ? this.step : null,
+				complete : F._afterZoomIn
 			});
 		},
 
 		zoomOut: function () {
-			var current = F.current,
-				effect = current.closeEffect,
-				elastic = effect === 'elastic',
-				endPos = { opacity: 0.1 };
+			var current  = F.current,
+				effect   = current.closeEffect,
+				elastic  = effect === 'elastic',
+				endPos   = {opacity : 0.1};
 
 			if (elastic) {
 				endPos = this.getOrigPosition();
@@ -15900,20 +13362,20 @@ if (typeof jQuery === 'undefined') {
 			}
 
 			F.wrap.animate(endPos, {
-				duration: effect === 'none' ? 0 : current.closeSpeed,
-				easing: current.closeEasing,
-				step: elastic ? this.step : null,
-				complete: F._afterZoomOut
+				duration : effect === 'none' ? 0 : current.closeSpeed,
+				easing   : current.closeEasing,
+				step     : elastic ? this.step : null,
+				complete : F._afterZoomOut
 			});
 		},
 
 		changeIn: function () {
-			var current = F.current,
-				effect = current.nextEffect,
-				startPos = current.pos,
-				endPos = { opacity: 1 },
+			var current   = F.current,
+				effect    = current.nextEffect,
+				startPos  = current.pos,
+				endPos    = { opacity : 1 },
 				direction = F.direction,
-				distance = 200,
+				distance  = 200,
 				field;
 
 			startPos.opacity = 0.1;
@@ -15922,11 +13384,11 @@ if (typeof jQuery === 'undefined') {
 				field = direction === 'down' || direction === 'up' ? 'top' : 'left';
 
 				if (direction === 'down' || direction === 'right') {
-					startPos[field] = getValue(getScalar(startPos[field]) - distance);
-					endPos[field] = '+=' + distance + 'px';
+					startPos[ field ] = getValue(getScalar(startPos[ field ]) - distance);
+					endPos[ field ]   = '+=' + distance + 'px';
 				} else {
-					startPos[field] = getValue(getScalar(startPos[field]) + distance);
-					endPos[field] = '-=' + distance + 'px';
+					startPos[ field ] = getValue(getScalar(startPos[ field ]) + distance);
+					endPos[ field ]   = '-=' + distance + 'px';
 				}
 			}
 
@@ -15935,28 +13397,28 @@ if (typeof jQuery === 'undefined') {
 				F._afterZoomIn();
 			} else {
 				F.wrap.css(startPos).animate(endPos, {
-					duration: current.nextSpeed,
-					easing: current.nextEasing,
-					complete: F._afterZoomIn
+					duration : current.nextSpeed,
+					easing   : current.nextEasing,
+					complete : F._afterZoomIn
 				});
 			}
 		},
 
 		changeOut: function () {
-			var previous = F.previous,
-				effect = previous.prevEffect,
-				endPos = { opacity: 0.1 },
+			var previous  = F.previous,
+				effect    = previous.prevEffect,
+				endPos    = { opacity : 0.1 },
 				direction = F.direction,
-				distance = 200;
+				distance  = 200;
 
 			if (effect === 'elastic') {
-				endPos[direction === 'down' || direction === 'up' ? 'top' : 'left'] = (direction === 'up' || direction === 'left' ? '-' : '+') + '=' + distance + 'px';
+				endPos[ direction === 'down' || direction === 'up' ? 'top' : 'left' ] = ( direction === 'up' || direction === 'left' ? '-' : '+' ) + '=' + distance + 'px';
 			}
 
 			previous.wrap.animate(endPos, {
-				duration: effect === 'none' ? 0 : previous.prevSpeed,
-				easing: previous.prevEasing,
-				complete: function () {
+				duration : effect === 'none' ? 0 : previous.prevSpeed,
+				easing   : previous.prevEasing,
+				complete : function () {
 					$(this).trigger('onReset').remove();
 				}
 			});
@@ -15968,29 +13430,29 @@ if (typeof jQuery === 'undefined') {
 	 */
 
 	F.helpers.overlay = {
-		defaults: {
-			closeClick: true,      // if true, fancyBox will be closed when user clicks on the overlay
-			speedOut: 200,       // duration of fadeOut animation
-			showEarly: true,      // indicates if should be opened immediately or wait until the content is ready
-			css: {},        // custom CSS properties
-			locked: !isTouch,  // if true, the content will be locked into overlay
-			fixed: true       // if false, the overlay CSS position property will not be set to "fixed"
+		defaults : {
+			closeClick : true,      // if true, fancyBox will be closed when user clicks on the overlay
+			speedOut   : 200,       // duration of fadeOut animation
+			showEarly  : true,      // indicates if should be opened immediately or wait until the content is ready
+			css        : {},        // custom CSS properties
+			locked     : !isTouch,  // if true, the content will be locked into overlay
+			fixed      : true       // if false, the overlay CSS position property will not be set to "fixed"
 		},
 
-		overlay: null,      // current handle
-		fixed: false,     // indicates if the overlay has position "fixed"
-		el: $('html'), // element that contains "the lock"
+		overlay : null,      // current handle
+		fixed   : false,     // indicates if the overlay has position "fixed"
+		el      : $('html'), // element that contains "the lock"
 
 		// Public methods
-		create: function (opts) {
+		create : function(opts) {
 			opts = $.extend({}, this.defaults, opts);
 
 			if (this.overlay) {
 				this.close();
 			}
 
-			this.overlay = $('<div class="fancybox-overlay"></div>').appendTo(F.coming ? F.coming.parent : opts.parent);
-			this.fixed = false;
+			this.overlay = $('<div class="fancybox-overlay"></div>').appendTo( F.coming ? F.coming.parent : opts.parent );
+			this.fixed   = false;
 
 			if (opts.fixed && F.defaults.fixed) {
 				this.overlay.addClass('fancybox-overlay-fixed');
@@ -15999,7 +13461,7 @@ if (typeof jQuery === 'undefined') {
 			}
 		},
 
-		open: function (opts) {
+		open : function(opts) {
 			var that = this;
 
 			opts = $.extend({}, this.defaults, opts);
@@ -16011,13 +13473,13 @@ if (typeof jQuery === 'undefined') {
 			}
 
 			if (!this.fixed) {
-				W.bind('resize.overlay', $.proxy(this.update, this));
+				W.bind('resize.overlay', $.proxy( this.update, this) );
 
 				this.update();
 			}
 
 			if (opts.closeClick) {
-				this.overlay.bind('click.overlay', function (e) {
+				this.overlay.bind('click.overlay', function(e) {
 					if ($(e.target).hasClass('fancybox-overlay')) {
 						if (F.isActive) {
 							F.close();
@@ -16030,10 +13492,10 @@ if (typeof jQuery === 'undefined') {
 				});
 			}
 
-			this.overlay.css(opts.css).show();
+			this.overlay.css( opts.css ).show();
 		},
 
-		close: function () {
+		close : function() {
 			var scrollV, scrollH;
 
 			W.unbind('resize.overlay');
@@ -16046,20 +13508,20 @@ if (typeof jQuery === 'undefined') {
 
 				this.el.removeClass('fancybox-lock');
 
-				W.scrollTop(scrollV).scrollLeft(scrollH);
+				W.scrollTop( scrollV ).scrollLeft( scrollH );
 			}
 
 			$('.fancybox-overlay').remove().hide();
 
 			$.extend(this, {
-				overlay: null,
-				fixed: false
+				overlay : null,
+				fixed   : false
 			});
 		},
 
 		// Private, callbacks
 
-		update: function () {
+		update : function () {
 			var width = '100%', offsetWidth;
 
 			// Reset width/height so it will not mess
@@ -16080,7 +13542,7 @@ if (typeof jQuery === 'undefined') {
 		},
 
 		// This is where we can manipulate DOM, because later it would cause iframes to reload
-		onReady: function (opts, obj) {
+		onReady : function (opts, obj) {
 			var overlay = this.overlay;
 
 			$('.fancybox-overlay').stop(true, true);
@@ -16094,8 +13556,8 @@ if (typeof jQuery === 'undefined') {
 					this.margin = D.height() > W.height() ? $('html').css('margin-right').replace("px", "") : false;
 				}
 
-				obj.locked = this.overlay.append(obj.wrap);
-				obj.fixed = false;
+				obj.locked = this.overlay.append( obj.wrap );
+				obj.fixed  = false;
 			}
 
 			if (opts.showEarly === true) {
@@ -16103,13 +13565,13 @@ if (typeof jQuery === 'undefined') {
 			}
 		},
 
-		beforeShow: function (opts, obj) {
+		beforeShow : function(opts, obj) {
 			var scrollV, scrollH;
 
 			if (obj.locked) {
 				if (this.margin !== false) {
-					$('*').filter(function () {
-						return ($(this).css('position') === 'fixed' && !$(this).hasClass("fancybox-overlay") && !$(this).hasClass("fancybox-wrap"));
+					$('*').filter(function(){
+						return ($(this).css('position') === 'fixed' && !$(this).hasClass("fancybox-overlay") && !$(this).hasClass("fancybox-wrap") );
 					}).addClass('fancybox-margin');
 
 					this.el.addClass('fancybox-margin');
@@ -16120,13 +13582,13 @@ if (typeof jQuery === 'undefined') {
 
 				this.el.addClass('fancybox-lock');
 
-				W.scrollTop(scrollV).scrollLeft(scrollH);
+				W.scrollTop( scrollV ).scrollLeft( scrollH );
 			}
 
 			this.open(opts);
 		},
 
-		onUpdate: function () {
+		onUpdate : function() {
 			if (!this.fixed) {
 				this.update();
 			}
@@ -16137,7 +13599,7 @@ if (typeof jQuery === 'undefined') {
 			// (e.g., it is not being open using afterClose callback)
 			//if (this.overlay && !F.isActive) {
 			if (this.overlay && !F.coming) {
-				this.overlay.fadeOut(opts.speedOut, $.proxy(this.close, this));
+				this.overlay.fadeOut(opts.speedOut, $.proxy( this.close, this ));
 			}
 		}
 	};
@@ -16147,15 +13609,15 @@ if (typeof jQuery === 'undefined') {
 	 */
 
 	F.helpers.title = {
-		defaults: {
-			type: 'float', // 'float', 'inside', 'outside' or 'over',
-			position: 'bottom' // 'top' or 'bottom'
+		defaults : {
+			type     : 'float', // 'float', 'inside', 'outside' or 'over',
+			position : 'bottom' // 'top' or 'bottom'
 		},
 
 		beforeShow: function (opts) {
 			var current = F.current,
-				text = current.title,
-				type = opts.type,
+				text    = current.title,
+				type    = opts.type,
 				title,
 				target;
 
@@ -16172,15 +13634,15 @@ if (typeof jQuery === 'undefined') {
 			switch (type) {
 				case 'inside':
 					target = F.skin;
-					break;
+				break;
 
 				case 'outside':
 					target = F.wrap;
-					break;
+				break;
 
 				case 'over':
 					target = F.inner;
-					break;
+				break;
 
 				default: // 'float'
 					target = F.skin;
@@ -16188,41 +13650,41 @@ if (typeof jQuery === 'undefined') {
 					title.appendTo('body');
 
 					if (IE) {
-						title.width(title.width());
+						title.width( title.width() );
 					}
 
 					title.wrapInner('<span class="child"></span>');
 
 					//Increase bottom margin so this title will also fit into viewport
-					F.current.margin[2] += Math.abs(getScalar(title.css('margin-bottom')));
-					break;
+					F.current.margin[2] += Math.abs( getScalar(title.css('margin-bottom')) );
+				break;
 			}
 
-			title[(opts.position === 'top' ? 'prependTo' : 'appendTo')](target);
+			title[ (opts.position === 'top' ? 'prependTo'  : 'appendTo') ](target);
 		}
 	};
 
 	// jQuery plugin initialization
 	$.fn.fancybox = function (options) {
 		var index,
-			that = $(this),
+			that     = $(this),
 			selector = this.selector || '',
-			run = function (e) {
+			run      = function(e) {
 				var what = $(this).blur(), idx = index, relType, relVal;
 
 				if (!(e.ctrlKey || e.altKey || e.shiftKey || e.metaKey) && !what.is('.fancybox-wrap')) {
 					relType = options.groupAttr || 'data-fancybox-group';
-					relVal = what.attr(relType);
+					relVal  = what.attr(relType);
 
 					if (!relVal) {
 						relType = 'rel';
-						relVal = what.get(0)[relType];
+						relVal  = what.get(0)[ relType ];
 					}
 
 					if (relVal && relVal !== '' && relVal !== 'nofollow') {
 						what = selector.length ? $(selector) : that;
 						what = what.filter('[' + relType + '="' + relVal + '"]');
-						idx = what.index(this);
+						idx  = what.index(this);
 					}
 
 					options.index = idx;
@@ -16235,7 +13697,7 @@ if (typeof jQuery === 'undefined') {
 			};
 
 		options = options || {};
-		index = options.index || 0;
+		index   = options.index || 0;
 
 		if (!selector || options.live === false) {
 			that.unbind('click.fb-start').bind('click.fb-start', run);
@@ -16249,15 +13711,15 @@ if (typeof jQuery === 'undefined') {
 	};
 
 	// Tests that need a body at doc ready
-	D.ready(function () {
+	D.ready(function() {
 		var w1, w2;
 
-		if ($.scrollbarWidth === undefined) {
+		if ( $.scrollbarWidth === undefined ) {
 			// http://benalman.com/projects/jquery-misc-plugins/#scrollbarwidth
-			$.scrollbarWidth = function () {
+			$.scrollbarWidth = function() {
 				var parent = $('<div style="width:50px;height:50px;overflow:auto"><div/></div>').appendTo('body'),
-					child = parent.children(),
-					width = child.innerWidth() - child.height(99).innerWidth();
+					child  = parent.children(),
+					width  = child.innerWidth() - child.height( 99 ).innerWidth();
 
 				parent.remove();
 
@@ -16265,10 +13727,10 @@ if (typeof jQuery === 'undefined') {
 			};
 		}
 
-		if ($.support.fixedPosition === undefined) {
-			$.support.fixedPosition = (function () {
-				var elem = $('<div style="position:fixed;top:20px;"></div>').appendTo('body'),
-					fixed = (elem[0].offsetTop === 20 || elem[0].offsetTop === 15);
+		if ( $.support.fixedPosition === undefined ) {
+			$.support.fixedPosition = (function() {
+				var elem  = $('<div style="position:fixed;top:20px;"></div>').appendTo('body'),
+					fixed = ( elem[0].offsetTop === 20 || elem[0].offsetTop === 15 );
 
 				elem.remove();
 
@@ -16277,9 +13739,9 @@ if (typeof jQuery === 'undefined') {
 		}
 
 		$.extend(F.defaults, {
-			scrollbarWidth: $.scrollbarWidth(),
-			fixed: $.support.fixedPosition,
-			parent: $('body')
+			scrollbarWidth : $.scrollbarWidth(),
+			fixed  : $.support.fixedPosition,
+			parent : $('body')
 		});
 
 		//Get real width of page scroll-bar
@@ -17574,120 +15036,123 @@ This file is generated by `grunt build`, do not edit it by hand.
 		return Chosen;
 	})(AbstractChosen);
 }).call(this);
+(function() {
+  var loadDropdown;
 
-(function () {
-	var loadDropdown;
+  loadDropdown = function(selectControl, data) {
+    var currentOptions, d, i, id, idField, initialBlank, initialText, initialVal, len, objData, opt, text, textField;
+    if (data) {
+      objData = data.$values || data;
+    } else {
+      return;
+    }
+    idField = selectControl.attr('data-id') || 'id';
+    textField = selectControl.attr('data-text') || 'name';
+    initialBlank = selectControl.attr('data-placeholder') ? true : false;
+    initialText = selectControl.attr('data-initial-text');
+    initialVal = selectControl.attr('data-initial-val');
+    currentOptions = [];
+    selectControl.find('option').each(function() {
+      return currentOptions.push($(this).val());
+    });
+    selectControl.empty();
+    if (initialBlank) {
+      opt = $('<option>').text('');
+      selectControl.append(opt);
+    }
+    for (i = 0, len = objData.length; i < len; i++) {
+      d = objData[i];
+      id = d[idField];
+      text = d[textField];
+      opt = $('<option>', {
+        value: id
+      }).text(text);
+      if ((currentOptions && currentOptions.length > 0) && $.inArray(id.toString(), currentOptions) === -1) {
+        opt.attr('selected', 'selected');
+      }
+      if (initialText && initialText === text) {
+        opt.attr('selected', 'selected');
+      }
+      if (initialVal && initialVal.toString() === id.toString()) {
+        opt.attr('selected', 'selected');
+      }
+      selectControl.append(opt);
+    }
+    selectControl.trigger('chosen:updated');
+  };
 
-	loadDropdown = function (selectControl, data) {
-		var currentOptions, d, i, id, idField, initialBlank, initialText, initialVal, len, objData, opt, text, textField;
-		if (data) {
-			objData = data.$values || data;
-		} else {
-			return;
-		}
-		idField = selectControl.attr('data-id') || 'id';
-		textField = selectControl.attr('data-text') || 'name';
-		initialBlank = selectControl.attr('data-placeholder') ? true : false;
-		initialText = selectControl.attr('data-initial-text');
-		initialVal = selectControl.attr('data-initial-val');
-		currentOptions = [];
-		selectControl.find('option').each(function () {
-			return currentOptions.push($(this).val());
-		});
-		selectControl.empty();
-		if (initialBlank) {
-			opt = $('<option>').text('');
-			selectControl.append(opt);
-		}
-		for (i = 0, len = objData.length; i < len; i++) {
-			d = objData[i];
-			id = d[idField];
-			text = d[textField];
-			opt = $('<option>', {
-				value: id
-			}).text(text);
-			if ((currentOptions && currentOptions.length > 0) && $.inArray(id.toString(), currentOptions) === -1) {
-				opt.attr('selected', 'selected');
-			}
-			if (initialText && initialText === text) {
-				opt.attr('selected', 'selected');
-			}
-			if (initialVal && initialVal.toString() === id.toString()) {
-				opt.attr('selected', 'selected');
-			}
-			selectControl.append(opt);
-		}
-		selectControl.trigger('chosen:updated');
-	};
+  $(document).ready(function() {
+    $('select[data-url]').each(function() {
+      var _this, opts;
+      _this = $(this);
+      opts = {};
+      if (_this.attr('data-placeholder')) {
+        opts.allow_single_deselect = true;
+      }
+      opts.width = _this.attr('data-width') || '100%';
+      _this.chosen(opts);
+      return $.ajax({
+        method: 'GET',
+        url: _this.attr('data-url')
+      }).done(function(html) {
+        return loadDropdown(_this, html);
+      });
+    });
+  });
 
-	$(document).ready(function () {
-		$('select[data-url]').each(function () {
-			var _this, opts;
-			_this = $(this);
-			opts = {};
-			if (_this.attr('data-placeholder')) {
-				opts.allow_single_deselect = true;
-			}
-			opts.width = _this.attr('data-width') || '100%';
-			_this.chosen(opts);
-			return $.ajax({
-				method: 'GET',
-				url: _this.attr('data-url')
-			}).done(function (html) {
-				return loadDropdown(_this, html);
-			});
-		});
-	});
 }).call(this);
 
-(function () {
-	jQuery.extend({
-		closeFancyboxAndRefreshParent: function () {
-			parent.$.fancybox.close();
-			return parent.$.reloadWindow();
-		}
-	});
+(function() {
+  jQuery.extend({
+    closeAndRefreshParent: function() {
+      parent.$.fancybox.close();
+      return parent.$.reloadWindow();
+    }
+  });
 
-	$(document).ready(function () {
-		$('.datepicker').each(function () {
-			return $(this).datepicker();
-		});
-		$('.remove-object').each(function () {
-			return $(this).on('click', function (e) {
-				e.preventDefault();
-				return $.ajax({
-					url: $(this).attr('href'),
-					method: 'DELETE',
-					success: function () {
-						return window.location.reload();
-					}
-				});
-			});
-		});
-		$('[email-src]').each(function () {
-			return $(this).blur(function () {
-				var dest;
-				if ($(this).val().length > 0) {
-					dest = '#' + $(this).attr('email-dest');
-					return $(dest).val($(this).val().replace(' ', '.') + '@ffspaducah.com');
-				}
-			});
-		});
-		return $('.fancybox').each(function () {
-			var _this, opts;
-			_this = $(this);
-			opts = {};
-			opts.type = 'iframe';
-			opts.autoSize = false;
-			opts.width = $(this).attr('data-width') || '640px';
-			opts.height = $(this).attr('data-height') || '480px';
-			opts.closeBtn = $(this).is('[close-button]');
-			opts.iframe = {};
-			opts.iframe.scrolling = 'no';
-			opts.afterClose = function () {
-				return parent.window.location.reload();
-			};
-			return $(this).fancybox(opts);
-		});
-	});
+  $(document).ready(function() {
+    $('.datepicker').each(function() {
+      return $(this).datepicker();
+    });
+    $('.remove-object').each(function() {
+      return $(this).on('click', function(e) {
+        e.preventDefault();
+        if (confirm('Are you sure you wish to delete this object?')) {
+          return $.ajax({
+            url: $(this).attr('href'),
+            method: 'DELETE',
+            success: function() {
+              return window.location.reload();
+            }
+          });
+        }
+      });
+    });
+    $('[email-src]').each(function() {
+      return $(this).blur(function() {
+        var dest;
+        if ($(this).val().length > 0) {
+          dest = '#' + $(this).attr('email-dest');
+          return $(dest).val($(this).val().replace(' ', '.') + '@ffspaducah.com');
+        }
+      });
+    });
+    return $('.fancybox').each(function() {
+      var _this, opts;
+      _this = $(this);
+      opts = {};
+      opts.type = 'iframe';
+      opts.autoSize = false;
+      opts.width = $(this).attr('data-width') || '640px';
+      opts.height = $(this).attr('data-height') || '480px';
+      opts.closeBtn = $(this).is('[close-button]');
+      opts.iframe = {};
+      opts.iframe.scrolling = 'no';
+      opts.afterClose = function() {
+        return parent.window.location.reload();
+      };
+      return $(this).fancybox(opts);
+    });
+  });
+
 }).call(this);

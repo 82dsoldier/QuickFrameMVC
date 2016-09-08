@@ -17,7 +17,7 @@ using System.Security.Claims;
 using static QuickFrame.Security.AuthorizationExtensions;
 
 namespace QuickFrame.Mvc {
-
+	[Obsolete("Use ControllerCore<TDataType, TEntity, TIndex, TEdit> instead")]
 	public abstract class GenericControllerCore<TDataType, TEntity, TIndex, TEdit>
 		: Controller
 		where TIndex : IGenericDataTransferObject<TEntity, TIndex>

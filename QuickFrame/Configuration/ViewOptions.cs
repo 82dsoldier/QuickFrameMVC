@@ -1,34 +1,21 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
 
+/// <include file='Doc/Documentation.xml' path='QuickFrame/documentation[@name="Configuration"]'/> 
 namespace QuickFrame.Configuration {
 
-	/// <summary>
-	/// The options from the appsettings.json file that provide paging information to the controllers
-	/// </summary>
+	/// <include file='Doc/Documentation.xml' path='QuickFrame/Configuration/documentation[@name="ViewOptions"]'/> 
 	public class ViewOptions {
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ViewOptions"/> class.
-		/// </summary>
+		/// <include file='Doc/Documentation.xml' path='QuickFrame/Configuration/ViewOptions/documentation[@name="ViewOptions"]'/> 
 		public ViewOptions() {
 			PerPageList = new List<SelectListItem>();
 		}
 
-		/// <summary>
-		/// Gets or sets the per page list.
-		/// </summary>
-		/// <value>
-		/// The per page list.
-		/// </value>
+		/// <include file='Doc/Documentation.xml' path='QuickFrame/Configuration/ViewOptions/documentation[@name="PerPageList"]'/> 
 		public List<SelectListItem> PerPageList { get; set; }
 
-		/// <summary>
-		/// Gets or sets the per page default.
-		/// </summary>
-		/// <value>
-		/// The per page default.
-		/// </value>
+		/// <include file='Doc/Documentation.xml' path='QuickFrame/Configuration/ViewOptions/documentation[@name="PerPageDefault"]'/> 
 		public string PerPageDefault { get; set; }
 	}
 }

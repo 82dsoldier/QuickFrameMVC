@@ -3,12 +3,15 @@ using System;
 using System.Composition;
 using System.Reflection;
 
+/// <include file='Doc/Documentation.xml' path='QuickFrame/documentation[@name="DI"]'/> 
 namespace QuickFrame.Di {
 
+	/// <include file='Doc/Documentation.xml' path='QuickFrame/Di/documentation[@name="ComponentContainer"]'/> 
 	public static class ComponentContainer {
 		private static IContainer _container;
 		private static ContainerBuilder _containerBuilder;
 
+		/// <include file='Doc/Documentation.xml' path='QuickFrame/Di/ComponentContainer/documentation[@name="Builder"]'/> 
 		public static ContainerBuilder Builder
 		{
 			get
@@ -19,6 +22,7 @@ namespace QuickFrame.Di {
 			}
 		}
 
+		/// <include file='Doc/Documentation.xml' path='QuickFrame/Di/ComponentContainer/documentation[@name="ServiceProvider"]'/> 
 		public static IServiceProvider ServiceProvider
 		{
 			get
@@ -29,10 +33,13 @@ namespace QuickFrame.Di {
 			}
 		}
 
+		/// <include file='Doc/Documentation.xml' path='QuickFrame/Di/ComponentContainer/documentation[@name="Component{TObject}"]'/> 
 		public static ComponentFactory<TObject> Component<TObject>() => new ComponentFactory<TObject>(_container);
 
+		/// <include file='Doc/Documentation.xml' path='QuickFrame/Di/ComponentContainer/documentation[@name="Component"]'/> 
 		public static ComponentFactoryEx Component(Type typeToResolve) => new ComponentFactoryEx(_container, typeToResolve);
 
+		/// <include file='Doc/Documentation.xml' path='QuickFrame/Di/ComponentContainer/documentation[@name="Register"]'/> 
 		public static void RegisterAssembly(Assembly assembly) {
 			if(assembly == null)
 				return;
@@ -61,33 +68,37 @@ namespace QuickFrame.Di {
 		}
 	}
 
+	/// <include file='Doc/Documentation.xml' path='QuickFrame/Di/documentation[@name="ComponentFactory"]'/> 
 	public class ComponentFactory<TObject> : IDisposable {
-		protected TObject CurrentObject;
-		protected ILifetimeScope CurrentScope;
+		private TObject CurrentObject;
+		private ILifetimeScope CurrentScope;
+
+		/// <include file='Doc/Documentation.xml' path='QuickFrame/Di/ComponentFactory/documentation[@name="Current"]'/> 
 		public TObject Current => (TObject)CurrentObject;
 
+		/// <include file='Doc/Documentation.xml' path='QuickFrame/Di/ComponentFactory/documentation[@name="ComponentFactory"]'/> 
 		public ComponentFactory(IContainer container) {
 			CurrentScope = container.BeginLifetimeScope();
 
 			CurrentObject = CurrentScope.Resolve<TObject>();
 		}
 
+		/// <include file='Doc/Documentation.xml' path='QuickFrame/Di/ComponentFactory/documentation[@name="Component"]'/> 
 		public TObject Component => CurrentObject;
 
+		/// <include file='Doc/Documentation.xml' path='QuickFrame/Di/ComponentFactory/documentation[@name="Dispose"]'/> 
 		public void Dispose() {
 			(CurrentObject as IDisposable)?.Dispose();
 			CurrentScope.Dispose();
 		}
-
-		public static implicit operator TObject(ComponentFactory<TObject> obj) {
-			return obj.Component;
-		}
 	}
 
+	/// <include file='Doc/Documentation.xml' path='QuickFrame/Di/documentation[@name="ComponentFactoryEx"]'/> 
 	public class ComponentFactoryEx : IDisposable {
-		protected object CurrentObject;
-		protected ILifetimeScope CurrentScope;
+		private object CurrentObject;
+		private ILifetimeScope CurrentScope;
 
+		/// <include file='Doc/Documentation.xml' path='QuickFrame/Di/ComponentFactoryEx/documentation[@name="Current"]'/> 
 		public object Current => CurrentObject;
 
 		public ComponentFactoryEx(IContainer container, Type typeToResolve) {

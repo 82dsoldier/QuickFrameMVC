@@ -8,8 +8,7 @@ using System.Security.Claims;
 using static QuickFrame.Security.AuthorizationExtensions;
 
 namespace QuickFrame.Mvc {
-
-	[Roles(new[] { "SiteUsers" })]
+	[Obsolete("Use ControllerCore<TEntity, T1, T2, TIndex, TEdit> instead")]
 	public abstract class CompositeController<TPrimaryDataType, TSecondaryDataType, TEntity, TIndex, TEdit>
 		: Controller
 		where TIndex : IGenericDataTransferObject<TEntity, TIndex>

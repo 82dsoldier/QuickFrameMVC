@@ -24,7 +24,7 @@ namespace QuickFrame.Security.AccountControl.Data.Dtos {
 					try {
 						uri = new Uri(src.Url);
 					} catch {
-						HttpContextAccessor contextAccessor = ComponentContainer.Component<HttpContextAccessor>();
+						HttpContextAccessor contextAccessor = ComponentContainer.Component<HttpContextAccessor>().Component;
 						var request = contextAccessor.HttpContext.Request;
 						uri = new Uri(String.Format("{0}{1}", $"{request.Scheme}://{request.Host}", src.Url));
 					}

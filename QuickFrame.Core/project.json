@@ -2,7 +2,7 @@
   "title": "QuickFrame Core",
   "description": "Entry point for the QuickFrame framework.  Provides a base startup file with the most common options selected.",
   "language": "en-US",
-  "version": "1.0.0-beta-4",
+  "version": "1.0.0-beta-1-r4",
   "authors": ["Drew Burchett"],
 
   "dependencies": {

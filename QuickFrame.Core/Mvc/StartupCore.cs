@@ -89,7 +89,7 @@ namespace QuickFrame.Core.Mvc {
 
 			//app.UseQuickFrameAttachmentsUi();
 			app.UseStaticFiles();
-			app.UseEmbeddedFileProviders();
+			//app.UseEmbeddedFileProviders();
 			app.UseSession();
 
 			app.UseMvc(routes => {

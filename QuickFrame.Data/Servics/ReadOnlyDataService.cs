@@ -37,18 +37,6 @@ namespace QuickFrame.Data.Services {
 		public virtual IEnumerable<TResult> GetList<TResult>(int start = 0, int count = 0, string columnName = "Name", SortOrder sortOrder = SortOrder.Ascending, bool includeDeleted = false)
 			=> GetListBase<TResult>(start, count, columnName, sortOrder, includeDeleted);
 
-		//	{
-		//	using(var contextFactory = ComponentContainer.Component<TContext>()) {
-		//		var query = sortOrder == SortOrder.Ascending ? contextFactory.Component.Set<TEntity>().OrderBy(columnName) : contextFactory.Component.Set<TEntity>().OrderByDescending(columnName);
-		//		if(start > 0)
-		//			query = query.Skip(start);
-		//		if(count > 0)
-		//			query = query.Take(count);
-		//		foreach(var obj in query)
-		//			yield return Mapper.Map<TEntity, TResult>(obj);
-		//	}
-		//}
-
 		public virtual Task<IEnumerable<TResult>> GetListAsync<TResult>(int start = 0, int count = 0, string columnName = "Name", SortOrder sortOrder = SortOrder.Ascending, bool includeDeleted = false)
 			=> Task.Run(() => GetList<TResult>(start, count, columnName, sortOrder));
 

@@ -54,7 +54,7 @@ namespace QuickFrame.Security.AccountControl.ActiveDirectory {
 										select role.Name).ToList() as IList<string>);
 			}
 		}
-
+		//TODO:  I just realized why I would need this function so fix it so that it actually returns an ID
 		public Task<string> GetUserIdAsync(SiteUser user, CancellationToken cancellationToken) => Task.FromResult(user.Id);
 
 		public Task<string> GetUserNameAsync(SiteUser user, CancellationToken cancellationToken) => Task.FromResult(user.UserName);

@@ -62,8 +62,8 @@ namespace QuickFrame.Security {
 					typeof(RolesController).GetTypeInfo().Assembly,
 					"QuickFrame.Security"));
 
-			var userManager = ComponentContainer.Component<QuickFrameUserManager>();
-			var roleManager = ComponentContainer.Component<QuickFrameRoleManager>();
+			var userManager = ComponentContainer.Component<QuickFrameUserManager>().Component;
+			var roleManager = ComponentContainer.Component<QuickFrameRoleManager>().Component;
 
 			app.UseClaimsTransformation(new ClaimsTransformationOptions {
 				Transformer = new QuickFrameClaimsTransformer(userManager, roleManager)

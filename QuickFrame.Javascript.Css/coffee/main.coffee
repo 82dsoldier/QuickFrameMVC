@@ -20,11 +20,12 @@ $(document).ready ->
     $('.remove-object').each ->
         $(this).on 'click', (e)->
             e.preventDefault();
-            $.ajax
-                url: $(this).attr('href'),
-                method: 'DELETE',
-                success: ->
-                    window.location.reload()
+            if(confirm('Are you sure you wish to delete this object?'))
+                $.ajax
+                    url: $(this).attr('href'),
+                    method: 'DELETE',
+                    success: ->
+                        window.location.reload()
 
     $('[email-src]').each ->
         $(this).blur ->

@@ -2,7 +2,7 @@
   "title": "QuickFrame.Mvc",
   "description": "QuickFrame MVC base.",
   "language": "en-US",
-  "version": "1.0.0-beta-10",
+  "version": "1.0.0-beta-1-r11",
   "authors": [ "Drew Burchett" ],
   "buildOptions": {
     "embed": ["Views/**"]

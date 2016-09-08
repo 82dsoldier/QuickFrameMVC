@@ -1,6 +1,7 @@
 ﻿using ExpressMapper;
 using QuickFrame.Data.Interfaces;
 using QuickFrame.Di;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.SqlClient;
@@ -9,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace QuickFrame.Data.Servics {
 
+	[Obsolete("Use DataService<TContext, T1, T2, TEntity> instead")]
 	public abstract class CompositeDataService<TContext, TPrimaryDataType, TSecondaryDataType, TEntity>
 		: ICompositeDataService<TPrimaryDataType, TSecondaryDataType, TEntity>
 		where TContext : DbContext

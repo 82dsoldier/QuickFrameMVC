@@ -5,14 +5,22 @@ using QuickFrame.Security.AccountControl.Data.Models;
 using QuickFrame.Security.AccountControl.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Claims;
 
 namespace QuickFrame.Security {
 
 	public static class AuthorizationExtensions {
+		private static bool useSecurity = true;
 
 		public static IActionResult AuthorizeExecution(ClaimsPrincipal user, string currentUrl, Func<IActionResult> func) {
+			useSecurity = true;
+			ExecuteWithoutSecurity();
+
+			if(!useSecurity)
+				return func();
+
 			var claim = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Authentication);
 			if(claim == null)
 				GetRolesForPrincipal(user);
@@ -35,6 +43,11 @@ namespace QuickFrame.Security {
 				}
 			}
 			return (IActionResult)(new UnauthorizedResult());
+		}
+
+		[Conditional("NOSECURITY")]
+		private static void ExecuteWithoutSecurity() {
+			useSecurity = false;
 		}
 
 		public static bool? IsUrlMatch(this string first, string second) {
@@ -95,4 +108,3 @@ namespace QuickFrame.Security {
 		}
 	}
 }
-
