@@ -10,7 +10,9 @@ namespace QuickFrame.Security.AccountControl {
 		private QuickFrameRoleManager _roleManager;
 
 		public Task<ClaimsPrincipal> TransformAsync(ClaimsTransformationContext context) {
-			GetRolesForPrincipal(context.Principal);
+			if(!ExecuteWithoutSecurity())
+				GetRolesForPrincipal(context.Principal);
+
 			return Task.FromResult(context.Principal);
 			//var claim = context.Principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
 			//if(claim == null) {

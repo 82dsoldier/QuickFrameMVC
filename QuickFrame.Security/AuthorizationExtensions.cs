@@ -5,20 +5,15 @@ using QuickFrame.Security.AccountControl.Data.Models;
 using QuickFrame.Security.AccountControl.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Security.Claims;
 
 namespace QuickFrame.Security {
 
 	public static class AuthorizationExtensions {
-		private static bool useSecurity = true;
 
 		public static IActionResult AuthorizeExecution(ClaimsPrincipal user, string currentUrl, Func<IActionResult> func) {
-			useSecurity = true;
-			ExecuteWithoutSecurity();
-
-			if(!useSecurity)
+			if(ExecuteWithoutSecurity())
 				return func();
 
 			var claim = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Authentication);
@@ -45,9 +40,18 @@ namespace QuickFrame.Security {
 			return (IActionResult)(new UnauthorizedResult());
 		}
 
-		[Conditional("NOSECURITY")]
-		private static void ExecuteWithoutSecurity() {
-			useSecurity = false;
+		public static bool ExecuteWithoutSecurity() {
+			var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+			var sec = Environment.GetEnvironmentVariable("NOSECURITY");
+			var useSecurity = true;
+
+			if(env != null) {
+				if(env.Equals("DEBUG", StringComparison.CurrentCultureIgnoreCase)) {
+					Boolean.TryParse(sec, out useSecurity);
+				}
+			}
+
+			return useSecurity;
 		}
 
 		public static bool? IsUrlMatch(this string first, string second) {
