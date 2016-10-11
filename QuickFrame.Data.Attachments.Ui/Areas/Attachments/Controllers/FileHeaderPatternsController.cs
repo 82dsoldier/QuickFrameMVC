@@ -3,13 +3,15 @@ using QuickFrame.Data.Attachments.Dtos;
 using QuickFrame.Data.Attachments.Interfaces;
 using QuickFrame.Data.Attachments.Models;
 using QuickFrame.Mvc;
+using QuickFrame.Mvc.Controllers;
+using QuickFrame.Security;
 
 namespace QuickFrame.Data.Attachments.Ui.Areas.Attachments.Controllers {
 
 	[Area("Attachments")]
-	public class FileHeaderPatternsController : ControllerCore<FileHeaderPattern, FileHeaderPatternDto, FileHeaderPatternDto> {
+	public class FileHeaderPatternsController : QfController<FileHeaderPattern, FileHeaderPatternDto, FileHeaderPatternDto> {
 
-		public FileHeaderPatternsController(IFileHeaderPatternsDataService dataService) : base(dataService) {
+		public FileHeaderPatternsController(IFileHeaderPatternsDataService dataService, QuickFrameSecurityManager securityManager) : base(dataService, securityManager) {
 		}
 	}
 }

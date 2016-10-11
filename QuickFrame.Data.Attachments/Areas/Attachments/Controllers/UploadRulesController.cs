@@ -3,16 +3,18 @@ using QuickFrame.Data.Attachments.Dtos;
 using QuickFrame.Data.Attachments.Interfaces;
 using QuickFrame.Data.Attachments.Models;
 using QuickFrame.Mvc;
+using QuickFrame.Mvc.Controllers;
+using QuickFrame.Security;
 using System.Data.SqlClient;
 
 namespace QuickFrame.Data.Attachments.Areas.Attachments.Controllers {
 
 	[Area("Attachments")]
-	public class UploadRulesController : ControllerCore<UploadRule, UploadRuleIndexDto, UploadRuleEditDto> {
+	public class UploadRulesController : QfController<UploadRule, UploadRuleIndexDto, UploadRuleEditDto> {
 
 		[HttpGet]
 		public IActionResult Activate(int id) {
-			var model = _dataService.Get<UploadRuleEditDto>(id);
+			var model = (_dataService as IUploadRulesDataService).Get<UploadRuleEditDto>(id);
 			model.Priority = (_dataService as IUploadRulesDataService).GetLastPriority();
 			return View(model);
 		}
@@ -30,18 +32,18 @@ namespace QuickFrame.Data.Attachments.Areas.Attachments.Controllers {
 
 		[HttpGet]
 		public IActionResult Deactivate(int id) {
-			var model = _dataService.Get(id);
+			var model = (_dataService as IUploadRulesDataService).Get(id);
 			model.IsActive = false;
 			model.Priority = null;
 			_dataService.Save(model);
 			return new ObjectResult(true);
 		}
 
-		protected override IActionResult IndexBase<TResult>(int page = 1, int itemsPerPage = 25, string sortColumn = "Name", SortOrder sortOrder = SortOrder.Ascending) {
-			return base.IndexBase<TResult>(page, itemsPerPage, "Priority", sortOrder);
+		protected override IActionResult IndexCore<TResult>(string searchTerm = "", int page = 1, int itemsPerPage = 25, string sortColumn = "Name", SortOrder sortOrder = SortOrder.Ascending, bool includeDeleted = false) {
+			return base.IndexCore<TResult>(searchTerm, page, itemsPerPage, "Priority", sortOrder, includeDeleted);
 		}
 
-		public UploadRulesController(IUploadRulesDataService dataService) : base(dataService) {
+		public UploadRulesController(IUploadRulesDataService dataService, QuickFrameSecurityManager securityManager) : base(dataService, securityManager) {
 		}
 	}
 }

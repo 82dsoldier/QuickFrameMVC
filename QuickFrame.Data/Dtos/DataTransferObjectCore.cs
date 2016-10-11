@@ -1,13 +1,12 @@
 ﻿using ExpressMapper;
-using QuickFrame.Data.Interfaces;
-using QuickFrame.Data.Models;
+using QuickFrame.Data.Interfaces.Dtos;
+using QuickFrame.Data.Interfaces.Models;
 
-namespace QuickFrame.Data {
+namespace QuickFrame.Data.Dtos {
 
-	public class DataTransferObjectCore<TDataType, TSrc, TDest>
-		: DataModel<TDataType>,
-		IDataTransferObject<TDataType, TSrc, TDest>
-		where TSrc : IDataModel<TDataType> {
+	public class DataTransferObjectCore<TSrc, TDest>
+		: IDataTransferObjectCore
+		where TSrc : IDataModelCore {
 
 		public virtual void Register() {
 			Mapper.Register<TSrc, TDest>();

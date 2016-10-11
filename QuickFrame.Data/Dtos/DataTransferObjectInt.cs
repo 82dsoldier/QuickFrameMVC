@@ -1,10 +1,11 @@
-﻿using QuickFrame.Data.Interfaces;
+﻿using QuickFrame.Data.Interfaces.Dtos;
+using QuickFrame.Data.Interfaces.Models;
 
-namespace QuickFrame.Data {
+namespace QuickFrame.Data.Dtos {
 
 	public class DataTransferObjectInt<TSrc, TDest>
-		: DataTransferObjectCore<int, TSrc, TDest>,
-		IDataTransferObjectInt<TSrc, TDest>
-		where TSrc : IDataModelInt {
+		: DataTransferObject<TSrc, TDest, int>,
+		IDataTransferObjectInt
+		where TSrc : class, IDataModel<int> {
 	}
 }

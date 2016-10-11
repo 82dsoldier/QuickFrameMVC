@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using QuickFrame.Security.AccountControl;
-using QuickFrame.Security.AccountControl.Data.Dtos;
-using QuickFrame.Security.AccountControl.Data.Models;
+using QuickFrame.Security.AccountControl.Dtos;
+using QuickFrame.Security.AccountControl.Models;
 using QuickFrame.Security.Areas.Security.Models;
 using System;
 using System.Collections.Generic;
@@ -149,6 +149,7 @@ namespace QuickFrame.Security.Areas.Security.Controllers {
 			var filterList = filter.Split(',').ToList();
 			return new ObjectResult(_roleManager.Roles.Where(r => !filterList.Contains(r.Name)));
 		}
+
 		public RolesController(QuickFrameRoleManager roleManager, UserManager<SiteUser> userManager, GroupManager<SiteGroup> groupManager) {
 			_roleManager = roleManager;
 			_userManager = userManager;

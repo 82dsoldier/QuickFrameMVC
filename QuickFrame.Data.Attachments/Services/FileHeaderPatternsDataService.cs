@@ -7,5 +7,8 @@ namespace QuickFrame.Data.Attachments.Services {
 
 	[Export]
 	public class FileHeaderPatternsDataService : DataService<AttachmentsContext, FileHeaderPattern>, IFileHeaderPatternsDataService {
+
+		public FileHeaderPatternsDataService(AttachmentsContext context) : base(context) {
+		}
 	}
 }

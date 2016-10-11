@@ -1,11 +1,10 @@
 ﻿using ExpressMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
-using QuickFrame.Di;
+using QuickFrame.Data;
 using QuickFrame.Security.AccountControl.ActiveDirectory.AdLookup;
-using QuickFrame.Security.AccountControl.ActiveDirectory.Configuration;
 using QuickFrame.Security.AccountControl.Data;
-using QuickFrame.Security.AccountControl.Data.Models;
+using QuickFrame.Security.AccountControl.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,16 +14,15 @@ using System.Threading.Tasks;
 namespace QuickFrame.Security.AccountControl.ActiveDirectory {
 
 	public class AdUserStore : IUserStore<SiteUser>, IUserRoleStore<SiteUser>, IQueryableUserStore<SiteUser> {
+		private SecurityContext _context;
 		public IQueryable<SiteUser> Users { get { return Mapper.Map<IEnumerable<Person>, IEnumerable<SiteUser>>(AccountService.GetAccounts()).AsQueryable(); } }
 
 		public Task AddToRoleAsync(SiteUser user, string roleName, CancellationToken cancellationToken) {
-			using(var context = ComponentContainer.Component<SecurityContext>()) {
-				var userRole = new UserRole();
-				userRole.RoleId = user.Id;
-				userRole.RoleId = context.Component.SiteRoles.First(r => r.Name == roleName).Id;
-				context.Component.UserRoles.Add(userRole);
-				return Task.FromResult(context.Component.SaveChanges());
-			}
+			var userRole = new UserRole();
+			userRole.RoleId = user.Id;
+			userRole.RoleId = _context.SiteRoles.First(r => r.Name == roleName).Id;
+			_context.UserRoles.Add(userRole);
+			return Task.FromResult(_context.SaveChanges());
 		}
 
 		public Task<IdentityResult> CreateAsync(SiteUser user, CancellationToken cancellationToken) {
@@ -48,13 +46,11 @@ namespace QuickFrame.Security.AccountControl.ActiveDirectory {
 		public Task<string> GetNormalizedUserNameAsync(SiteUser user, CancellationToken cancellationToken) => Task.FromResult(user.NormalizedUserName);
 
 		public Task<IList<string>> GetRolesAsync(SiteUser user, CancellationToken cancellationToken) {
-			using(var context = ComponentContainer.Component<SecurityContext>()) {
-				return Task.FromResult((from role in context.Component.SiteRoles
-										where role.UserRoles.Any(ur => ur.UserId == user.Id)
-										select role.Name).ToList() as IList<string>);
-			}
+			return Task.FromResult((from role in _context.SiteRoles
+									where role.UserRoles.Any(ur => ur.UserId == user.Id)
+									select role.Name).ToList() as IList<string>);
 		}
-		//TODO:  I just realized why I would need this function so fix it so that it actually returns an ID
+
 		public Task<string> GetUserIdAsync(SiteUser user, CancellationToken cancellationToken) => Task.FromResult(user.Id);
 
 		public Task<string> GetUserNameAsync(SiteUser user, CancellationToken cancellationToken) => Task.FromResult(user.UserName);
@@ -71,12 +67,10 @@ namespace QuickFrame.Security.AccountControl.ActiveDirectory {
 		}
 
 		public Task RemoveFromRoleAsync(SiteUser user, string roleName, CancellationToken cancellationToken) {
-			using(var context = ComponentContainer.Component<SecurityContext>()) {
-				var role = (context.Component.SiteRoles.First(siteRole => siteRole.Name.Equals(roleName, StringComparison.CurrentCultureIgnoreCase)));
-				var userRole = context.Component.UserRoles.First(r => r.UserId == user.Id && r.RoleId == role.Id);
-				context.Component.UserRoles.Remove(userRole);
-				return Task.FromResult(context.Component.SaveChanges());
-			}
+			var role = (_context.SiteRoles.First(siteRole => siteRole.Name.Equals(roleName, StringComparison.CurrentCultureIgnoreCase)));
+			var userRole = _context.UserRoles.First(r => r.UserId == user.Id && r.RoleId == role.Id);
+			_context.UserRoles.Remove(userRole);
+			return Task.FromResult(_context.SaveChanges());
 		}
 
 		public Task SetNormalizedUserNameAsync(SiteUser user, string normalizedName, CancellationToken cancellationToken) {
@@ -93,20 +87,19 @@ namespace QuickFrame.Security.AccountControl.ActiveDirectory {
 		}
 
 		private IEnumerable<string> GetUserIdsInRole(string roleName) {
-			using(var context = ComponentContainer.Component<SecurityContext>()) {
-				foreach(var obj in from userRole in context.Component.UserRoles
-								   where userRole.RoleId ==
-										(from role in context.Component.SiteRoles
-										 where role.NormalizedName == roleName
-										 select role.Id).FirstOrDefault()
-								   select userRole.UserId) {
-					yield return obj;
-				}
+			foreach(var obj in from userRole in _context.UserRoles
+							   where userRole.RoleId ==
+								   (from role in _context.SiteRoles
+									where role.NormalizedName == roleName
+									select role.Id).FirstOrDefault()
+							   select userRole.UserId) {
+				yield return obj;
 			}
 		}
 
-		public AdUserStore(IOptions<AdOptions> options) {
-			AccountService.SearchPath = options.Value.SearchPath;
+		public AdUserStore(IOptions<DataOptions> options, SecurityContext context) {
+			AccountService.SearchPath = options.Value.ConnectionString.AdSecurity;
+			_context = context;
 		}
 	}
 }

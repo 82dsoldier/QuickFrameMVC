@@ -1,12 +1,11 @@
 ﻿using ExpressMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
-using QuickFrame.Di;
+using QuickFrame.Data;
 using QuickFrame.Security.AccountControl.ActiveDirectory.AdLookup;
-using QuickFrame.Security.AccountControl.ActiveDirectory.Configuration;
 using QuickFrame.Security.AccountControl.Data;
-using QuickFrame.Security.AccountControl.Data.Models;
 using QuickFrame.Security.AccountControl.Interfaces;
+using QuickFrame.Security.AccountControl.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +15,12 @@ using System.Threading.Tasks;
 namespace QuickFrame.Security.AccountControl.ActiveDirectory {
 
 	public class AdGroupStore : IGroupStore<SiteGroup>, IGroupRoleStore<SiteGroup>, IQueryableGroupStore<SiteGroup> {
+		private SecurityContext _context;
+
+		public AdGroupStore(IOptions<DataOptions> options, SecurityContext context) {
+			_context = context;
+			GroupService.SearchPath = options.Value.ConnectionString.AdSecurity;
+		}
 
 		public IQueryable<SiteGroup> Groups
 		{
@@ -29,13 +34,11 @@ namespace QuickFrame.Security.AccountControl.ActiveDirectory {
 		}
 
 		public Task AddToRoleAsync(SiteGroup group, string roleName, CancellationToken cancellationToken) {
-			using(var context = ComponentContainer.Component<SecurityContext>()) {
-				var groupRole = new GroupRole();
-				groupRole.GroupId = group.Id;
-				groupRole.RoleId = context.Component.SiteRoles.First(r => r.Name == roleName).Id;
-				context.Component.GroupRoles.Add(groupRole);
-				return Task.FromResult(context.Component.SaveChanges());
-			}
+			var groupRole = new GroupRole();
+			groupRole.GroupId = group.Id;
+			groupRole.RoleId = _context.SiteRoles.First(r => r.Name == roleName).Id;
+			_context.GroupRoles.Add(groupRole);
+			return Task.FromResult(_context.SaveChanges());
 		}
 
 		public Task<IdentityResult> CreateAsync(SiteGroup user, CancellationToken cancellationToken) {
@@ -68,11 +71,9 @@ namespace QuickFrame.Security.AccountControl.ActiveDirectory {
 		public Task<string> GetNormalizedGroupNameAsync(SiteGroup group, CancellationToken cancellationToken) => Task.FromResult(group.Name.ToUpper());
 
 		public Task<IList<string>> GetRolesAsync(SiteGroup siteGroup, CancellationToken cancellationToken) {
-			using(var context = ComponentContainer.Component<SecurityContext>()) {
-				return Task.FromResult((from role in context.Component.SiteRoles
-										where role.GroupRoles.Any(ur => ur.GroupId == siteGroup.Id)
-										select role.Name).ToList() as IList<string>);
-			}
+			return Task.FromResult((from role in _context.SiteRoles
+									where role.GroupRoles.Any(ur => ur.GroupId == siteGroup.Id)
+									select role.Name).ToList() as IList<string>);
 		}
 
 		public Task<bool> IsInRoleAsync(SiteGroup group, string roleName, CancellationToken cancellationToken) {
@@ -81,12 +82,10 @@ namespace QuickFrame.Security.AccountControl.ActiveDirectory {
 		}
 
 		public Task RemoveFromRoleAsync(SiteGroup group, string roleName, CancellationToken cancellationToken) {
-			using(var context = ComponentContainer.Component<SecurityContext>()) {
-				var role = (context.Component.SiteRoles.First(siteRole => siteRole.Name.Equals(roleName, StringComparison.CurrentCultureIgnoreCase)));
-				var groupRole = context.Component.GroupRoles.First(r => r.GroupId == group.Id && r.RoleId == role.Id);
-				context.Component.GroupRoles.Remove(groupRole);
-				return Task.FromResult(context.Component.SaveChanges());
-			}
+			var role = (_context.SiteRoles.First(siteRole => siteRole.Name.Equals(roleName, StringComparison.CurrentCultureIgnoreCase)));
+			var groupRole = _context.GroupRoles.First(r => r.GroupId == group.Id && r.RoleId == role.Id);
+			_context.GroupRoles.Remove(groupRole);
+			return Task.FromResult(_context.SaveChanges());
 		}
 
 		public Task SetGroupNameAsync(SiteGroup user, string userName, CancellationToken cancellationToken) {
@@ -102,20 +101,14 @@ namespace QuickFrame.Security.AccountControl.ActiveDirectory {
 		}
 
 		private IEnumerable<string> GetGroupIdsInRole(string roleName) {
-			using(var context = ComponentContainer.Component<SecurityContext>()) {
-				foreach(var obj in from groupRole in context.Component.GroupRoles
-								   where groupRole.RoleId ==
-										(from role in context.Component.SiteRoles
-										 where role.NormalizedName == roleName
-										 select role.Id).FirstOrDefault()
-								   select groupRole.GroupId) {
-					yield return obj;
-				}
+			foreach(var obj in from groupRole in _context.GroupRoles
+							   where groupRole.RoleId ==
+								   (from role in _context.SiteRoles
+									where role.NormalizedName == roleName
+									select role.Id).FirstOrDefault()
+							   select groupRole.GroupId) {
+				yield return obj;
 			}
-		}
-
-		public AdGroupStore(IOptions<AdOptions> options) {
-			GroupService.SearchPath = options.Value.SearchPath;
 		}
 	}
 }

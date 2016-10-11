@@ -1,24 +1,22 @@
-﻿using ExpressMapper;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using QuickFrame.Di;
-using QuickFrame.Security.AccountControl.Data;
-using QuickFrame.Security.AccountControl.Data.Dtos;
-using QuickFrame.Security.AccountControl.Data.Models;
-using QuickFrame.Security.AccountControl.Interfaces;
+using QuickFrame.Security.AccountControl.Dtos;
+using QuickFrame.Security.AccountControl.Interfaces.Services;
 using QuickFrame.Security.Areas.Security.Models;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace QuickFrame.Security.Areas.Security.Controllers {
 
 	[Area("Security")]
 	public class RulesController : Controller {
+		private ISiteRulesDataService _siteRulesDataService;
+
+		public RulesController(ISiteRulesDataService siteRulesDataService) {
+			_siteRulesDataService = siteRulesDataService;
+		}
 
 		public IActionResult Index() {
-			using(var context = ComponentContainer.Component<ISiteRulesDataService>()) {
-				return View(context.Component.GetList<SiteRuleIndexDto>());
-			}
+			return View(_siteRulesDataService.GetList<SiteRuleIndexDto>());
 		}
 
 		[HttpGet]
@@ -28,35 +26,27 @@ namespace QuickFrame.Security.Areas.Security.Controllers {
 
 		[HttpPost]
 		public IActionResult Create(SiteRuleIndexDto model) {
-			using(var dataService = ComponentContainer.Component<ISiteRulesDataService>()) {
-				dataService.Component.Create(model);
-			}
+			_siteRulesDataService.Create(model);
 			return View("CloseCurrentView");
 		}
 
 		[HttpGet]
 		public IActionResult Edit(int id) {
-			using(var dataService = ComponentContainer.Component<ISiteRulesDataService>()) {
-				return View("CreateOrEdit", dataService.Component.Get<SiteRuleIndexDto>(id));
-			}
+			return View("CreateOrEdit", _siteRulesDataService.Get<SiteRuleIndexDto>(id));
 		}
 
 		[HttpPost]
 		public IActionResult Edit(SiteRuleIndexDto model) {
-			using(var dataService = ComponentContainer.Component<ISiteRulesDataService>()) {
-				dataService.Component.Save(model);
-			}
+			_siteRulesDataService.Save(model);
 			return View("CloseCurrentView");
 		}
 
 		[HttpGet]
 		public IActionResult ListUsers(int id) {
-			using(var dataService = ComponentContainer.Component<ISiteRulesDataService>()) {
-				return View(new UserRuleIndexModel {
-					RuleId = id,
-					UserList = dataService.Component.GetUsersForRule(id).ToList()
-				});
-			}
+			return View(new UserRuleIndexModel {
+				RuleId = id,
+				UserList = _siteRulesDataService.GetUsersForRule(id).ToList()
+			});
 		}
 
 		[HttpGet]
@@ -71,28 +61,22 @@ namespace QuickFrame.Security.Areas.Security.Controllers {
 
 		[HttpPost]
 		public IActionResult AddUserToRule(UserListModel model) {
-			using(var dataService = ComponentContainer.Component<ISiteRulesDataService>()) {
-				dataService.Component.AddUserToRule((int)HttpContext.Session.GetInt32("RuleId"), model.UserId);
-			}
+			_siteRulesDataService.AddUserToRule((int)HttpContext.Session.GetInt32("RuleId"), model.UserId);
 			return View("CloseCurrentView");
 		}
 
 		[HttpDelete]
 		public IActionResult RemoveUserFromRule(int id, string userId) {
-			using(var dataService = ComponentContainer.Component<ISiteRulesDataService>()) {
-				dataService.Component.DeleteUserFromRule(id, userId);
-			}
+			_siteRulesDataService.DeleteUserFromRule(id, userId);
 			return new ObjectResult(true);
 		}
 
 		[HttpGet]
 		public IActionResult ListGroups(int id) {
-			using(var dataService = ComponentContainer.Component<ISiteRulesDataService>()) {
-				return View(new GroupRuleIndexModel {
-					RuleId = id,
-					GroupList = dataService.Component.GetGroupsForRule(id).ToList()
-				});
-			}
+			return View(new GroupRuleIndexModel {
+				RuleId = id,
+				GroupList = _siteRulesDataService.GetGroupsForRule(id).ToList()
+			});
 		}
 
 		[HttpGet]
@@ -107,19 +91,16 @@ namespace QuickFrame.Security.Areas.Security.Controllers {
 
 		[HttpPost]
 		public IActionResult AddGroupToRule(GroupListModel model) {
-			using(var dataService = ComponentContainer.Component<ISiteRulesDataService>()) {
-				dataService.Component.AddGroupToRule((int)HttpContext.Session.GetInt32("RuleId"), model.GroupId);
-			}
+			_siteRulesDataService.AddGroupToRule((int)HttpContext.Session.GetInt32("RuleId"), model.GroupId);
 			return View("CloseCurrentView");
 		}
 
 		[HttpDelete]
 		public IActionResult RemoveGroupFromRule(int id, string groupId) {
-			using(var dataService = ComponentContainer.Component<ISiteRulesDataService>()) {
-				dataService.Component.DeleteGroupFromRule(id, groupId);
-			}
+			_siteRulesDataService.DeleteGroupFromRule(id, groupId);
 			return new ObjectResult(true);
 		}
+
 		[HttpGet]
 		public IActionResult AddRoleToRule(int id) {
 			HttpContext.Session.SetInt32("RuleId", id);
@@ -132,17 +113,13 @@ namespace QuickFrame.Security.Areas.Security.Controllers {
 
 		[HttpPost]
 		public IActionResult AddRoleToRule(RoleListModel model) {
-			using(var dataService = ComponentContainer.Component<ISiteRulesDataService>()) {
-				dataService.Component.AddRoleToRule((int)HttpContext.Session.GetInt32("RuleId"), model.RoleId);
-			}
+			_siteRulesDataService.AddRoleToRule((int)HttpContext.Session.GetInt32("RuleId"), model.RoleId);
 			return View("CloseCurrentView");
 		}
 
 		[HttpDelete]
 		public IActionResult RemoveRoleFromRule(int id, string roleId) {
-			using(var dataService = ComponentContainer.Component<ISiteRulesDataService>()) {
-				dataService.Component.DeleteRoleFromRule(id, roleId);
-			}
+			_siteRulesDataService.DeleteRoleFromRule(id, roleId);
 			return new ObjectResult(true);
 		}
 	}

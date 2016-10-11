@@ -1,6 +1,6 @@
 ﻿using ExpressMapper;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using QuickFrame.Security.AccountControl.Data.Models;
+using QuickFrame.Security.AccountControl.Models;
 
 namespace QuickFrame.Security.AccountControl.ActiveDirectory.AdLookup {
 
@@ -14,7 +14,9 @@ namespace QuickFrame.Security.AccountControl.ActiveDirectory.AdLookup {
 				Email = context.Source.Email.Count > 0 ? context.Source.Email[0] : null,
 				NormalizedEmail = context.Source.Email.Count > 0 ? context.Source.Email[0].ToUpper() : null,
 				PhoneNumber = context.Source.PhoneNumber.Count > 0 ? context.Source.PhoneNumber[0] : null,
-				UserName = context.Source.UserName
+				UserName = context.Source.UserName,
+				FirstName = context.Source.FirstName,
+				LastName = context.Source.LastName
 			};
 
 			foreach(var obj in context.Source.Claims) {

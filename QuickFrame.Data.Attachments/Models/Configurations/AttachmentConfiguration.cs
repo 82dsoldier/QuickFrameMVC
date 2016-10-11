@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace QuickFrame.Data.Attachments.Models.Configurations {
 	// Attachments
 
-	public class AttachmentConfiguration : ConfigurationGuid<Attachment> {
+	public class AttachmentConfiguration : DataModelGuidConfiguration<Attachment> {
 
 		public AttachmentConfiguration() : base() {
 			Property(x => x.Data).HasColumnName(@"Data").IsRequired().HasColumnType("varbinary");
@@ -20,5 +20,3 @@ namespace QuickFrame.Data.Attachments.Models.Configurations {
 		}
 	}
 }
-
-// </auto-generated>

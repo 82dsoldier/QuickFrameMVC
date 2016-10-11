@@ -7,5 +7,8 @@ namespace QuickFrame.Data.Attachments.Services {
 
 	[Export]
 	public class MimeTypesDataService : DataService<AttachmentsContext, MimeType>, IMimeTypesDataService {
+
+		public MimeTypesDataService(AttachmentsContext context) : base(context) {
+		}
 	}
 }

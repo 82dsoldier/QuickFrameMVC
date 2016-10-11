@@ -3,7 +3,7 @@ using QuickFrame.Data.Attachments.Dtos;
 using QuickFrame.Data.Attachments.Interfaces;
 using QuickFrame.Data.Attachments.Models;
 using QuickFrame.Data.Services;
-using QuickFrame.Di;
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -14,20 +14,19 @@ namespace QuickFrame.Data.Attachments.Services {
 	[Export]
 	public class UploadRulesDataService : DataService<AttachmentsContext, UploadRule>, IUploadRulesDataService {
 
+		public UploadRulesDataService(AttachmentsContext context) : base(context) {
+		}
+
 		public int GetLastPriority() {
-			using(var context = ComponentContainer.Component<AttachmentsContext>()) {
-				return context.Component.UploadRules
-					.Where(obj => obj.Priority != Int32.MaxValue - 1)
-					.OrderByDescending(obj => obj.Priority)
-					.First()?.Priority ?? 1;
-			}
+			return _dbContext.UploadRules
+				.Where(obj => obj.Priority != Int32.MaxValue - 1)
+				.OrderByDescending(obj => obj.Priority)
+				.First()?.Priority ?? 1;
 		}
 
 		public IEnumerable<UploadRuleDto> GetUploadRules() {
-			using(var context = ComponentContainer.Component<AttachmentsContext>()) {
-				foreach(var obj in context.Component.UploadRules.Where(obj => obj.IsActive == true && obj.IsDeleted == false))
-					yield return Mapper.Map<UploadRule, UploadRuleDto>(obj);
-			}
+			foreach(var obj in _dbContext.UploadRules.Where(obj => obj.IsActive == true && obj.IsDeleted == false))
+				yield return Mapper.Map<UploadRule, UploadRuleDto>(obj);
 		}
 	}
 }

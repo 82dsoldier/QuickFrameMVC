@@ -8,26 +8,22 @@ using System.Text.Encodings.Web;
 namespace QuickFrame.Mvc {
 
 	/// <summary>
-	/// A new version of <see cref="Microsoft.AspNetCore.Mvc.Rendering.TagBuilder" /> in which commands used to set options on the tag builder can be chained together like
-	/// Linq queries.
+	/// A new version of <see cref="Microsoft.AspNetCore.Mvc.Rendering.TagBuilder"/> in which
+	/// commands used to set options on the tag builder can be chained together like Linq queries.
 	/// </summary>
-	/// <seealso cref="IHtmlContent" />
+	/// <seealso cref="IHtmlContent"/>
 	public class FluentTagBuilder : IHtmlContent {
 
 		/// <summary>
 		/// Gets the tag builder that is used as a base for this class.
 		/// </summary>
-		/// <value>
-		/// The tag builder.
-		/// </value>
+		/// <value>The tag builder.</value>
 		private TagBuilder TagBuilder { get; }
 
 		/// <summary>
 		/// Gets an AttributeDictionary containing the attributes to be associated with the created tag.
 		/// </summary>
-		/// <value>
-		/// An <see cref="Microsoft.AspNetCore.Mvc.ViewFeatures.AttributeDictionary" /> object
-		/// </value>
+		/// <value>An <see cref="Microsoft.AspNetCore.Mvc.ViewFeatures.AttributeDictionary"/> object</value>
 		public AttributeDictionary Attributes => TagBuilder.Attributes;
 
 		public IHtmlContentBuilder InnerHtml => TagBuilder.InnerHtml;
@@ -56,7 +52,7 @@ namespace QuickFrame.Mvc {
 		/// Adds the specified CSS classes to the rendered HTML tag.
 		/// </summary>
 		/// <param name="value">The CSS classes to add.</param>
-		/// <returns>This <see cref="FluentTagBuilder" /> object</returns>
+		/// <returns>This <see cref="FluentTagBuilder"/> object</returns>
 		public FluentTagBuilder AddCssClass(string value) {
 			TagBuilder.AddCssClass(value);
 			return this;
@@ -69,8 +65,10 @@ namespace QuickFrame.Mvc {
 		/// Generates the id for the rendered HTML tag.
 		/// </summary>
 		/// <param name="name">The name that will be used for the ID</param>
-		/// <param name="invalidCharReplacement">string used to replace invanlid characters in the name</param>
-		/// <returns>This <see cref="FluentTagBuilder" /> object</returns>
+		/// <param name="invalidCharReplacement">
+		/// string used to replace invanlid characters in the name
+		/// </param>
+		/// <returns>This <see cref="FluentTagBuilder"/> object</returns>
 		public FluentTagBuilder GenerateId(string name, string invalidCharReplacement) {
 			TagBuilder.GenerateId(name, invalidCharReplacement);
 			return this;
@@ -81,7 +79,7 @@ namespace QuickFrame.Mvc {
 		/// </summary>
 		/// <param name="key">The key.</param>
 		/// <param name="value">The value.</param>
-		/// <returns>This <see cref="FluentTagBuilder" /> object</returns>
+		/// <returns>This <see cref="FluentTagBuilder"/> object</returns>
 		public FluentTagBuilder MergeAttribute(string key, string value) {
 			TagBuilder.MergeAttribute(key, value);
 			return this;
@@ -92,8 +90,10 @@ namespace QuickFrame.Mvc {
 		/// </summary>
 		/// <param name="key">The key.</param>
 		/// <param name="value">The value.</param>
-		/// <param name="replaceExisting">A boolean indicating whether to replace any existing value</param>
-		/// <returns>This <see cref="FluentTagBuilder" /> object</returns>
+		/// <param name="replaceExisting">
+		/// A boolean indicating whether to replace any existing value
+		/// </param>
+		/// <returns>This <see cref="FluentTagBuilder"/> object</returns>
 		public FluentTagBuilder MergeAttribute(string key, string value, bool replaceExisting) {
 			TagBuilder.MergeAttribute(key, value, replaceExisting);
 			return this;
@@ -105,7 +105,7 @@ namespace QuickFrame.Mvc {
 		/// <typeparam name="TKey">The type of the key.</typeparam>
 		/// <typeparam name="TValue">The type of the value.</typeparam>
 		/// <param name="attributes">The attributes.</param>
-		/// <returns>This <see cref="FluentTagBuilder" /> object</returns>
+		/// <returns>This <see cref="FluentTagBuilder"/> object</returns>
 		public FluentTagBuilder MergeAttributes<TKey, TValue>(IDictionary<TKey, TValue> attributes) {
 			TagBuilder.MergeAttributes(attributes);
 			return this;
@@ -118,7 +118,7 @@ namespace QuickFrame.Mvc {
 		/// <typeparam name="TValue">The type of the value.</typeparam>
 		/// <param name="attributes">The attributes.</param>
 		/// <param name="replaceExisting">if set to <c>true</c> replaces existing values.</param>
-		/// <returns>This <see cref="FluentTagBuilder" /> object</returns>
+		/// <returns>This <see cref="FluentTagBuilder"/> object</returns>
 		public FluentTagBuilder MergeAttributes<TKey, TValue>(IDictionary<TKey, TValue> attributes, bool replaceExisting) {
 			TagBuilder.MergeAttributes(attributes, replaceExisting);
 			return this;
@@ -130,7 +130,7 @@ namespace QuickFrame.Mvc {
 		/// <param name="key">The key.</param>
 		/// <param name="value">The value.</param>
 		/// <param name="replaceExisting">if set to <c>true</c> replaces existing values.</param>
-		/// <returns>This <see cref="FluentTagBuilder" /> object</returns>
+		/// <returns>This <see cref="FluentTagBuilder"/> object</returns>
 		public FluentTagBuilder MergeAttributes(string key, string value, bool replaceExisting) {
 			TagBuilder.MergeAttribute(key, value, replaceExisting);
 			return this;

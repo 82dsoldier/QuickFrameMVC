@@ -4,8 +4,7 @@ using System.Collections.Generic;
 namespace QuickFrame.Data.Attachments.Models {
 	// FileExtensions
 
-	public class FileExtension : DataModel {
-		public string Name { get; set; } // Name (length: 64)
+	public class FileExtension : NamedDataModel {
 		public string Description { get; set; } // Description (length: 2048)
 		public string Extension { get; set; } // Extension (length: 32)
 

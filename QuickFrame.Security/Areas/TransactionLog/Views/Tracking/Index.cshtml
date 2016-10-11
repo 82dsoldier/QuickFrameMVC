@@ -1,0 +1,53 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model IEnumerable<QuickFrame.Security.Data.Dtos.AuditLogIndexDto>
+
+@{
+
+	ViewBag.Title = "Audit Logs";
+	ViewBag.UseSearch = true;
+	ViewBag.UsePaging = true;
+	ViewBag.SearchTerm = Context.Request.Query["searchTerm"];
+	Layout = "_Layout";
+}
+
+@section menu {
+	@Html.Partial("MainMenu")
+}
+
+@{
+	if(Model.Any()) {
+		<table class="table index table-striped table-bordered table-hover" style="border: 0;">
+			<thead>
+				<tr>
+					<th style="width:3%;"></th>
+					<th style="width: 25%;">User Id</th>
+					<th>Event Date</th>
+					<th>Event Type</th>
+					<th>Table Name</th>
+					<th>Record Id</th>
+				</tr>
+			</thead>
+			<tbody>
+				@{
+					foreach(var obj in Model) {
+						<tr>
+							<td style="text-align:center;">
+								<div class="dropdown">
+									<a href="#" class="dropdown-toggle" style="display:inline-block;width:100%;" data-toggle="dropdown"><i class="fa fa-lg fa-ellipsis-v"></i></a>
+									<ul class="dropdown-menu">
+										<li><a asp-controller="Tracking" asp-action="Details" asp-route-id="@obj.Id" asp-route-area="TransactionLog" class="fancybox" dta-height="1024px" data-width="1280px" data-scroll="auto"><i class="fa-fw fa fa-info"></i>View Details</a></li>
+									</ul>
+								</div>
+							</td>
+							<td>@obj.UserId</td>
+							<td>@obj.EventDate</td>
+							<td>@obj.EventType</td>
+							<td>@obj.TableName</td>
+							<td>@obj.RecordId</td>
+						</tr>
+					}
+				}
+			</tbody>
+		</table>
+					}
+}

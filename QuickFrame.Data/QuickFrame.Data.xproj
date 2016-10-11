@@ -7,7 +7,7 @@
 
   <Import Project="$(VSToolsPath)\DotNet\Microsoft.DotNet.Props" Condition="'$(VSToolsPath)' != ''" />
   <PropertyGroup Label="Globals">
-    <ProjectGuid>7eeb12e3-e16d-45ac-87a7-dd57a97b7907</ProjectGuid>
+    <ProjectGuid>98d529ed-e00a-49b5-8327-63da04a34a56</ProjectGuid>
     <RootNamespace>QuickFrame.Data</RootNamespace>
     <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">.\obj</BaseIntermediateOutputPath>
     <OutputPath Condition="'$(OutputPath)'=='' ">.\bin\</OutputPath>

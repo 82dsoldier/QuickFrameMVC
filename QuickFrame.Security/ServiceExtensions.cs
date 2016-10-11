@@ -1,75 +1,58 @@
-﻿using Autofac;
+﻿using ExpressMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Options;
-using QuickFrame.Data.Services;
-using QuickFrame.Di;
+using QuickFrame.Data;
 using QuickFrame.Security.AccountControl;
 using QuickFrame.Security.AccountControl.Data;
-using QuickFrame.Security.AccountControl.Data.Models;
-using QuickFrame.Security.AccountControl.Interfaces;
+using QuickFrame.Security.AccountControl.Interfaces.Services;
+using QuickFrame.Security.AccountControl.Models;
 using QuickFrame.Security.AccountControl.Services;
-using QuickFrame.Security.Areas.Security.Controllers;
+using QuickFrame.Security.Configuration;
+using QuickFrame.Security.Data;
+using QuickFrame.Security.Data.Dtos;
+using QuickFrame.Security.Data.Events;
+using QuickFrame.Security.Data.Models;
 using QuickFrame.Security.Policies;
-using System.ComponentModel.Composition;
-using System.Linq;
 using System.Reflection;
 
 namespace QuickFrame.Security {
 
 	public static class ServiceExtensions {
-		private static ContainerBuilder _builder => ComponentContainer.Builder;
 
-		public static IServiceCollection AddQuickFrameSecurity(this IServiceCollection services) {
-			_builder.RegisterType(typeof(SecurityContext)).InstancePerLifetimeScope();
-			foreach(var obj in typeof(SecurityContext).Assembly.GetTypes().Where(t => t.GetTypeInfo().GetCustomAttribute<ExportAttribute>() != null || typeof(DataService<,,>).IsAssignableFrom(t))) {
-				ExportAttribute att = obj.GetCustomAttribute<ExportAttribute>();
-				if(att?.ContractType != null) {
-					_builder.RegisterType(obj).As(att.ContractType);
-				} else {
-					foreach(var intf in obj.GetInterfaces())
-						_builder.RegisterType(obj).As(intf);
-				}
-			}
-
-			_builder.RegisterType<RoleRequirement>().As<IAuthorizationHandler>();
-			_builder.RegisterType<SiteRulesDataService>().As<ISiteRulesDataService>();
-			_builder.RegisterType<QuickFrameIdentityErrorDescriber>(); 
-			_builder.RegisterType<GroupManager<SiteGroup>>();
-			_builder.RegisterType<QuickFrameRoleStore>().As<IRoleStore<SiteRole>>();
-			_builder.RegisterType<RoleRequirement>().As<IAuthorizationHandler>();
-
-			services.Configure<RazorViewEngineOptions>(options => {
-				options.FileProviders.Add(new EmbeddedFileProvider(
-					typeof(RolesController).GetTypeInfo().Assembly,
-					"QuickFrame.Security"));
-			});
-			services.AddTransient<IAuthorizationHandler, RoleRequirement>();
+		public static IServiceCollection AddQuickFrameSecurity(this IServiceCollection services, IConfigurationRoot configuration) {
 			services.AddIdentity<SiteUser, SiteRole>()
-				.AddUserManager<QuickFrameUserManager>()
-				.AddRoleManager<QuickFrameRoleManager>();
-			return services;
-		}
+				.AddUserManager<QuickFrameUserManager>();
 
-		public static IApplicationBuilder UseQuickFrameSecurity(this IApplicationBuilder app) {
-			IOptions<RazorViewEngineOptions> razorViewEngineOptions =
-				app.ApplicationServices.GetService<IOptions<RazorViewEngineOptions>>();
-			razorViewEngineOptions.Value.FileProviders.Add(new EmbeddedFileProvider(
-					typeof(RolesController).GetTypeInfo().Assembly,
-					"QuickFrame.Security"));
+			services.AddSingleton<TrackingContext>()
+				.AddExpressMapperObjects(typeof(TrackingContext).GetTypeInfo().Assembly)
+				.Configure<RazorViewEngineOptions>(options => {
+					options.FileProviders.Add(
+						new CompositeFileProvider(
+							new EmbeddedFileProvider(typeof(TrackingContext).GetTypeInfo().Assembly, "QuickFrame.Security")));
+				})
+				.AddTransient<IAuthorizationHandler, RoleRequirement>()
+				.AddTransient<QuickFrameSecurityManager>()
+				.AddTransient<ISiteRulesDataService, SiteRulesDataService>()
+				.AddTransient<GroupManager<SiteGroup>>()
+				.AddTransient<QuickFrameIdentityErrorDescriber>()
+				.AddScoped<SecurityContext>();
 
-			var userManager = ComponentContainer.Component<QuickFrameUserManager>().Component;
-			var roleManager = ComponentContainer.Component<QuickFrameRoleManager>().Component;
+			Mapper.Register<AuditLog, DataChangedEventArgs>()
+				.Function(dest => dest.EventType, src => {
+					return (EntityState)src.EventType;
+				});
 
-			app.UseClaimsTransformation(new ClaimsTransformationOptions {
-				Transformer = new QuickFrameClaimsTransformer(userManager, roleManager)
+			Mapper.Register<DataChangedEventArgs, DataChangedEventArgsDto>();
+
+			services.Configure<NameListOptions>(excluded => {
+				excluded.Load(configuration.GetSection("ExcludedNames"));
 			});
 
-			return app;
+			return services;
 		}
 	}
 }

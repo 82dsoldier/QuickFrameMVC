@@ -10,6 +10,9 @@
     $('.datepicker').each(function() {
       return $(this).datepicker();
     });
+    $('.chosen').each(function() {
+      return $this.chosen();
+    });
     $('.remove-object').each(function() {
       return $(this).on('click', function(e) {
         e.preventDefault();
@@ -34,8 +37,9 @@
       });
     });
     return $('.fancybox').each(function() {
-      var _this, opts;
+      var _this, opts, refresh;
       _this = $(this);
+      refresh = $(this).is('[refresh]');
       opts = {};
       opts.type = 'iframe';
       opts.autoSize = false;
@@ -43,9 +47,15 @@
       opts.height = $(this).attr('data-height') || '480px';
       opts.closeBtn = $(this).is('[close-button]');
       opts.iframe = {};
-      opts.iframe.scrolling = 'no';
+      if ($(this).is('[scrolling]')) {
+        opts.iframe.scrolling = 'yes';
+      } else {
+        opts.iframe.scrolling = 'no';
+      }
       opts.afterClose = function() {
-        return parent.window.location.reload();
+        if (refresh) {
+          return window.location.reload();
+        }
       };
       return $(this).fancybox(opts);
     });

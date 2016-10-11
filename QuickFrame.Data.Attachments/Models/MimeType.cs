@@ -4,8 +4,7 @@ using System.Collections.Generic;
 namespace QuickFrame.Data.Attachments.Models {
 	// MimeTypes
 
-	public class MimeType : DataModel {
-		public string Name { get; set; } // Name (length: 64)
+	public class MimeType : NamedDataModel {
 		public string Description { get; set; } // Description (length: 2048)
 		public string MimeTypeIdentifier { get; set; } // MimeTypeIdentifier (length: 128)
 

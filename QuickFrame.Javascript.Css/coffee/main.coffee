@@ -17,6 +17,9 @@ $(document).ready ->
     $('.datepicker').each ->
         $(this).datepicker()
 
+    $('.chosen').each ->
+        ($this).chosen()
+
     $('.remove-object').each ->
         $(this).on 'click', (e)->
             e.preventDefault();
@@ -35,6 +38,7 @@ $(document).ready ->
 
     $('.fancybox').each ->
         _this = $(this)
+        refresh = $(this).is('[refresh]')
         opts = {}
         opts.type = 'iframe'
         opts.autoSize = false
@@ -42,9 +46,13 @@ $(document).ready ->
         opts.height = $(this).attr('data-height') || '480px'
         opts.closeBtn = $(this).is('[close-button]')
         opts.iframe = {}
-        opts.iframe.scrolling = 'no'
+        if $(this).is('[scrolling]')
+            opts.iframe.scrolling = 'yes'
+        else
+            opts.iframe.scrolling = 'no'
         opts.afterClose = ->
-            parent.window.location.reload()
+            if refresh
+                window.location.reload()
 
         $(this).fancybox opts
 

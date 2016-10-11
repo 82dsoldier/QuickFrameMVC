@@ -1,4 +1,5 @@
 ﻿using QuickFrame.Data.Attachments.Models;
+using QuickFrame.Data.Dtos;
 using System;
 
 namespace QuickFrame.Data.Attachments.Dtos {

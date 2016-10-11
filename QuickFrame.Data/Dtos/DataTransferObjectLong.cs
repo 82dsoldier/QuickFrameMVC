@@ -1,10 +1,11 @@
-﻿using QuickFrame.Data.Interfaces;
+﻿using QuickFrame.Data.Interfaces.Dtos;
+using QuickFrame.Data.Interfaces.Models;
 
-namespace QuickFrame.Data {
+namespace QuickFrame.Data.Dtos {
 
 	public class DataTransferObjectLong<TSrc, TDest>
-	: DataTransferObjectCore<long, TSrc, TDest>,
-		IDataTransferObjectLong<TSrc, TDest>
-	where TSrc : IDataModelLong {
+		: DataTransferObject<TSrc, TDest, long>,
+		IDataTransferObjectLong
+		where TSrc : class, IDataModelLong {
 	}
 }

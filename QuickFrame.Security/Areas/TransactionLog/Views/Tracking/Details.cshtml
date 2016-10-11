@@ -1,0 +1,38 @@
+﻿@model QuickFrame.Security.Data.Dtos.AuditLogDetailDto
+
+@{
+
+	ViewBag.Title = "Audit Logs";
+	Layout = "_PopupLayout";
+}
+
+<table class="table index table-striped table-bordered table-hover">
+	<tr>
+		<td>User Id</td>
+		<td>@Model.UserId</td>
+	</tr>
+	<tr>
+		<td>Event Date</td>
+		<td>@Model.EventDate</td>
+	</tr>
+	<tr>
+		<td>Event Type</td>
+		<td>@Model.EventType</td>
+	</tr>
+	<tr>
+		<td>Table Name</td>
+		<td>@Model.TableName</td>
+	</tr>
+	<tr>
+		<td>Record Id</td>
+		<td>@Model.RecordId</td>
+	</tr>
+	<tr>
+		<td>Original Value</td>
+		<td>@Html.Raw(Model.OriginalValue)</td>
+	</tr>
+	<tr>
+		<td>New Value</td>
+		<td>@Html.Raw(Model.NewValue)</td>
+	</tr>
+</table>

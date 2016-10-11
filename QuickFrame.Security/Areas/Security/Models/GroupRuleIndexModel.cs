@@ -1,5 +1,4 @@
-﻿using QuickFrame.Security.AccountControl.Data.Dtos;
-using QuickFrame.Security.AccountControl.Data.Models;
+﻿using QuickFrame.Security.AccountControl.Models;
 using System.Collections.Generic;
 
 namespace QuickFrame.Security.Areas.Security.Models {

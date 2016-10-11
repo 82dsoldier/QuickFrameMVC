@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-using QuickFrame.Security.AccountControl.Data.Models;
+using QuickFrame.Security.AccountControl.Models;
 using System.Collections.Generic;
 
 namespace QuickFrame.Security.AccountControl {

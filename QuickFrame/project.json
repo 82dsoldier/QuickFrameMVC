@@ -1,80 +1,32 @@
 {
-  "title": "QuickFrame",
-  "description": "Base QuickFrame file for using the QuickFrameMVC framework",
-  "language": "en-US",
-  "version": "1.0.0-beta-1-r6",
-  "authors": ["Drew Burchett"],
+  "version": "2.0.0-beta-1-r1",
+  "authors": [ "Drew Burchett" ],
+  "packOptions": {
+    "language": "en-US",
+    "title": "QuickFrame",
+    "licenseUrl": "https://github.com/82dsoldier/QuickFrameMVC/blob/master/LICENSE",
+    "iconUrl": "https://github.com/82dsoldier/QuickFrameMVC/blob/master/QuickFrame/icon.png?raw=true",
+    "projectUrl": "https://github.com/82dsoldier/QuickFrameMVC",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/82dsoldier/QuickFrameMVC"
+    },
+    "owners": [ "Drew Burchett" ],
+    "summary": "Base QuickFrame file for using the QuickFrameMVC framework",
+  },
   "dependencies": {
-    "Autofac": "4.0.0-rc2-240",
-    "Autofac.Extensions.DependencyInjection": "4.0.0-rc2-240",
-    "Expressmapper": "1.8.1",
-    "NETStandard.Library": "1.5.0-rc2-24027",
-    "Microsoft.Extensions.FileProviders.Embedded": "1.0.0",
-    "Microsoft.Extensions.FileProviders.Composite": "1.0.0",
+    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
     "Microsoft.Extensions.Configuration.Abstractions": "1.0.0",
-    "Microsoft.VisualStudio.Web.CodeGeneration.Utils": "1.0.0-preview2-final",
-    "Microsoft.AspNetCore.Mvc.ViewFeatures": "1.0.0",
-    "Microsoft.AspNetCore.Mvc.Razor": "1.0.0",
-    "Microsoft.Extensions.Configuration": "1.0.0",
-    "Microsoft.Extensions.Configuration.Json": "1.0.0",
-    "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0",
-    "Microsoft.AspNetCore.Mvc": "1.0.0",
-    "Microsoft.AspNetCore.Session": "1.0.0",
-    "Microsoft.Net.Http.Server": "1.0.0-rc1-final",
-    "Microsoft.AspNetCore.Diagnostics": "1.0.0",
-    "Microsoft.AspNet.IISPlatformHandler": "1.0.0-rc1-final",
-    "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0",
-    "Microsoft.AspNetCore.StaticFiles": "1.0.0",
-    "Microsoft.Extensions.Configuration.UserSecrets": "1.0.0",
-    "Newtonsoft.Json": "9.0.1",
-    "Microsoft.Extensions.Logging.Console": "1.0.0-rc2-final",
-    "Microsoft.Extensions.Logging.Debug": "1.0.0-rc2-final",
-    "Microsoft.Extensions.PlatformAbstractions": "1.0.0",
-    "Microsoft.VisualStudio.Web.BrowserLink.Loader": "14.0.0-rc2-final",
-    "Microsoft.AspNetCore.Authorization": "1.0.0"
+    "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
+    "Microsoft.AspNetCore.Http.Abstractions": "1.0.0",
+    "Microsoft.AspNetCore.Http": "1.0.0",
+    "Microsoft.AspNetCore.Mvc.Abstractions": "1.0.0",
+    "Microsoft.AspNetCore.Mvc": "1.0.0"
   },
   "frameworks": {
-    "net451": {
-      "imports": [
-        "dotnet4.5"
-      ],
-      "dependencies": {
-            "Autofac.Framework.DependencyInjection": "4.0.0-beta8-157"
-      }
-    },
-    "net452": {
-      "imports": [
-        "dotnet4.5"
-      ],
-      "dependencies": {
-            "Autofac.Framework.DependencyInjection": "4.0.0-beta8-157"
-      }
-    },
-    "net46": {
-      "imports": [
-        "dotnet4.6"
-      ],
-      "dependencies": {
-            "Autofac.Framework.DependencyInjection": "4.0.0-beta8-157"
-      }
-    },
-    "net461": {
-      "imports": [
-        "dotnet4.6"
-      ],
-      "dependencies": {
-            "Autofac.Framework.DependencyInjection": "4.0.0-beta8-157"
-      }
-    }
+    "net452": {}
   },
-  "buildOptions": {
-    "optimize": true,
-    "xmlDoc": true
+  "configurations": {
+    "Staging": {}
   },
-  "packOptions": {
-    "licenseUrl": "https://github.com/82dsoldier/QuickFrameMVC/blob/master/LICENSE",
-    "iconUrl": "https://github.com/82dsoldier/QuickFrameMVC/blob/master/QuickFrame/icon.png",
-    "owners": [ "Drew Burchett" ],
-    "summary": "The core library for the QuickFrame MVC Framework.  Contains building blocks for all other libraries."
-  }
 }

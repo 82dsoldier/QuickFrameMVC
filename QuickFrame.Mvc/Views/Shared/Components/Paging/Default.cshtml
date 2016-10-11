@@ -1,0 +1,152 @@
+﻿@model QuickFrame.Mvc.Models.PagingComponentModel
+<div style="float:right">
+	<select style="width:auto;float:left;margin-right:15px;"
+			class="item-count-dropdown form-control"
+			onchange="javascript:window.location.href = $('.item-count-dropdown option:selected').attr('tag')">
+		@{
+			foreach(var item in Model.ItemsPerPageList) {
+				if(Convert.ToInt32(item.Value) == Model.ItemsPerPage) {
+					<option value="@item.Value"
+							tag="@Url.Action($"{Model.Action}", $"{Model.Controller}", new { area = $"{Model.Area}", page = 1, itemsPerPage = item.Value, sortColumn=Model.SortColumn, sortOrder = Model.SortOrder })"
+							selected>
+						@item.Text
+					</option>
+				} else {
+					<option value="@item.Value"
+							tag="@Url.Action($"{Model.Action}", $"{Model.Controller}", new { area = $"{Model.Area}", page = 1, itemsPerPage = item.Value, sortColumn=Model.SortColumn, sortOrder = Model.SortOrder})">
+						@item.Text
+					</option>
+				}
+			}
+		}
+	</select>
+	<ul class="pagination pagination-sm" style="display:inline">
+		<li>
+			<a asp-area="@Model.Area"
+			   asp-controller="@Model.Controller"
+			   asp-action="@Model.Action"
+			   asp-route-page="1"
+			   asp-route-itemsPerPage="@Model.ItemsPerPage"
+			   @{ if(!String.IsNullOrEmpty(Model.SortColumn)) { Html.Raw($@"asp-route-sortColumn=""{Model.SortColumn}"""); Html.Raw($@"asp-route-sortOrder=""{Model.SortOrder}"""); }}>«</a>
+		</li>
+		<li>
+			<a asp-area="@Model.Area"
+			   asp-controller="@Model.Controller"
+			   asp-action="@Model.Action"
+			   asp-route-page="@(Model.CurrentPage - 1 > 0 ? Model.CurrentPage - 1 : 1)"
+			   asp-route-itemsPerPage="@Model.ItemsPerPage"
+			   @{ if(!String.IsNullOrEmpty(Model.SortColumn)) { Html.Raw($@"asp-route-sortColumn=""{Model.SortColumn}"""); Html.Raw($@"asp-route-sortOrder=""{Model.SortOrder}"""); }}>‹</a>
+		</li>
+		@{
+			switch(Model.TotalPages) {
+				case 0:
+					break;
+				case 2:
+					<li>
+						@{
+							if(Model.CurrentPage == 1) {
+								<span>1</span>
+							} else {
+								<a asp-area="@Model.Area"
+								   asp-controller="@Model.Controller"
+								   asp-action="@Model.Action"
+								   asp-route-page="1"
+								   asp-route-itemsPerPage="@Model.ItemsPerPage"
+								   @{
+									   if(!String.IsNullOrEmpty(Model.SortColumn)) {
+										   Html.Raw($@"asp-route-sortColumn=""{Model.SortColumn}""");
+										   Html.Raw($@"asp-route-sortOrder=""{Model.SortOrder}"""); }}>1</a>
+	}
+						}
+					</li>
+					<li>
+						@{
+							if(Model.CurrentPage == 2) {
+								<span>2</span>
+							} else {
+								<a asp-area="@Model.Area"
+								   asp-controller="@Model.Controller"
+								   asp-action="@Model.Action"
+								   asp-route-page="2"
+								   asp-route-itemsPerPage="@Model.ItemsPerPage"
+								   @{ if(!String.IsNullOrEmpty(Model.SortColumn)) { Html.Raw($@"asp-route-sortColumn=""{Model.SortColumn}"""); Html.Raw($@"asp-route-sortOrder=""{Model.SortOrder}"""); }}>2</a>
+	}
+						}
+					</li>
+					break;
+				case 3:
+				case 4:
+				case 5:
+					for(int i = 1; i < Model.TotalPages; i++) {
+			<li>
+				@{
+					if(Model.CurrentPage == i) {
+						<span>@i</span>
+					} else {
+						<a asp-area="@Model.Area"
+						   asp-controller="@Model.Controller"
+						   asp-action="@Model.Action"
+						   asp-route-page="@i"
+						   asp-route-itemsPerPage="@Model.ItemsPerPage"
+						   @{ if(!String.IsNullOrEmpty(Model.SortColumn)) { Html.Raw($@"asp-route-sortColumn=""{Model.SortColumn}"""); Html.Raw($@"asp-route-sortOrder=""{Model.SortOrder}"""); }}>@i</a>
+	}
+				}
+			</li>
+					}
+					break;
+				default:
+					if(Model.CurrentPage < 4) {
+						for(int i = 1; i < 6; i++) {
+				<li>
+					@{
+						if(Model.CurrentPage == i) {
+							<span>@i</span>
+						} else {
+							<a asp-area="@Model.Area"
+							   asp-controller="@Model.Controller"
+							   asp-action="@Model.Action"
+							   asp-route-page="@i"
+							   asp-route-itemsPerPage="@Model.ItemsPerPage"
+							   @{ if(!String.IsNullOrEmpty(Model.SortColumn)) { Html.Raw($@"asp-route-sortColumn=""{Model.SortColumn}"""); Html.Raw($@"asp-route-sortOrder=""{Model.SortOrder}"""); }}>@i</a>
+	}
+					}
+				</li>
+						}
+					} else {
+						var endPage = Model.CurrentPage + 2 < Model.TotalPages ? Model.CurrentPage + 3 : Model.TotalPages + 1;
+						for(int i = endPage - 5; i < endPage; i++) {
+			<li>
+				@{					if(Model.CurrentPage == i) {
+						<span>@i</span>			} else {
+						<a asp-area="@Model.Area"
+						   asp-controller="@Model.Controller"
+						   asp-action="@Model.Action"
+						   asp-route-page="@i"
+						   asp-route-itemsPerPage="@Model.ItemsPerPage"
+						   @{ if(!String.IsNullOrEmpty(Model.SortColumn)) { Html.Raw($@"asp-route-sortColumn=""{Model.SortColumn}"""); Html.Raw($@"asp-route-sortOrder=""{Model.SortOrder}"""); }}>@i</a>
+	}
+				}
+			</li>
+						}
+					}
+					break;
+			}
+		}
+		<li>
+			<a asp-area="@Model.Area"
+			   asp-controller="@Model.Controller"
+			   asp-action="@Model.Action"
+			   asp-route-page="@(Model.CurrentPage + 1 <= Model.TotalPages ? Model.CurrentPage + 1 : Model.TotalPages)"
+			   asp-route-itemsPerPage="@Model.ItemsPerPage"
+			   @{ if(!String.IsNullOrEmpty(Model.SortColumn)) { Html.Raw($@"asp-route-sortColumn=""{Model.SortColumn}"""); Html.Raw($@"asp-route-sortOrder=""{Model.SortOrder}"""); }}>›</a>
+		</li>
+		<li>
+			<a asp-area="@Model.Area"
+			   asp-controller="@Model.Controller"
+			   asp-action="@Model.Action"
+			   asp-route-page="@Model.TotalPages"
+			   asp-route-itemsPerPage="@Model.ItemsPerPage"
+			   @{ if(!String.IsNullOrEmpty(Model.SortColumn)) { Html.Raw($@"asp-route-sortColumn=""{Model.SortColumn}"""); Html.Raw($@"asp-route-sortOrder=""{Model.SortOrder}"""); }}>»</a>
+		</li>
+	</ul>
+</div>

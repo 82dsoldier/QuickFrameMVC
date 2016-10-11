@@ -1,14 +1,12 @@
 using Microsoft.AspNetCore.Http;
 using QuickFrame.Data.Attachments.Interfaces;
 using QuickFrame.Data.Attachments.Models;
-using QuickFrame.Mapping;
+using QuickFrame.Data.Dtos;
 using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace QuickFrame.Data.Attachments.Dtos {
-	// MimeTypes
 
-	[ExpressMap]
 	public class MimeTypeDto : DataTransferObject<MimeType, MimeTypeDto>, IUploadRuleDto {
 
 		[StringLength(256)]

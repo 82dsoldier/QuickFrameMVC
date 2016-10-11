@@ -9,7 +9,7 @@ module.exports = (grunt)->
             js:
                 src: [
                     'jquery/jquery-2.2.3.js',
-                    'jquery-us/1.11.4/jquery-ui.js'
+                    'jquery-ui/1.11.4/jquery-ui.js'
                     'bootstrap/3.3.6/bootstrap.js',
                     'jquery-validation/1.15.0/jquery.validate.js',
                     'jquery-validation/1.15.0/additional-methods.js',

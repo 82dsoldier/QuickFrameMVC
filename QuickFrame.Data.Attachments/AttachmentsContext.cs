@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using QuickFrame.Data.Attachments.Models;
 using QuickFrame.Data.Attachments.Models.Configurations;
+using QuickFrame.Security.Data;
 using System.Data.Entity;
 
 namespace QuickFrame.Data.Attachments {

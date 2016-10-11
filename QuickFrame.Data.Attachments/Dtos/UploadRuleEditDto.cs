@@ -1,10 +1,8 @@
 ﻿using QuickFrame.Data.Attachments.Models;
-using QuickFrame.Mapping;
+using QuickFrame.Data.Dtos;
 using System.ComponentModel.DataAnnotations;
 
 namespace QuickFrame.Data.Attachments.Dtos {
-
-	[ExpressMap]
 	public class UploadRuleEditDto : DataTransferObject<UploadRule, UploadRuleEditDto> {
 
 		[StringLength(64)]

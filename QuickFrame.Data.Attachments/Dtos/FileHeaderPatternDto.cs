@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using QuickFrame.Data.Attachments.Interfaces;
 using QuickFrame.Data.Attachments.Models;
-using QuickFrame.Mapping;
+using QuickFrame.Data.Dtos;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
@@ -11,13 +11,8 @@ using System.Text.RegularExpressions;
 
 namespace QuickFrame.Data.Attachments.Dtos {
 
-	[ExpressMap]
-	public class FileHeaderPatternDto : DataTransferObject<FileHeaderPattern, FileHeaderPatternDto>, IUploadRuleDto {
+	public class FileHeaderPatternDto : NamedDataTransferObject<FileHeaderPattern, FileHeaderPatternDto>, IUploadRuleDto {
 		private static Regex stringMap = new Regex(@"([A-Fa-f0-9][A-Fa-f0-9]?)[,\s]?", RegexOptions.Compiled);
-
-		[StringLength(64)]
-		[Required]
-		public string Name { get; set; } // Name (length: 64)
 
 		[StringLength(1024)]
 		public string Description { get; set; } // Description (length: 1024)

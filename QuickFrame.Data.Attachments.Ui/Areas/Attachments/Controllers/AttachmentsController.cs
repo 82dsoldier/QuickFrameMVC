@@ -3,12 +3,14 @@ using QuickFrame.Data.Attachments.Dtos;
 using QuickFrame.Data.Attachments.Interfaces;
 using QuickFrame.Data.Attachments.Models;
 using QuickFrame.Mvc;
+using QuickFrame.Mvc.Controllers;
+using QuickFrame.Security;
 using System;
 
 namespace QuickFrame.Data.Attachments.Ui.Areas.Attachments.Controllers {
 
 	[Area("Attachments")]
-	public class AttachmentsController : ControllerGuid<Attachment, AttachmentIndexDto, AttachmentCreateDto> {
+	public class AttachmentsController : QfControllerGuid<Attachment, AttachmentIndexDto, AttachmentCreateDto> {
 
 		[HttpGet]
 		public IActionResult CreateRevision(Guid id, Guid parentId) {
@@ -26,11 +28,7 @@ namespace QuickFrame.Data.Attachments.Ui.Areas.Attachments.Controllers {
 			return View();
 		}
 
-		protected override IActionResult CreateBase<TReturn>(bool closeOnSubmit = false, string modelName = "CreateOrEdit") {
-			return base.CreateBase<AttachmentCreateDto>(closeOnSubmit, "Create");
-		}
-
-		protected override IActionResult CreateBase<TModel>(TModel model, string modelName = "CreateOrEdit") {
+		protected override IActionResult CreateCore<TModel>(TModel model) {
 			var id = (_dataService as IAttachmentsDataService).CreateAttachment(model);
 			var parentId = (_dataService as IAttachmentsDataService).FindParent(id);
 			if(parentId == null)
@@ -38,7 +36,8 @@ namespace QuickFrame.Data.Attachments.Ui.Areas.Attachments.Controllers {
 			return RedirectToAction("CreateRevision", new { id = id, parentId = parentId });
 		}
 
-		public AttachmentsController(IAttachmentsDataService dataService) : base(dataService) {
+		public AttachmentsController(IAttachmentsDataService dataService, QuickFrameSecurityManager securityManager) : base(dataService, securityManager) {
+			CreatePage = "Create";
 		}
 	}
 }

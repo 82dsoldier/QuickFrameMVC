@@ -6,20 +6,26 @@ using System.Linq;
 namespace QuickFrame.Data {
 
 	/// <summary>
-	/// The options from the appsettings.json file that provide database information to the controllers
+	/// Class that accepts database configuration options from the appsettings.json file.
 	/// </summary>
+	/// <remarks>
+	/// This class contains information needed for database connections including connection strings.
+	/// </remarks>
 	public class DataOptions {
 
-		/// <summary>
-		/// Gets or sets the connection string.
-		/// </summary>
-		/// <value>
-		/// The connection string.
-		/// </value>
+		///<summary>A <see cref="QuickFrame.Data.ConnectionStringData"></see> class used to store and retrieve relavant database connection strings in the appsettings.json file.</summary>
 		public ConnectionStringData ConnectionString { get; set; } = new ConnectionStringData();
 
+		///<summary>A boolean value indicating if a FileStream database will be used.</summary>
 		public bool UseFilestream { get; set; } = false;
 
+		///<summary>A function used to load the database data into the DataOptions class for later retrieval.</summary>
+		///<remarks>
+		///	The Load function takes an <see cref="Microsoft.Extensions.Configuration.IConfigurationRoot">IConfigurationRoot</see> and enumerates it for any database settings.  If a section key begins with Data: it is considered to be a database setting.  The name of the key (without Data: prepended) will be used to store and identify the connection string in the DataOptions class.
+		///</remarks>
+		///<param name="config">
+		///	An <see cref="Microsoft.Extensions.Configuration.IConfigurationRoot">IConfigurationRoot</see> representing the values within the appsettings.json.
+		///</param>
 		public void Load(IConfigurationRoot config) {
 			foreach(var configSection in config.AsEnumerable()) {
 				if(configSection.Key.StartsWith("Data:", StringComparison.CurrentCultureIgnoreCase) && !String.IsNullOrEmpty(configSection.Value)) {
@@ -36,9 +42,11 @@ namespace QuickFrame.Data {
 		}
 	}
 
+	///<summary>Class used to store and enumerate database connection strings</summary>
 	public class ConnectionStringData {
 		private Dictionary<string, string> _connectionStringList;
 
+		///<summary>Gets the default connection string.</summary>
 		public string Default
 		{
 			get
@@ -55,6 +63,7 @@ namespace QuickFrame.Data {
 			}
 		}
 
+		///<summary>Gets the security database connection string or the default if no security database has been set.</summary>
 		public string Security
 		{
 			get
@@ -69,6 +78,7 @@ namespace QuickFrame.Data {
 			}
 		}
 
+		///<summary>Gets the active directory connection string.</summary>
 		public string AdSecurity
 		{
 			get
@@ -83,6 +93,7 @@ namespace QuickFrame.Data {
 			}
 		}
 
+		///<summary>Gets the attachments database connection string or the default if no attachments database has been set.</summary>
 		public string Attachments
 		{
 			get
@@ -97,13 +108,15 @@ namespace QuickFrame.Data {
 			}
 		}
 
+		///<summary>Provides an indexer through which connection strings can be accessed by name.  If a specified connection string does not exist, the default connection string is returned instead.</summary>
 		public string this[string index]
 		{
 			get
 			{
 				if(_connectionStringList == null)
 					return null;
-				return _connectionStringList.ContainsKey(index) ? _connectionStringList[index] : null;
+				return _connectionStringList.ContainsKey(index) ? _connectionStringList[index] : _connectionStringList["DefaultConnection"];
+				;
 			}
 			set
 			{

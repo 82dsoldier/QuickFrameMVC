@@ -1,38 +1,49 @@
 {
-  "title": "QuickFrame.Mvc",
-  "description": "QuickFrame MVC base.",
-  "language": "en-US",
-  "version": "1.0.0-beta-1-r11",
+  "version": "2.0.0-beta-1-r1",
   "authors": [ "Drew Burchett" ],
-  "buildOptions": {
-    "embed": ["Views/**"]
-  },
   "packOptions": {
+    "language": "en-US",
+    "title": "QuickFrame.Data",
     "licenseUrl": "https://github.com/82dsoldier/QuickFrameMVC/blob/master/LICENSE",
-    "iconUrl": "resource://@QiuckFrame/icon.png",
+    "iconUrl": "https://github.com/82dsoldier/QuickFrameMVC/blob/master/QuickFrame/icon.png?raw=true",
+    "projectUrl": "https://github.com/82dsoldier/QuickFrameMVC",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/82dsoldier/QuickFrameMVC"
+    },
     "owners": [ "Drew Burchett" ],
     "summary": "The core MVC library for the QuickFrame MVC Framework."
   },
   "dependencies": {
+    "Microsoft.Extensions.Configuration.Abstractions": "1.0.0",
+    "Microsoft.AspNetCore.Hosting.Abstractions": "1.0.0",
+    "Microsoft.Extensions.Configuration": "1.0.0",
+    "Microsoft.Extensions.Configuration.FileExtensions": "1.0.0",
+    "Microsoft.Extensions.Configuration.Json": "1.0.0",
+    "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0",
+    "Microsoft.AspNetCore.Http": "1.0.0",
+    "Microsoft.AspNetCore.Mvc.Abstractions": "1.0.0",
+    "Microsoft.AspNetCore.Mvc": "1.0.0",
+    "Microsoft.AspNetCore.Mvc.Core": "1.0.0",
+    "Microsoft.AspNetCore.Session": "1.0.0",
+    "Microsoft.Extensions.Logging.Console": "1.0.0",
+    "Microsoft.Extensions.Logging.Debug": "1.0.0",
+    "Microsoft.AspNetCore.Diagnostics": "1.0.0",
+    "Microsoft.AspNetCore.StaticFiles": "1.0.0",
+    "Microsoft.Extensions.FileProviders.Embedded": "1.0.0",
+    "System.Data.SqlClient": "4.1.0",
     "iTextSharp": "5.5.9",
     "itextsharp.xmlworker": "5.5.9",
-    "Microsoft.AspNetCore.Authorization": "1.0.0",
-    "Microsoft.AspNetCore.Mvc.TagHelpers": "1.0.0",
-    "Microsoft.AspNetCore.Mvc.ViewFeatures": "1.0.0",
-    "Microsoft.AspNetCore.Razor.Runtime": "1.0.0",
-    "Microsoft.Composition": "1.0.27",
-    "NETStandard.Library": "1.6.0",
-    "QuickFrame": "1.0.0-*",
-    "QuickFrame.Data": "1.0.0-*",
-    "QuickFrame.Security": "1.0.0-*",
-    "System.Data.SqlClient": "4.1.0-rc2-24027"
+    "QuickFrame.Data": "2.0.0-beta-1-r1",
+    "QuickFrame.Security": "2.0.0-beta-1-r1"
   },
-
+  "buildOptions": {
+    "embed": [ "Views/**/*.cshtml" ]
+  },
   "frameworks": {
-    "net452": {
-      "imports": [
-        "dotnet4.5"
-      ]
-    }
+    "net452": {}
+  },
+  "configurations": {
+    "Staging": {}
   }
 }

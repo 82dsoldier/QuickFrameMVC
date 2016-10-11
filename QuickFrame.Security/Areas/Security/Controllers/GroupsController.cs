@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using QuickFrame.Security.AccountControl;
-using QuickFrame.Security.AccountControl.Data.Models;
+using QuickFrame.Security.AccountControl.Models;
 using QuickFrame.Security.Configuration;
 using System;
 using System.Collections.Generic;

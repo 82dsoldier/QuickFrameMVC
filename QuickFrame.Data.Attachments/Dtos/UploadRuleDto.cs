@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using QuickFrame.Data.Attachments.Interfaces;
 using QuickFrame.Data.Attachments.Models;
+using QuickFrame.Data.Dtos;
 
 namespace QuickFrame.Data.Attachments.Dtos {
 
@@ -14,7 +15,6 @@ namespace QuickFrame.Data.Attachments.Dtos {
 		public int? FileHeaderPatternId { get; set; } // FileHeaderPatternId
 		public int? MimeTypeId { get; set; } // MimeTypeId
 
-		// Foreign keys
 		public FileExtensionDto FileExtension { get; set; } // FK__UploadRul__FileE__412EB0B6
 
 		public FileHeaderPatternDto FileHeaderPattern { get; set; } // FK__UploadRul__FileH__4222D4EF

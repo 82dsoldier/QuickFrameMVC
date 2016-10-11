@@ -2,14 +2,13 @@ using ExpressMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
 using QuickFrame.Data.Attachments.Models;
-using QuickFrame.Mapping;
+using QuickFrame.Data.Dtos;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 
 namespace QuickFrame.Data.Attachments.Dtos {
 
-	[ExpressMap]
 	public class AttachmentCreateDto : DataTransferObjectGuid<Attachment, AttachmentCreateDto> {
 		public IFormFile Data { get; set; } // Data
 

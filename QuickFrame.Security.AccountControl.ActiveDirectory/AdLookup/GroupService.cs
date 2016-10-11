@@ -1,4 +1,5 @@
-﻿using System;
+﻿using QuickFrame.Data;
+using System;
 using System.Collections.Generic;
 using System.DirectoryServices;
 using System.Security.Principal;

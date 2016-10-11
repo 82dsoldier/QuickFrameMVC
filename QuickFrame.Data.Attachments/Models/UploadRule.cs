@@ -3,8 +3,7 @@ using QuickFrame.Data.Models;
 namespace QuickFrame.Data.Attachments.Models {
 	// AllRules
 
-	public class UploadRule : DataModel {
-		public string Name { get; set; } // Name (length: 64)
+	public class UploadRule : NamedDataModel {
 		public string Description { get; set; } // Description (length: 2048)
 		public int? Priority { get; set; } // Priority
 		public bool IsActive { get; set; } // IsActive

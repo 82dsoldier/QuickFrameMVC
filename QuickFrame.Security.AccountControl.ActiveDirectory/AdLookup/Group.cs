@@ -1,15 +1,13 @@
 ﻿using ExpressMapper;
 using QuickFrame.Data.Dtos;
-using QuickFrame.Mapping;
-using QuickFrame.Security.AccountControl.ActiveDirectory.AdLookup.Interfaces;
-using QuickFrame.Security.AccountControl.Data.Models;
+using QuickFrame.Data.Interfaces.Models;
+using QuickFrame.Security.AccountControl.Models;
 using System.Collections.Generic;
 using System.DirectoryServices;
 
 namespace QuickFrame.Security.AccountControl.ActiveDirectory.AdLookup {
 
-	[ExpressMap]
-	public class Group : GenericDataTransferObject<Group, SiteGroup> {
+	public class Group : DataTransferObjectCore<Group, SiteGroup>, IDataModelCore {
 		private string _commonName;
 		private IndexedProperty<string> _member;
 		private IndexedProperty<int[], string[]> _groupType;
@@ -26,8 +24,8 @@ namespace QuickFrame.Security.AccountControl.ActiveDirectory.AdLookup {
 		public string AccountName { get { return _accountName[0]; } }
 
 		public Group() {
-
 		}
+
 		public Group(SearchResult result) {
 			_commonName = result.Properties.Contains("cn") ? result.Properties["cn"][0].ToString() : result.Properties["sAMAccountName"][0].ToString();
 			_member = new IndexedProperty<string>(result.Properties["member"]);
@@ -39,7 +37,7 @@ namespace QuickFrame.Security.AccountControl.ActiveDirectory.AdLookup {
 		}
 
 		public override void Register() {
-			Mapper.Register<Group, SiteGroup>()
+			Mapper.Register<Group, Models.SiteGroup>()
 				.Member(dest => dest.Id, src => src.ObjectSid)
 				.Member(dest => dest.Name, src => src.CommonName)
 				.Function(dest => dest.Member, src => { return new List<string>(); })

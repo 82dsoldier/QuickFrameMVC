@@ -2,9 +2,10 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using QuickFrame.Security.AccountControl.Data.Models;
+using QuickFrame.Security.AccountControl.Models;
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 
 namespace QuickFrame.Security.AccountControl {
 
@@ -16,6 +17,10 @@ namespace QuickFrame.Security.AccountControl {
 			IdentityErrorDescriber errors, IServiceProvider services, ILogger<UserManager<SiteUser>> logger)
 			: base(store, optionsAccessor, passwordHasher, userValidators, passwordValidators, keyNormalizer, errors, services, logger) {
 			_userStore = store;
+		}
+
+		public override string GetUserId(ClaimsPrincipal principal) {
+			return principal.FindFirstValue(ClaimTypes.PrimarySid);
 		}
 	}
 }

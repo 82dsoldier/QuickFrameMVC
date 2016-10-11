@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNet.Http;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -7,14 +7,12 @@ using Microsoft.Extensions.Options;
 using QuickFrame.Security.AccountControl.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace QuickFrame.Security.AccountControl {
 
-	[Export]
 	public class GroupManager<TGroup> : IDisposable where TGroup : class {
 		private bool _disposed;
 

@@ -1,4 +1,4 @@
-﻿using QuickFrame.Data.Interfaces;
+﻿using QuickFrame.Data.Interfaces.Models;
 
 namespace QuickFrame.Data.Models {
 
