@@ -106,6 +106,12 @@ namespace QuickFrame.Mvc.TagHelpers {
 				GenerateCheckBox(modelExplorer, output, ForAttribute);
 			} else {
 				var val = string.IsNullOrEmpty(Value) ? ForAttribute.Model : Value;
+				if(modelExplorer.ModelType == typeof(DateTime) || modelExplorer.ModelType == typeof(DateTimeOffset)) {
+					DateTime convertedValue = default(DateTime);
+					DateTime.TryParse(val.ToString(), out convertedValue);
+					if(convertedValue == default(DateTime))
+						return;
+				}
 				var formattedVal = string.IsNullOrEmpty(format)
 					? Convert.ToString(val, CultureInfo.CurrentCulture)
 					: string.Format(format, val);

@@ -170,6 +170,9 @@ namespace QuickFrame.Mvc.TagHelpers {
 			if(inputType.Equals("email", StringComparison.CurrentCultureIgnoreCase)) {
 				format = "<a href=\"mailto://{0}\">{0}</a>";
 			}
+			if(inputType.Equals("url", StringComparison.CurrentCultureIgnoreCase)) {
+				format = "<a href=\"{0}\" target=\"_blank\">{0}</a>";
+			}
 			return format;
 		}
 	}
