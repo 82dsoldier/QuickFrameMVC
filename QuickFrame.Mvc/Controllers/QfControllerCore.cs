@@ -62,10 +62,12 @@ namespace QuickFrame.Mvc.Controllers {
 		}
 
 		protected virtual IActionResult CreateCore<TModel>(TModel model) where TModel : IDataTransferObjectCore {
-			_dataService.Create(model);
-			var closeOnSubmit = (bool)HttpContext.Session.GetBoolean("closeOnSubmit", true);
-			if(closeOnSubmit)
-				return View("CloseCurrentView");
+			if(ModelState.IsValid) {
+				_dataService.Create(model);
+				var closeOnSubmit = (bool)HttpContext.Session.GetBoolean("closeOnSubmit", true);
+				if(closeOnSubmit)
+					return View("CloseCurrentView");
+			}
 			return View(CreatePage, model);
 		}
 
