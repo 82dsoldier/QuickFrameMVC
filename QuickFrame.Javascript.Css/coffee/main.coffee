@@ -1,17 +1,10 @@
 ﻿# CoffeeScript
 
-#jQuery.extend
-#    closeFancybox: ()->
-#        parent.$.fancybox.close()
-
-jQuery.extend
-    closeAndRefreshParent: ()->
-        parent.$.fancybox.close()
-        parent.$.reloadWindow()
-
-#jQuery.extend
-#    reloadWindow: ()->
-#        window.location.reload();
+search = (searchBox) ->
+    if $(searchBox).val()
+        window.location.href = $(searchBox).attr('search-url') + '?searchTerm=' + $(searchBox).val()
+    else
+        window.location.href = $(searchBox).attr('search-url')
 
 $(document).ready ->
     $('.datepicker').each ->
@@ -56,3 +49,10 @@ $(document).ready ->
 
         $(this).fancybox opts
 
+    $('#searchBox').change ->
+        search this
+
+    $('#searchBox').keypress (event)->
+        keycode = if event.keyCode then event.keyCode else event.which
+        if(keycode == 13)
+            search this

@@ -35,15 +35,6 @@
         <script src="~/js/popup.min.js"></script>
         <script src="~/js/main.min.js"></script>
     </environment>
-    @{
-        if (ViewBag.CloseOnSubmit == true) {
-			<script>
-				$(document).ready(function () {
-					parent.window.$.fancybox.close();
-				})
-			</script>
-        }
-    }
 
     @RenderSection("scripts", false)
 </body>

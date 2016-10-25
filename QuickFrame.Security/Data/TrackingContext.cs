@@ -77,8 +77,9 @@ namespace QuickFrame.Security.Data {
 		///<summary>Overrides the default SaveChanges method so that every time changes are saved, they are logged.</summary>
 		///<returns>The number of state entries written to the underlying database.</returns>
 		public override int SaveChanges() {
-			if(!TrackChanges)
+			if(!TrackChanges) {
 				return base.SaveChanges();
+			}
 			string userId = (_contextAccessor.HttpContext.User.Identity as ClaimsIdentity).Claims.First(claim => claim.Type == ClaimTypes.PrimarySid).Value;
 			var changeList = ChangeTracker.Entries()
 						.Where(p => p.State == EntityState.Added || p.State == EntityState.Deleted || p.State == EntityState.Modified)

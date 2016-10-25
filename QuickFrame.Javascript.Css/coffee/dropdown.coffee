@@ -45,9 +45,12 @@ $(document).ready ->
 
         _this.chosen opts
 
+        $('#overlay').removeClass('overlay-off').addClass('overlay')
+
         $.ajax
             method: 'GET',
             url: _this.attr('data-url')
         .done (html)->
+            $('#overlay').removeClass('overlay').addClass('overlay-off')
             loadDropdown(_this, html)
     return;

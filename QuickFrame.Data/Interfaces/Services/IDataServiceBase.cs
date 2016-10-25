@@ -10,7 +10,7 @@ namespace QuickFrame.Data.Interfaces.Services {
 
 		void Create<TModel>(TModel model) where TModel : IDataTransferObjectCore;
 
-		int GetCount();
+		int GetCount(string searchColumn = "", string searchTerm = "");
 
 		IEnumerable<TEntity> GetList(string searchTerm, int page, int itemsPerPage, string sortColumn, SortOrder sortOrder, bool includeDeleted);
 

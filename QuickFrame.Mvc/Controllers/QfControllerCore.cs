@@ -65,6 +65,7 @@ namespace QuickFrame.Mvc.Controllers {
 			if(ModelState.IsValid) {
 				_dataService.Create(model);
 				var closeOnSubmit = (bool)HttpContext.Session.GetBoolean("closeOnSubmit", true);
+				HttpContext.Session.SetBoolean("closeOnSubmit", false);
 				if(closeOnSubmit)
 					return View("CloseCurrentView");
 			}
@@ -77,10 +78,13 @@ namespace QuickFrame.Mvc.Controllers {
 		}
 
 		protected virtual IActionResult EditCore(TEdit model) {
-			_dataService.Save(model);
-			var closeOnSubmit = HttpContext.Session.GetBoolean("closeOnSubmit");
-			if(closeOnSubmit == true)
-				return View("CloseCurrentView");
+			if(ModelState.IsValid) {
+				_dataService.Save(model);
+				var closeOnSubmit = HttpContext.Session.GetBoolean("closeOnSubmit");
+				HttpContext.Session.SetBoolean("closeOnSubmit", false);
+				if(closeOnSubmit == true)
+					return View("CloseCurrentView");
+			}
 			return View(EditPage, model);
 		}
 	}

@@ -53,10 +53,12 @@
       }
       opts.width = _this.attr('data-width') || '100%';
       _this.chosen(opts);
+      $('#overlay').removeClass('overlay-off').addClass('overlay');
       return $.ajax({
         method: 'GET',
         url: _this.attr('data-url')
       }).done(function(html) {
+        $('#overlay').removeClass('overlay').addClass('overlay-off');
         return loadDropdown(_this, html);
       });
     });

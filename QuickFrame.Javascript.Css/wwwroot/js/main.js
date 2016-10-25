@@ -1,10 +1,13 @@
 (function() {
-  jQuery.extend({
-    closeAndRefreshParent: function() {
-      parent.$.fancybox.close();
-      return parent.$.reloadWindow();
+  var search;
+
+  search = function(searchBox) {
+    if ($(searchBox).val()) {
+      return window.location.href = $(searchBox).attr('search-url') + '?searchTerm=' + $(searchBox).val();
+    } else {
+      return window.location.href = $(searchBox).attr('search-url');
     }
-  });
+  };
 
   $(document).ready(function() {
     $('.datepicker').each(function() {
@@ -36,7 +39,7 @@
         }
       });
     });
-    return $('.fancybox').each(function() {
+    $('.fancybox').each(function() {
       var _this, opts, refresh;
       _this = $(this);
       refresh = $(this).is('[refresh]');
@@ -58,6 +61,16 @@
         }
       };
       return $(this).fancybox(opts);
+    });
+    $('#searchBox').change(function() {
+      return search(this);
+    });
+    return $('#searchBox').keypress(function(event) {
+      var keycode;
+      keycode = event.keyCode ? event.keyCode : event.which;
+      if (keycode === 13) {
+        return search(this);
+      }
     });
   });
 

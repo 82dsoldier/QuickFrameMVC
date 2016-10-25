@@ -35,7 +35,7 @@ namespace QuickFrame.Mvc.Controllers {
 			=> IndexCore<TIndex>(searchTerm, page, itemsPerPage, sortColumn, sortOrder, includeDeleted);
 
 		protected virtual IActionResult IndexCore<TResult>(string searchTerm = "", int page = 1, int itemsPerPage = 25, string sortColumn = "Name", SortOrder sortOrder = SortOrder.Ascending, bool includeDeleted = false) where TResult : IDataTransferObjectCore {
-			ViewBag.TotalItems = _dataService.GetCount();
+			ViewBag.TotalItems = _dataService.GetCount(sortColumn, searchTerm);
 			IEnumerable<TResult> model = _dataService.GetList<TResult>(searchTerm, page, itemsPerPage, sortColumn, sortOrder, includeDeleted);
 			return View(IndexPage, model);
 		}

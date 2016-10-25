@@ -30,7 +30,12 @@ namespace QuickFrame.Data.Services {
 			Create(Mapper.Map<TModel, TEntity>(model));
 		}
 
-		public virtual int GetCount() => _dbContext.Set<TEntity>().Count();
+		public virtual int GetCount(string searchColumn = "", string searchTerm = "") {
+			var query = _dbContext.Set<TEntity>().AsQueryable();
+			if(!string.IsNullOrEmpty(searchTerm))
+				query = _dbContext.Set<TEntity>().Where($"{searchColumn}.Contains(@0)", searchTerm);
+			return query.Count();
+		}
 
 		public virtual IEnumerable<TEntity> GetList(string searchTerm = "", int page = 1, int itemsPerPage = 25, string sortColumn = "Name", SortOrder sortOrder = SortOrder.Ascending, bool includeDeleted = false) {
 			var query = default(IQueryable<TEntity>);
