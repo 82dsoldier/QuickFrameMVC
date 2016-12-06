@@ -1,0 +1,27 @@
+﻿{
+  "authors": [ "Drew Burchett" ],
+  "packOptions": {
+    "language": "en-US",
+    "title": "QuickFrame",
+    "licenseUrl": "https://github.com/82dsoldier/QuickFrameMVC/blob/master/LICENSE",
+    "iconUrl": "https://github.com/82dsoldier/QuickFrameMVC/blob/master/QuickFrame/icon.png?raw=true",
+    "projectUrl": "https://github.com/82dsoldier/QuickFrameMVC",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/82dsoldier/QuickFrameMVC"
+    },
+    "owners": [ "Drew Burchett" ],
+    "summary": "Base QuickFrame file for using the QuickFrameMVC framework"
+  },
+  "version": "2.0.0-beta-1-r5",
+  "frameworks": {
+    "net452": {},
+    "net46": {},
+    "net461": {},
+    "netstandard1.6": {
+      "dependencies": {
+        "NETStandard.Library": "1.6.0"
+      }
+    }
+  }
+}

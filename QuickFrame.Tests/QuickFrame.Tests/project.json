@@ -1,0 +1,12 @@
+{
+  "version": "2.0.0-beta-1-r2",
+  "testRunner": "xunit",
+  "dependencies": {
+    "xunit": "2.2.0-beta3-build3402",
+    "QuickFrame": "2.0.0-beta-1-r2",
+    "dotnet-test-xunit": "2.2.0-preview2-build1029"
+  },
+  "frameworks": {
+    "net452": {}
+  }
+}

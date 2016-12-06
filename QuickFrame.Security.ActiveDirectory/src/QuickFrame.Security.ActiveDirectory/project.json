@@ -1,0 +1,30 @@
+{
+  "version": "2.0.0-beta-1-r3",
+  "authors": [ "Drew Burchett" ],
+  "packOptions": {
+    "language": "en-US",
+    "title": "QuickFrame.Data",
+    "licenseUrl": "https://github.com/82dsoldier/QuickFrameMVC/blob/master/LICENSE",
+    "iconUrl": "https://github.com/82dsoldier/QuickFrameMVC/blob/master/QuickFrame/icon.png?raw=true",
+    "projectUrl": "https://github.com/82dsoldier/QuickFrameMVC",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/82dsoldier/QuickFrameMVC"
+    },
+    "owners": [ "Drew Burchett" ],
+    "summary": "An Active Directory addon to the core security library for the QuickFrame MVC Framework."
+  },
+  "dependencies": {
+    "QuickFrame.Security": "2.0.0-beta-1-r5"
+  },
+  "frameworks": {
+    "net452": {
+      "frameworkAssemblies": {
+        "System.DirectoryServices": "4.0.0.0"
+      }
+    }
+  },
+  "configurations": {
+    "Staging": {}
+  }
+}
