@@ -14,15 +14,15 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace QuickFrame.Security.AccountControl.Data {
 
 	public class SecurityContext : TrackingContext {
-		public DbSet<GroupRole> GroupRoles { get; set; }
-		public DbSet<GroupRule> GroupRules { get; set; }
+		//public DbSet<GroupRole> GroupRoles { get; set; }
+		//public DbSet<GroupRule> GroupRules { get; set; }
 		public DbSet<SiteRole> SiteRoles { get; set; }
 		public DbSet<SiteRoleClaim> SiteRoleClaims { get; set; }
 		public DbSet<SiteRule> SiteRules { get; set; }
 		public DbSet<UserRole> UserRoles { get; set; }
 		public DbSet<UserRule> UserRules { get; set; }
-		public DbSet<RoleRule> RoleRules { get; set; }
-		public DbSet<SiteGroup> SiteGroups { get; set; }
+		//public DbSet<RoleRule> RoleRules { get; set; }
+		//public DbSet<SiteGroup> SiteGroups { get; set; }
 
 #if NETSTANDARD1_6
 		public SecurityContext(DbContextOptions options) : base(options) {
@@ -98,15 +98,15 @@ namespace QuickFrame.Security.AccountControl.Data {
 		}
 
 		protected override void OnModelCreating(DbModelBuilder modelBuilder) {
-			modelBuilder.Entity<GroupRole>().HasKey(a => new { a.RoleId, a.GroupId });
-			modelBuilder.Entity<GroupRole>().Property(a => a.RoleId).IsRequired().HasMaxLength(128).HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);
-			modelBuilder.Entity<GroupRole>().Property(a => a.GroupId).IsRequired().HasMaxLength(128).HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);
-			modelBuilder.Entity<GroupRole>().HasRequired(a => a.SiteRole).WithMany(b => b.GroupRoles).HasForeignKey(c => c.RoleId).WillCascadeOnDelete(false);
+			//modelBuilder.Entity<GroupRole>().HasKey(a => new { a.RoleId, a.GroupId });
+			//modelBuilder.Entity<GroupRole>().Property(a => a.RoleId).IsRequired().HasMaxLength(128).HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);
+			//modelBuilder.Entity<GroupRole>().Property(a => a.GroupId).IsRequired().HasMaxLength(128).HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);
+			//modelBuilder.Entity<GroupRole>().HasRequired(a => a.SiteRole).WithMany(b => b.GroupRoles).HasForeignKey(c => c.RoleId).WillCascadeOnDelete(false);
 
-			modelBuilder.Entity<GroupRule>().HasKey(a => new { a.RuleId, a.GroupId });
-			modelBuilder.Entity<GroupRule>().Property(a => a.RuleId).IsRequired().HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);
-			modelBuilder.Entity<GroupRule>().Property(a => a.GroupId).IsRequired().HasMaxLength(128).HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);
-			modelBuilder.Entity<GroupRule>().HasRequired(a => a.SiteRule).WithMany(b => b.GroupRules).HasForeignKey(c => c.RuleId).WillCascadeOnDelete(false);
+			//modelBuilder.Entity<GroupRule>().HasKey(a => new { a.RuleId, a.GroupId });
+			//modelBuilder.Entity<GroupRule>().Property(a => a.RuleId).IsRequired().HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);
+			//modelBuilder.Entity<GroupRule>().Property(a => a.GroupId).IsRequired().HasMaxLength(128).HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);
+			//modelBuilder.Entity<GroupRule>().HasRequired(a => a.SiteRule).WithMany(b => b.GroupRules).HasForeignKey(c => c.RuleId).WillCascadeOnDelete(false);
 
 			modelBuilder.Entity<SiteRoleClaim>().HasKey(a => a.Id);
 			modelBuilder.Entity<SiteRoleClaim>().Property(a => a.Id).IsRequired().HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
@@ -116,18 +116,29 @@ namespace QuickFrame.Security.AccountControl.Data {
 			modelBuilder.Entity<SiteRoleClaim>().HasOptional(a => a.SiteRole).WithMany(b => b.SiteRoleClaims).HasForeignKey(c => c.RoleId).WillCascadeOnDelete(false);
 
 			modelBuilder.Entity<SiteRole>().HasKey(a => a.Id);
-			modelBuilder.Entity<SiteRole>().Property(a => a.Id).IsRequired().HasMaxLength(128).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+			modelBuilder.Entity<SiteRole>().Property(a => a.Id).IsRequired().HasMaxLength(128);
 			modelBuilder.Entity<SiteRole>().Property(a => a.Name).IsRequired().HasMaxLength(256);
 			modelBuilder.Entity<SiteRole>().Property(a => a.NormalizedName).IsRequired().HasMaxLength(256);
 			modelBuilder.Entity<SiteRole>().Property(a => a.ConcurrencyStamp).IsOptional().HasMaxLength(128);
 			modelBuilder.Entity<SiteRole>().Property(a => a.Description).IsOptional().HasMaxLength(2048);
 			modelBuilder.Entity<SiteRole>().HasMany(a => a.SiteRules)
-				.WithMany(b => b.SiteRoles)
-				.Map(c => {
-					c.ToTable("RoleRules", "dbo");
-					c.MapLeftKey("RoleId");
-					c.MapRightKey("RuleId");
-				});
+			.WithMany(b => b.SiteRoles)
+			.Map(c => {
+				 c.ToTable("RoleRules");
+				 c.MapLeftKey("RoleId");
+				 c.MapRightKey("RuleId");
+			 });
+
+			//modelBuilder.Entity<RoleRule>().ToTable("RoleRules");
+			//modelBuilder.Entity<RoleRule>().HasKey(a => new { a.RoleId, a.RuleId });
+			//modelBuilder.Entity<RoleRule>().Property(a => a.RoleId).HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);
+			//modelBuilder.Entity<RoleRule>().Property(a => a.RuleId).HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);
+			//modelBuilder.Entity<RoleRule>().HasRequired(a => a.SiteRole)
+			//	.WithMany(b => b.RoleRules)
+			//	.HasForeignKey(a => a.RoleId);
+			//modelBuilder.Entity<RoleRule>().HasRequired(a => a.SiteRule)
+			//	.WithMany(b => b.RoleRules)
+			//	.HasForeignKey(a => a.RuleId);
 
 			modelBuilder.Entity<SiteRule>().HasKey(a => a.Id);
 			modelBuilder.Entity<SiteRule>().Property(a => a.Id).IsRequired().HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
@@ -146,6 +157,7 @@ namespace QuickFrame.Security.AccountControl.Data {
 			modelBuilder.Entity<UserRule>().Property(a => a.RuleId).IsRequired().HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);
 			modelBuilder.Entity<UserRule>().HasRequired(a => a.SiteRule).WithMany(b => b.UserRules).HasForeignKey(c => c.RuleId).WillCascadeOnDelete(false);
 
+			base.OnModelCreating(modelBuilder);
 		}
 #endif
 

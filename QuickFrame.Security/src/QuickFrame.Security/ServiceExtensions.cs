@@ -1,16 +1,19 @@
 ﻿using ExpressMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using QuickFrame.Data;
+using QuickFrame.Data.Dtos;
 using QuickFrame.Security.AccountControl;
 using QuickFrame.Security.AccountControl.Data;
 using QuickFrame.Security.AccountControl.Interfaces.Services;
 using QuickFrame.Security.AccountControl.Models;
 using QuickFrame.Security.AccountControl.Services;
+using QuickFrame.Security.AccountControl.Stores;
 using QuickFrame.Security.Configuration;
 using QuickFrame.Security.Data;
 using QuickFrame.Security.Data.Dtos;
@@ -37,8 +40,11 @@ namespace QuickFrame.Security {
 				.AddTransient<IAuthorizationHandler, RoleRequirement>()
 				.AddTransient<QuickFrameSecurityManager>()
 				.AddTransient<ISiteRulesDataService, SiteRulesDataService>()
-				.AddTransient<GroupManager<SiteGroup>>()
+				//.AddTransient<GroupManager<SiteGroup>>()
 				.AddTransient<QuickFrameIdentityErrorDescriber>()
+				.AddTransient<QuickFrameRoleManager>()
+				.AddTransient<IRoleStore<SiteRole>, RoleStore>()
+				.AddTransient<ISiteRolesDataService, SiteRolesDataService>()
 				.AddScoped<SecurityContext>();
 
 			Mapper.Register<AuditLog, DataChangedEventArgs>()
@@ -47,6 +53,7 @@ namespace QuickFrame.Security {
 				});
 
 			Mapper.Register<DataChangedEventArgs, DataChangedEventArgsDto>();
+			Mapper.Register<SiteGroup, LookupTableDto<SiteGroup, string>>();
 
 			services.Configure<NameListOptions>(excluded => {
 				excluded.Load(configuration.GetSection("ExcludedNames"));

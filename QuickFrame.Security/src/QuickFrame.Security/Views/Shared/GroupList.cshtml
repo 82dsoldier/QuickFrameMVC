@@ -8,7 +8,7 @@
 		<div>
 	<select asp-for="GroupId"
 
-			data-url="@Url.Action("GetGroups", "Groups", new { filter = Model.Filter })"
+			data-url="@Url.Action("GetRoles", "Groups", new { area = "Security", filter = Model.Filter })"
 			data-id="id"
 			data-text="name"></select>
 		</div>

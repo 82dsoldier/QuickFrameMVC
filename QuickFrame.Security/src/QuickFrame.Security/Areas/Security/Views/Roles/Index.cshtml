@@ -1,0 +1,49 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model IEnumerable<QuickFrame.Security.AccountControl.Dtos.SiteRoleIndexDto>
+
+@{
+
+	ViewBag.Title = "Site Roles";
+	ViewBag.UseSearch = false;
+	ViewBag.UsePaging = true;
+	Layout = "_Layout";
+}
+
+@section createbutton {
+	<a asp-controller="Roles" asp-action="Create" asp-area="Security" scrolling close-click close-button class="btn btn-sm btn-default fancybox" refresh="true" data-width="1024px" data-height="768px"><i class="fa fa-plus"></i> Create a New Role</a>
+}
+
+
+@{
+	if(Model.Any()) {
+		<table class="table index table-striped table-bordered table-hover" style="border: 0;">
+			<thead>
+				<tr>
+					<th style="width:3%;"></th>
+					<th style="width:25%">Name</th>
+					<th>Description</th>
+				</tr>
+			</thead>
+			<tbody>
+				@{
+					foreach(var obj in Model) {
+						<tr>
+							<td style="text-align:center;">
+								<div class="dropdown">
+									<a href="#" class="dropdown-toggle" style="display:inline-block;width:100%;" data-toggle="dropdown">&nbsp;<i class="fa fa-lg fa-ellipsis-v"></i>&nbsp;</a>
+									<ul class="dropdown-menu">
+										<li><a asp-controller="Roles" asp-action="Edit" asp-route-id="@obj.Id" asp-route-area="Security" class="fancybox" refresh="true" data-width="1024px" data-height="768px"><i class="fa-fw fa fa-edit"></i>Edit</a></li>
+										<li><a ash-controller="Roles" asp-action="ListUsersInRole" asp-route-id="@obj.Id" asp-route-area="Security" class="fancybox" data-width="1024px" data-height="768px"><i class="fa-fw fa fa-align-justify"></i>List Users</a></li>
+										<li><a asp-controller="Roles" asp-action="Delete" asp-route-id="@obj.Id" asp-route-area="Security" class="remove-object"><i class="fa-fw fa fa-times" style="color:red" ></i>Delete</a></li>
+									</ul>
+								</div>
+							</td>
+							<td>@obj.Name</td>
+							<td>@obj.Description</td>
+						</tr>
+					}
+				}
+			</tbody>
+		</table>
+					}
+}

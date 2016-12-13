@@ -9,11 +9,9 @@ namespace QuickFrame.Security.AccountControl.Models {
 		public bool IsAllow { get; set; }
 		public bool MatchPartial { get; set; }
 
-		public virtual ICollection<GroupRule> GroupRules { get; set; }
+		//public virtual ICollection<GroupRule> GroupRules { get; set; }
 		public virtual ICollection<SiteRole> SiteRoles { get; set; }
 		public virtual ICollection<UserRule> UserRules { get; set; }
-		public virtual ICollection<RoleRule> RoleRules { get; set; }
+		//public virtual ICollection<RoleRule> RoleRules { get; set; }
 	}
 }
-
-// </auto-generated>

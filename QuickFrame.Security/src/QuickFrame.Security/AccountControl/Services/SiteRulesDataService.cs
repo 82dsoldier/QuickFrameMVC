@@ -6,6 +6,7 @@ using QuickFrame.Security.AccountControl.Interfaces.Services;
 using QuickFrame.Security.AccountControl.Models;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 #if NETSTANDARD1_6
 using Microsoft.EntityFrameworkCore;
 #else
@@ -17,12 +18,12 @@ namespace QuickFrame.Security.AccountControl.Services {
 
 	public class SiteRulesDataService : ISiteRulesDataService {
 		private SecurityContext _context;
-		private GroupManager<SiteGroup> _groupManager;
+		//private GroupManager<SiteGroup> _groupManager;
 		private UserManager<SiteUser> _userManager;
 
-		public SiteRulesDataService(SecurityContext context, GroupManager<SiteGroup> groupManager, UserManager<SiteUser> userManager) {
+		public SiteRulesDataService(SecurityContext context, UserManager<SiteUser> userManager) {
 			_context = context;
-			_groupManager = groupManager;
+			//_groupManager = groupManager;
 			_userManager = userManager;
 		}
 
@@ -62,20 +63,20 @@ namespace QuickFrame.Security.AccountControl.Services {
 			}
 		}
 
-		public IEnumerable<SiteRule> GetSiteRulesForGroup(string gropuId) {
-			foreach(var obj in _context.SiteRules.Where(obj => obj.IsDeleted == false && obj.GroupRules.Any(group => group.GroupId == gropuId))) {
-				_context.Entry(obj).State = EntityState.Detached;
-				yield return obj;
-			}
-		}
+		//public IEnumerable<SiteRule> GetSiteRulesForGroup(string gropuId) {
+		//	foreach(var obj in _context.SiteRules.Where(obj => obj.IsDeleted == false && obj.GroupRules.Any(group => group.GroupId == gropuId))) {
+		//		_context.Entry(obj).State = EntityState.Detached;
+		//		yield return obj;
+		//	}
+		//}
 
-		public IEnumerable<SiteGroup> GetGroupsForRule(int id) {
-			foreach(var group in _context.GroupRules.Where(r => r.RuleId == id)) {
-				var t = _groupManager.FindByIdAsync(group.GroupId);
-				t.Wait();
-				yield return t.Result;
-			}
-		}
+		//public IEnumerable<SiteGroup> GetGroupsForRule(int id) {
+		//	foreach(var group in _context.GroupRules.Where(r => r.RuleId == id)) {
+		//		var t = _groupManager.FindByIdAsync(group.GroupId);
+		//		t.Wait();
+		//		yield return t.Result;
+		//	}
+		//}
 
 		public IEnumerable<SiteUser> GetUsersForRule(int id) {
 			foreach(var user in _context.UserRules.Where(r => r.RuleId == id)) {
@@ -99,32 +100,47 @@ namespace QuickFrame.Security.AccountControl.Services {
 			_context.SaveChanges();
 		}
 
-		public void AddGroupToRule(int ruleId, string groupId) {
-			_context.GroupRules.Add(new GroupRule {
-				RuleId = ruleId,
-				GroupId = groupId
-			});
-			_context.SaveChanges();
-		}
+		//public void AddGroupToRule(int ruleId, string groupId) {
+		//	_context.GroupRules.Add(new GroupRule {
+		//		RuleId = ruleId,
+		//		GroupId = groupId
+		//	});
+		//	_context.SaveChanges();
+		//}
 
-		public void DeleteGroupFromRule(int ruleId, string groupId) {
-			var rule = _context.GroupRules.First(r => r.RuleId == ruleId && r.GroupId == groupId);
-			_context.GroupRules.Remove(rule);
-			_context.SaveChanges();
-		}
+		//public void DeleteGroupFromRule(int ruleId, string groupId) {
+		//	var rule = _context.GroupRules.First(r => r.RuleId == ruleId && r.GroupId == groupId);
+		//	_context.GroupRules.Remove(rule);
+		//	_context.SaveChanges();
+		//}
 
 		public void AddRoleToRule(int ruleId, string roleId) {
-			_context.RoleRules.Add(new RoleRule {
-				RuleId = ruleId,
-				RoleId = roleId
-			});
+			var role = _context.SiteRoles.First(r => r.Id == roleId);
+			var rule = _context.SiteRules.First(r => r.Id == ruleId);
+			if(rule.SiteRoles == null)
+				rule.SiteRoles = new List<SiteRole>();
+			rule.SiteRoles.Add(role);
+			_context.Entry(rule).State = EntityState.Modified;
 			_context.SaveChanges();
 		}
 
 		public void DeleteRoleFromRule(int ruleId, string roleId) {
-			var rule = _context.RoleRules.First(r => r.RuleId == ruleId && r.RoleId == roleId);
-			_context.RoleRules.Remove(rule);
+			var role = _context.SiteRoles.First(r => r.Id == roleId);
+			var rule = _context.SiteRules.First(r => r.Id == ruleId);
+			if(rule.SiteRoles == null)
+				return;
+			rule.SiteRoles.Remove(role);
+			_context.Entry(rule).State = EntityState.Modified;
 			_context.SaveChanges();
+		}
+
+		public IEnumerable<SiteRole> ListRolesForRule(int id) {
+			return _context.SiteRules.First(r => r.Id == id).SiteRoles;
+		}
+
+		public IEnumerable<TResult> ListRolesForRule<TResult>(int id) {
+			foreach(var obj in ListRolesForRule(id))
+				yield return Mapper.Map<SiteRole, TResult>(obj);
 		}
 	}
 }

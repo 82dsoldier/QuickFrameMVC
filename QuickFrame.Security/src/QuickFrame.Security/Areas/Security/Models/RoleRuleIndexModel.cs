@@ -1,10 +1,11 @@
-﻿using QuickFrame.Security.AccountControl.Models;
+﻿using QuickFrame.Security.AccountControl.Dtos;
+using QuickFrame.Security.AccountControl.Models;
 using System.Collections.Generic;
 
 namespace QuickFrame.Security.Areas.Security.Models {
 
 	public class RoleRuleIndexModel {
-		public string RuleId { get; set; }
-		public List<SiteRole> RoleList { get; } = new List<SiteRole>();
+		public int RoleId { get; set; }
+		public List<SiteRoleIndexDto> RoleList { get; set; } = new List<SiteRoleIndexDto>();
 	}
 }

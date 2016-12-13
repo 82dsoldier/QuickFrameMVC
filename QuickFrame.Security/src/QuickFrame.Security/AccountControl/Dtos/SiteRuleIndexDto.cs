@@ -22,20 +22,6 @@ namespace QuickFrame.Security.AccountControl.Dtos {
 
 		public List<SiteRoleIndexDto> SiteRoles { get; set; }
 
-		public override void Register() {
-			Mapper.Register<SiteRule, SiteRuleIndexDto>()
-				.Function(dest => dest.Url, src => {
-					Uri uri = null;
-					try {
-						uri = new Uri(src.Url);
-					} catch {
-						var request = _contextAccessor.HttpContext.Request;
-						uri = new Uri(String.Format("{0}{1}", $"{request.Scheme}://{request.Host}", src.Url));
-					}
-					return uri.ToString();
-				});
-		}
-
 		public SiteRuleIndexDto(IHttpContextAccessor contextAccessor) {
 			_contextAccessor = contextAccessor;
 		}

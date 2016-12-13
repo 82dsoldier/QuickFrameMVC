@@ -24,7 +24,11 @@ using System.Security.Claims;
 using System.Text;
 
 namespace QuickFrame.Mvc.Controllers {
-
+	/// <summary>
+	/// The base class from which all MVC controllers should inherit.
+	/// </summary>
+	/// <typeparam name="TEntity">The type of entity that will be used in this controller.</typeparam>
+	/// <typeparam name="TIndex">The type of class to which the entity will be mapped when returning the Index page.</typeparam>
 	public class QfControllerBase<TEntity, TIndex>
 		: Controller
 		where TEntity : class
@@ -33,31 +37,84 @@ namespace QuickFrame.Mvc.Controllers {
 		protected QuickFrameSecurityManager _securityManager;
 		protected string IndexPage = "Index";
 
+		/// <summary>
+		/// The constructor for the QFControllerBase class.
+		/// </summary>
+		/// <param name="dataService">The data service used to return data to the views contained within this class.</param>
+		/// <param name="securityManager">The <see cref="QuickFrame.Security.QuickFrameSecurityManager"/>  used to apply security to functions within this class.</param>
 		public QfControllerBase(IDataServiceBase<TEntity> dataService, QuickFrameSecurityManager securityManager) {
 			_dataService = dataService;
 			_securityManager = securityManager;
 		}
 
+		/// <summary>
+		/// Returns the index page for the current controller
+		/// </summary>
+		/// <param name="searchTerm">The term for which to search, if any.</param>
+		/// <param name="page">If paging is being used, the page on which to start.</param>
+		/// <param name="itemsPerPage">If paging is being used, the number of items to return on each page.</param>
+		/// <param name="sortColumn">If sorting or searching, the name of the column on which to sort or search.</param>
+		/// <param name="sortOrder">If sorting, the direction in which to sort.</param>
+		/// <param name="includeDeleted">True to return records that have been marked as deleted.</param>
+		/// <returns>An IActionResult representing the index page for the current controller.</returns>
 		[HttpGet]
-		public IActionResult Index(string searchTerm = "", int page = 1, int itemsPerPage = 25, string sortColumn = "Name", SortOrder sortOrder = SortOrder.Ascending, bool includeDeleted = false)
+		public IActionResult Index(string searchTerm, int page, int itemsPerPage, string sortColumn, SortOrder sortOrder, bool includeDeleted)
 			=> Authorize(() => IndexCore<TIndex>(searchTerm, page, itemsPerPage, sortColumn, sortOrder, includeDeleted));
 
-		protected virtual IActionResult IndexCore<TResult>(string searchTerm = "", int page = 1, int itemsPerPage = 25, string sortColumn = "Name", SortOrder sortOrder = SortOrder.Ascending, bool includeDeleted = false) where TResult : IDataTransferObjectCore {
+		/// <summary>
+		/// The core function called by Index in order to return the Index page for the current controller.
+		/// </summary>
+		/// <typeparam name="TResult">The type of class to return from the database.</typeparam>
+		/// <param name="searchTerm">The term for which to search, if any.</param>
+		/// <param name="page">If paging is being used, the page on which to start.</param>
+		/// <param name="itemsPerPage">If paging is being used, the number of items to return on each page.</param>
+		/// <param name="sortColumn">If sorting or searching, the name of the column on which to sort or search.</param>
+		/// <param name="sortOrder">If sorting, the direction in which to sort.</param>
+		/// <param name="includeDeleted">True to return records that have been marked as deleted.</param>
+		/// <returns>An IActionResult representing the index page for the current controller.</returns>
+		/// <remarks>If overriding the core index functionality, override this function rather than <see cref="QuickFrame.Mvc.Controllers.QfControllerBase{TEntity, TIndex}.Index(string, int, int, string, SortOrder, bool)"/> </remarks>
+		protected virtual IActionResult IndexCore<TResult>(string searchTerm, int page, int itemsPerPage, string sortColumn, SortOrder sortOrder, bool includeDeleted ) 
+			where TResult : IDataTransferObjectCore {
 			ViewBag.TotalItems = _dataService.GetCount(sortColumn, searchTerm);
 			IEnumerable<TResult> model = _dataService.GetList<TResult>(searchTerm, page, itemsPerPage, sortColumn, sortOrder, includeDeleted);
 			return View(IndexPage, model);
 		}
 
+		/// <summary>
+		/// Wrapper function for authorizing a user to access a URL in the security manager.
+		/// </summary>
+		/// <param name="func">The function to execute if the user is authorized.</param>
+		/// <returns>An IActionResult representing the page returned by the specified function.</returns>
 		protected virtual IActionResult Authorize(Func<IActionResult> func) => _securityManager.AuthorizeExecution(User, CurrentUrl, func);
 
+		/// <summary>
+		/// Returns the specified web page as a PDF.
+		/// </summary>
+		/// <param name="dataModel">The data model to use.</param>
+		/// <param name="pageSize">The size of the page to create.</param>
+		/// <returns>A pdf as an IActionResult.</returns>
 		protected virtual IActionResult Pdf(object dataModel, Rectangle pageSize = null) {
 			return Pdf(String.Empty, dataModel, pageSize);
 		}
 
+		/// <summary>
+		/// Returns the specified web page as a PDF.
+		/// </summary>
+		/// <param name="viewName">The name of the view to convert to PDF.</param>
+		/// <param name="dataModel">The data model to use.</param>
+		/// <param name="pageSize">The size of the page to create.</param>
+		/// <returns>A pdf as an IActionResult.</returns>
 		protected virtual IActionResult Pdf(string viewName, object dataModel, Rectangle pageSize = null) {
 			return new FileContentResult(PdfBytes(viewName, dataModel, pageSize), "application/pdf");
 		}
 
+		/// <summary>
+		/// Converts the specified view name and data model to a PDF.
+		/// </summary>
+		/// <param name="viewName">The name of the view to convert to PDF.</param>
+		/// <param name="dataModel">The data model to use.</param>
+		/// <param name="pageSize">The size of the page to create.</param>
+		/// <returns>The raw data of the PDF as a byte array.</returns>
 		protected virtual byte[] PdfBytes(string viewName, object dataModel, Rectangle pageSize) {
 			if(String.IsNullOrEmpty(viewName))
 				viewName = ControllerContext.RouteData.Values["action"].ToString();
@@ -102,6 +159,9 @@ namespace QuickFrame.Mvc.Controllers {
 			}
 		}
 
+		/// <summary>
+		/// Gets the fully qualified URL of the current page.
+		/// </summary>
 		protected string CurrentUrl
 		{
 			get

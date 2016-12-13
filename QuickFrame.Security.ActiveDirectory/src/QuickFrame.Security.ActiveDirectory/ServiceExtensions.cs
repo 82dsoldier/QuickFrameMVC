@@ -10,8 +10,8 @@ namespace QuickFrame.Security.AccountControl.ActiveDirectory {
 	public static class ServiceExtensions {
 
 		public static IServiceCollection AddQuickFrameSecurityAd(this IServiceCollection services) {
-			services.AddTransient<IUserStore<SiteUser>, AdUserStore>()
-				.AddTransient<IGroupStore<SiteGroup>, AdGroupStore>();
+			services.AddTransient<IUserStore<SiteUser>, AdUserStore>();
+				//.AddTransient<IGroupStore<SiteGroup>, AdGroupStore>();
 
 			Mapper.RegisterCustom<Person, SiteUser, PersonSiteUserMap>();
 

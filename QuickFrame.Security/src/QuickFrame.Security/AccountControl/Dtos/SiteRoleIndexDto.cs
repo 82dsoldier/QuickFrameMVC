@@ -13,5 +13,6 @@ namespace QuickFrame.Security.AccountControl.Dtos {
 
 		[StringLength(2048)]
 		public string Description { get; set; }
+		public string NormalizedName { get; set; }
 	}
 }

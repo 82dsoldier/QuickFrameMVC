@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -9,7 +10,7 @@ namespace QuickFrame.Utilities
     public class PdfDocument
     {
 		public byte[] ToPdf(string fileName) {
-			var doc = new Aspose.Words.Document(FilePath);
+			var doc = new Aspose.Words.Document(fileName);
 			using(var ms = new MemoryStream()) {
 				doc.Save(ms, Aspose.Words.SaveFormat.Pdf);
 				return ms.ToArray();

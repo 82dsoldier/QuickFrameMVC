@@ -17,22 +17,25 @@ namespace QuickFrame.Security.AccountControl.Interfaces.Services {
 
 		IEnumerable<SiteRule> GetSiteRulesForRole(string roleId);
 
-		IEnumerable<SiteRule> GetSiteRulesForGroup(string groupId);
+		//IEnumerable<SiteRule> GetSiteRulesForGroup(string groupId);
 
 		IEnumerable<SiteUser> GetUsersForRule(int id);
 
-		IEnumerable<SiteGroup> GetGroupsForRule(int id);
+		//IEnumerable<SiteGroup> GetGroupsForRule(int id);
 
 		void AddUserToRule(int ruleId, string userId);
 
 		void DeleteUserFromRule(int ruleId, string userId);
 
-		void AddGroupToRule(int ruleId, string groupId);
+		//void AddGroupToRule(int ruleId, string groupId);
 
-		void DeleteGroupFromRule(int ruleId, string groupId);
+		//void DeleteGroupFromRule(int ruleId, string groupId);
 
 		void AddRoleToRule(int ruleId, string roleId);
 
 		void DeleteRoleFromRule(int ruleId, string roleId);
+
+		IEnumerable<SiteRole> ListRolesForRule(int id);
+		IEnumerable<TResult> ListRolesForRule<TResult>(int id);
 	}
 }

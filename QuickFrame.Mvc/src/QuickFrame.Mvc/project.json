@@ -1,5 +1,5 @@
 {
-  "version": "2.0.0-beta-1-r8",
+  "version": "2.0.0-beta-1-r9",
   "authors": [ "Drew Burchett" ],
   "packOptions": {
     "language": "en-US",
@@ -31,11 +31,11 @@
     "Microsoft.AspNetCore.Diagnostics": "1.0.0",
     "Microsoft.AspNetCore.StaticFiles": "1.0.0",
     "Microsoft.Extensions.FileProviders.Embedded": "1.0.0",
-    "QuickFrame.Data": "2.0.0-beta-1-r5",
-    "QuickFrame.Security": "2.0.0-beta-1-r4",
+    "QuickFrame.Data": "2.0.0-beta-1-r6",
     "System.Data.SqlClient": "4.3.0-preview1-24530-04",
     "iTextSharp": "5.5.10",
     "itextsharp.xmlworker": "5.5.10",
+    "QuickFrame.Security": "2.0.0-beta-1-r6",
   },
   "buildOptions": {
     "embed": [ "Views/**/*.cshtml" ]

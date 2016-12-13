@@ -1,0 +1,26 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model QuickFrame.Security.AccountControl.Dtos.SiteRoleIndexDto
+
+@{
+	Layout = "_PopupLayout";
+	var action = String.IsNullOrEmpty(Model.Id) ? "Create" : "Edit";
+}
+<h3>@action Site Role</h3>
+<form asp-action="@action" asp-controller="Roles" asp-area="Security">
+	<div asp-validation-summary="All"></div>
+	<input type="hidden" asp-for="Id" />
+	<input type="hidden" asp-for="NormalizedName" />
+	<div class="col-md-6">
+		<label asp-for="Name"></label>
+		<div>
+			<input asp-for="Name" class="form-control"/>
+		</div>
+	</div>
+	<div class="col-md-12">
+		<label asp-for="Description"></label>
+		<div>
+			<textarea asp-for="Description"></textarea>
+		</div>
+	</div>
+	@Html.Partial("FormButtons");
+</form>

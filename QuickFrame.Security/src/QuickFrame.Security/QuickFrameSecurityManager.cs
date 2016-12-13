@@ -81,14 +81,14 @@ namespace QuickFrame.Security {
 			}
 
 			return !useSecurity;
-		}
+		}			//foreach(var claim in id.Claims.Where(c => c.Type == ClaimTypes.GroupSid || c.Type == ClaimTypes.PrimaryGroupSid))
+
 
 		private IEnumerable<SiteRule> GetSiteRulesForIdentity(ClaimsIdentity id) {
 			foreach(var rule in _siteRulesDataService.GetSiteRulesForUser(id.Claims.FirstOrDefault(c => c.Type == ClaimTypes.PrimarySid)?.Value))
 				yield return rule;
-			foreach(var claim in id.Claims.Where(c => c.Type == ClaimTypes.GroupSid || c.Type == ClaimTypes.PrimaryGroupSid))
-				foreach(var rule in _siteRulesDataService.GetSiteRulesForGroup(claim.Value))
-					yield return rule;
+				//foreach(var rule in _siteRulesDataService.GetSiteRulesForGroup(claim.Value))
+				//	yield return rule;
 			foreach(var claim in id.Claims.Where(c => c.Type == ClaimTypes.Role))
 				foreach(var rule in _siteRulesDataService.GetSiteRulesForRole(claim.Value))
 					yield return rule;

@@ -1,5 +1,5 @@
 {
-  "version": "2.0.0-beta-1-r3",
+  "version": "2.0.0-beta-1-r9",
   "authors": [ "Drew Burchett" ],
   "packOptions": {
     "language": "en-US",
@@ -15,7 +15,7 @@
     "summary": "An Active Directory addon to the core security library for the QuickFrame MVC Framework."
   },
   "dependencies": {
-    "QuickFrame.Security": "2.0.0-beta-1-r5"
+    "QuickFrame.Security": "2.0.0-beta-1-r6"
   },
   "frameworks": {
     "net452": {

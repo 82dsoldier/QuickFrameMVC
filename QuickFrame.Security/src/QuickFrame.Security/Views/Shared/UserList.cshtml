@@ -2,7 +2,7 @@
 @{
 	Layout = "_PopupLayout";
 }
-<form asp-action="@Model.Action" asp-controller="@Model.Controller" asp-area="@Model.Area">
+<form action="@Url.Action(Model.Action, Model.Controller, new { area = Model.Area })" method="post">
 	<div class="col-md-6">
 		<label for="UserId"></label>
 		<div>
