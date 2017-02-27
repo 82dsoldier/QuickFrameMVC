@@ -11,6 +11,7 @@ using QuickFrame.Mvc.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Dynamic;
 using System.Linq;
 
 namespace QuickFrame.Mvc.TagHelpers {
@@ -68,14 +69,18 @@ namespace QuickFrame.Mvc.TagHelpers {
 			UrlHelperFactory = urlHelperFactory;
 		}
 
-		//[HtmlAttributeName(DisplayForAttributeName)]
-		//public string DisplayFor { get; set; }
 
 		[HtmlAttributeName(DisplayForAttributeName)]
 		public string DisplayFor { get; set; }
 
 		[HtmlAttributeName("qf-sort")]
 		public bool Sort { get; set; }
+
+		[HtmlAttributeName("qf-controller")]
+		public string Controller { get; set; }
+
+		[HtmlAttributeName("qf-action")]
+		public string Action { get; set; }
 
 		[HtmlAttributeNotBound]
 		[ViewContext]
@@ -128,9 +133,18 @@ namespace QuickFrame.Mvc.TagHelpers {
 				if(currentPage == 0)
 					currentPage = 1;
 
-				var controller = (ViewContext.ActionDescriptor as ControllerActionDescriptor)?.ControllerName;
+				var controller = String.IsNullOrEmpty(Controller) ? (ViewContext.ActionDescriptor as ControllerActionDescriptor)?.ControllerName : Controller;
 
-				var action = "Index";
+				var action = String.IsNullOrEmpty(Action) ? ViewContext.RouteData.Values["action"].ToString() : Action;
+				if(string.IsNullOrEmpty(action))
+					action = "Index";
+
+				dynamic routeValues = new ExpandoObject();
+				foreach(var obj in ContextAccessor.HttpContext.Request.Query)
+					((System.Collections.Generic.IDictionary<string, object>)routeValues)[obj.Key] = obj.Value;
+
+				routeValues.sortColumn = columnName;
+				routeValues.sortOrder = SortOrder.Ascending;
 
 				var ul = new FluentTagBuilder("ul")
 					.AddCssClass("sort-spinner")
@@ -142,9 +156,10 @@ namespace QuickFrame.Mvc.TagHelpers {
 						string.Empty,
 						string.Empty,
 						string.Empty,
-						new { page = currentPage, itemsPerPage, sortColumn = columnName },
-						new { @class = "fa fa-sort-asc" })))
-					.AppendHtml(new FluentTagBuilder("li")
+						routeValues,
+						new { @class = "fa fa-sort-asc" })));
+				routeValues.sortOrder = SortOrder.Descending;
+				ul.AppendHtml(new FluentTagBuilder("li")
 						.AppendHtml(Generator.GenerateActionLink(ViewContext,
 						string.Empty,
 						action,
@@ -152,7 +167,7 @@ namespace QuickFrame.Mvc.TagHelpers {
 						string.Empty,
 						string.Empty,
 						string.Empty,
-						new { page = currentPage, itemsPerPage, sortColumn = columnName, sortOrder = SortOrder.Descending },
+						routeValues,
 						new { @class = "fa fa-sort-desc" })));
 
 				output.Content.AppendHtml(ul);

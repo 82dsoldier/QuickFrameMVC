@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 
@@ -13,6 +14,7 @@ namespace QuickFrame.Mvc.Models {
 		public string Area { get; set; }
 		public string Controller { get; set; }
 		public string Action { get; set; }
+		public IQueryCollection QueryString { get; set; }
 		public List<SelectListItem> ItemsPerPageList { get; set; } = new List<SelectListItem>();
 	}
 }

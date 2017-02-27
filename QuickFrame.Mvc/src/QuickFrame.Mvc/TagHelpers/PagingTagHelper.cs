@@ -11,6 +11,7 @@ using QuickFrame.Data;
 using QuickFrame.Mvc.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 
 namespace QuickFrame.Mvc.TagHelpers {
 
@@ -68,6 +69,7 @@ namespace QuickFrame.Mvc.TagHelpers {
 
 				string controller = String.IsNullOrEmpty(Controller) ? (ViewContext.ActionDescriptor as ControllerActionDescriptor)?.ControllerName : Controller;
 				string action = String.IsNullOrEmpty(Action) ? "Index" : Action;
+				var httpContext = ContextAccessor.HttpContext;
 
 				var pageList = new List<string> {
 					"«",
@@ -105,8 +107,9 @@ namespace QuickFrame.Mvc.TagHelpers {
 				var list = new FluentTagBuilder("ul").AddCssClass("pagination pagination-sm")
 					.MergeAttribute("style", "display:inline;");
 
+				dynamic routeValues = new ExpandoObject();
 				foreach(var page in pageList) {
-					object routeValues = null;
+					routeValues = new ExpandoObject();
 
 					if(page.IsNumeric())
 						routeValues = new { page, itemsPerPage };
@@ -127,6 +130,11 @@ namespace QuickFrame.Mvc.TagHelpers {
 							page = totalPages,
 							itemsPerPage
 						};
+					foreach(var obj in httpContext.Request.Query) {
+						if(!obj.Key.Equals("page", StringComparison.CurrentCultureIgnoreCase)) {
+							routeValues[obj.Key] = obj.Value;
+						}
+					}
 
 					var li = new FluentTagBuilder("li")
 						.AppendHtml(Generator.GenerateActionLink(ViewContext, page, action, controller, string.Empty, string.Empty, string.Empty, routeValues, null));
@@ -138,19 +146,29 @@ namespace QuickFrame.Mvc.TagHelpers {
 					list.AppendHtml(li);
 				}
 
+				routeValues = new ExpandoObject();
+				foreach(var obj in httpContext.Request.Query) {
+					if(!obj.Key.Equals("page", StringComparison.CurrentCultureIgnoreCase)) {
+						routeValues[obj.Key] = obj.Value;
+					}
+				}
+
 				var perPageSelect = new FluentTagBuilder("select")
 					.GenerateId("ddlResultsPerPage", "")
 					.MergeAttribute("style", "width:auto;float:left;margin-right:15px;")
-					.MergeAttribute("data-url", urlHelper.Action("Index", Controller))
+					.MergeAttribute("data-url", urlHelper.Action(Action, Controller, (object)routeValues))
 					.AddCssClass("itemCountDropdown form-control")
 					.MergeAttribute("onchange", "javascript:window.location.href = $('.itemCountDropdown option:selected').attr('tag')");
 
+				routeValues.Page = 1;
+
 				foreach(var item in ViewOptions.PerPageList) {
+					routeValues.itemsPerPage = item.Value;
 					item.Selected = item.Value == itemsPerPage.ToString();
 					var option = new FluentTagBuilder("option")
 						.MergeAttribute("value", item.Value)
 						.Append(item.Text)
-						.MergeAttribute("tag", urlHelper.Action(action, controller, new { page = 1, itemsPerPage = item.Value }));
+						.MergeAttribute("tag", urlHelper.Action(action, controller, (object)routeValues));
 
 					if(item.Selected)
 						option.MergeAttribute("selected", "selected");

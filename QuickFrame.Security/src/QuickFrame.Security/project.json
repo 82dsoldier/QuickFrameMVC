@@ -1,5 +1,5 @@
 {
-  "version": "2.0.0-beta-1-r6",
+  "version": "1.0-beta1-build0030",
   "authors": [ "Drew Burchett" ],
   "packOptions": {
     "language": "en-US",
@@ -16,13 +16,13 @@
   },
   "dependencies": {
     "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "1.0.0",
-    "QuickFrame.Data": "2.0.0-beta-1-r6",
+    "QuickFrame.Data": "1.0.0-beta1-build0031",
     "EntityFramework": "6.1.3"
   },
   "buildOptions": {
     "embed": [
       "Areas/**/*.cshtml",
-      "Views/**/*.cshtml" 
+      "Views/**/*.cshtml"
     ]
   },
   "frameworks": {
@@ -31,5 +31,10 @@
   "configurations": {
     "Staging": {},
     "Testing": {}
+  },
+  "scripts": {
+    "postcompile": [
+      "dotnet pack --no-build --configuration %compile:Configuration%"
+    ]
   }
 }

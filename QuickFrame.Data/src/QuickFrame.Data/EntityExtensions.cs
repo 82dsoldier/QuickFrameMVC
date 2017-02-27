@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace QuickFrame.Data {
 
@@ -38,6 +39,7 @@ namespace QuickFrame.Data {
 			return source.Provider.CreateQuery<TSource>(methodCall);
 		}
 
+		[Obsolete("Use IsDeleted(false)")]
 		public static IQueryable<TSource> IsNotDeleted<TSource>(this IQueryable<TSource> source) {
 			var parameterExpression = Expression.Parameter(typeof(TSource));
 			var propertyExpression = Expression.Property(parameterExpression, "IsDeleted");
@@ -45,6 +47,39 @@ namespace QuickFrame.Data {
 			var lambdaExpression = Expression.Lambda<Func<TSource, bool>>(notExpression, parameterExpression);
 			var compiled = lambdaExpression.Compile();
 			return source.Where(lambdaExpression);
+		}
+
+		public static IQueryable<TSource> IsDeleted<TSource>(this IQueryable<TSource> source, bool val) {
+			var parameterExpression = Expression.Parameter(typeof(TSource));
+			var propertyExpression = Expression.Property(parameterExpression, "IsDeleted");
+			var boolExpression = Expression.Equal(propertyExpression, Expression.Constant(val));
+			var lambdaExpression = Expression.Lambda<Func<TSource, bool>>(boolExpression, parameterExpression);
+			var compiled = lambdaExpression.Compile();
+			return source.Where(lambdaExpression);
+		}
+
+		public static IOrderedQueryable<T> ApplyOrder<T>(IQueryable<T> source, string property, string methodName) {
+			string[] props = property.Split('.');
+			Type type = typeof(T);
+			ParameterExpression arg = Expression.Parameter(type, "x");
+			Expression expr = arg;
+			foreach(string prop in props) {
+				// use reflection (not ComponentModel) to mirror LINQ
+				PropertyInfo pi = type.GetProperty(prop);
+				expr = Expression.Property(expr, pi);
+				type = pi.PropertyType;
+			}
+			Type delegateType = typeof(Func<,>).MakeGenericType(typeof(T), type);
+			LambdaExpression lambda = Expression.Lambda(delegateType, expr, arg);
+
+			object result = typeof(Queryable).GetMethods().Single(
+					method => method.Name == methodName
+							&& method.IsGenericMethodDefinition
+							&& method.GetGenericArguments().Length == 2
+							&& method.GetParameters().Length == 2)
+					.MakeGenericMethod(typeof(T), type)
+					.Invoke(null, new object[] { source, lambda });
+			return (IOrderedQueryable<T>)result;
 		}
 	}
 }

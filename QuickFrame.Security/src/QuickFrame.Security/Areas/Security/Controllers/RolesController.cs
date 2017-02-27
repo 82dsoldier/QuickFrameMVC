@@ -155,9 +155,9 @@ namespace QuickFrame.Security.Areas.Security.Controllers {
 		[HttpGet]
 		public IActionResult GetRoles(string filter = "") {
 			var filterList = filter.Split(',').ToList();
-			var list = new List<LookupTableDto<SiteRole, string>>();
+			var list = new List<LookupTableDtoString>();
 			foreach(var obj in _roleManager.Roles.Where(r => !filterList.Contains(r.Name)))
-				list.Add(Mapper.Map<SiteRole, LookupTableDto<SiteRole, string>>(obj));
+				list.Add(Mapper.Map<SiteRole, LookupTableDtoString>(obj));
 			return new ObjectResult(list);
 		}
 

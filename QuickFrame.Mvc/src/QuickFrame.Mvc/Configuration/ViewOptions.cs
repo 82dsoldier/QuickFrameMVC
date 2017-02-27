@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 
 namespace QuickFrame.Mvc.Configuration {
 
@@ -12,5 +13,6 @@ namespace QuickFrame.Mvc.Configuration {
 		public List<SelectListItem> PerPageList { get; set; }
 
 		public string PerPageDefault { get; set; }
+		public SortOrder SortOrder { get; set; }
 	}
 }

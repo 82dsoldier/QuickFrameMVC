@@ -12,8 +12,10 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.Extensions.Options;
 using QuickFrame.Data.Interfaces.Dtos;
 using QuickFrame.Data.Interfaces.Services;
+using QuickFrame.Mvc.Configuration;
 using QuickFrame.Mvc.Utilities;
 using QuickFrame.Security;
 using System;
@@ -36,6 +38,7 @@ namespace QuickFrame.Mvc.Controllers {
 		protected IDataServiceBase<TEntity> _dataService;
 		protected QuickFrameSecurityManager _securityManager;
 		protected string IndexPage = "Index";
+		protected ViewOptions _viewOptions;
 
 		/// <summary>
 		/// The constructor for the QFControllerBase class.
@@ -45,8 +48,22 @@ namespace QuickFrame.Mvc.Controllers {
 		public QfControllerBase(IDataServiceBase<TEntity> dataService, QuickFrameSecurityManager securityManager) {
 			_dataService = dataService;
 			_securityManager = securityManager;
+			_viewOptions = new ViewOptions {
+				PerPageList = new List<SelectListItem>() {
+					new SelectListItem {  Text = "25", Value = "25" },
+					new SelectListItem {  Text = "50", Value = "50" },
+					new SelectListItem {  Text = "75", Value = "75" },
+					new SelectListItem {  Text = "100", Value = "100" },
+				},
+				PerPageDefault = "25"
+			};
 		}
 
+		public QfControllerBase(IDataServiceBase<TEntity> dataService, QuickFrameSecurityManager securityManager, IOptions<ViewOptions> viewOptions) {
+			_dataService = dataService;
+			_securityManager = securityManager;
+			_viewOptions = viewOptions.Value;
+		}
 		/// <summary>
 		/// Returns the index page for the current controller
 		/// </summary>
@@ -55,11 +72,15 @@ namespace QuickFrame.Mvc.Controllers {
 		/// <param name="itemsPerPage">If paging is being used, the number of items to return on each page.</param>
 		/// <param name="sortColumn">If sorting or searching, the name of the column on which to sort or search.</param>
 		/// <param name="sortOrder">If sorting, the direction in which to sort.</param>
-		/// <param name="includeDeleted">True to return records that have been marked as deleted.</param>
+		/// <param name="isDeleted">True to return records that have been marked as deleted. Null to return all records.</param>
 		/// <returns>An IActionResult representing the index page for the current controller.</returns>
 		[HttpGet]
-		public IActionResult Index(string searchTerm, int page, int itemsPerPage, string sortColumn, SortOrder sortOrder, bool includeDeleted)
-			=> Authorize(() => IndexCore<TIndex>(searchTerm, page, itemsPerPage, sortColumn, sortOrder, includeDeleted));
+		public IActionResult Index(string searchTerm, int page, int itemsPerPage, string sortColumn, SortOrder sortOrder, bool? isDeleted = false)
+			=> Authorize(() => {
+				if(itemsPerPage == 0)
+					Int32.TryParse(_viewOptions.PerPageDefault, out itemsPerPage);
+				return IndexCore<TIndex>(searchTerm, page, itemsPerPage, sortColumn, sortOrder, isDeleted);
+			});
 
 		/// <summary>
 		/// The core function called by Index in order to return the Index page for the current controller.
@@ -70,13 +91,13 @@ namespace QuickFrame.Mvc.Controllers {
 		/// <param name="itemsPerPage">If paging is being used, the number of items to return on each page.</param>
 		/// <param name="sortColumn">If sorting or searching, the name of the column on which to sort or search.</param>
 		/// <param name="sortOrder">If sorting, the direction in which to sort.</param>
-		/// <param name="includeDeleted">True to return records that have been marked as deleted.</param>
+		/// <param name="isDeleted">True to return records that have been marked as deleted. Null to return all records.</param>
 		/// <returns>An IActionResult representing the index page for the current controller.</returns>
 		/// <remarks>If overriding the core index functionality, override this function rather than <see cref="QuickFrame.Mvc.Controllers.QfControllerBase{TEntity, TIndex}.Index(string, int, int, string, SortOrder, bool)"/> </remarks>
-		protected virtual IActionResult IndexCore<TResult>(string searchTerm, int page, int itemsPerPage, string sortColumn, SortOrder sortOrder, bool includeDeleted ) 
+		protected virtual IActionResult IndexCore<TResult>(string searchTerm, int page, int itemsPerPage, string sortColumn, SortOrder sortOrder, bool? isDeleted = false) 
 			where TResult : IDataTransferObjectCore {
-			ViewBag.TotalItems = _dataService.GetCount(sortColumn, searchTerm);
-			IEnumerable<TResult> model = _dataService.GetList<TResult>(searchTerm, page, itemsPerPage, sortColumn, sortOrder, includeDeleted);
+			ViewBag.TotalItems = _dataService.GetCount("Name", searchTerm, isDeleted);
+			IEnumerable<TResult> model = _dataService.GetList<TResult>(page, itemsPerPage, sortColumn, sortOrder, searchTerm, "Name", isDeleted);
 			return View(IndexPage, model);
 		}
 
@@ -175,6 +196,14 @@ namespace QuickFrame.Mvc.Controllers {
 				};
 
 				return builder.Uri.ToString();
+			}
+		}
+
+		protected string CurrentAction
+		{
+			get
+			{
+				return $"{Request.Host.Host}.{Request.Host.Port ?? 80}.{Request.Path.ToString().Replace("/", ".")}";
 			}
 		}
 	}

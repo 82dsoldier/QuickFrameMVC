@@ -1,152 +1,174 @@
-﻿@model QuickFrame.Mvc.Models.PagingComponentModel
-<div style="float:right">
-	<select style="width:auto;float:left;margin-right:15px;"
-			class="item-count-dropdown form-control"
-			onchange="javascript:window.location.href = $('.item-count-dropdown option:selected').attr('tag')">
-		@{
-			foreach(var item in Model.ItemsPerPageList) {
-				if(Convert.ToInt32(item.Value) == Model.ItemsPerPage) {
-					<option value="@item.Value"
-							tag="@Url.Action($"{Model.Action}", $"{Model.Controller}", new { area = $"{Model.Area}", page = 1, itemsPerPage = item.Value, sortColumn=Model.SortColumn, sortOrder = Model.SortOrder })"
-							selected>
-						@item.Text
-					</option>
-				} else {
-					<option value="@item.Value"
-							tag="@Url.Action($"{Model.Action}", $"{Model.Controller}", new { area = $"{Model.Area}", page = 1, itemsPerPage = item.Value, sortColumn=Model.SortColumn, sortOrder = Model.SortOrder})">
-						@item.Text
-					</option>
-				}
+﻿@inject Microsoft.Extensions.Options.IOptions<QuickFrame.Mvc.Configuration.ViewOptions> viewOptions
+@{
+	var itemsPerPageList = new List<SelectListItem>();
+
+	var action = ViewContext.RouteData.Values["action"];
+	var controller = ViewContext.RouteData.Values["controller"].ToString();
+	var area = ViewContext.RouteData.Values["area"]?.ToString();
+
+	var routeValues = new System.Dynamic.ExpandoObject();
+
+	var query = Context.Request.Query;
+
+	if(query != null) {
+		foreach(var obj in query) {
+			if(obj.Value.Count == 1) {
+				((System.Collections.Generic.IDictionary<string, object>)routeValues)[obj.Key] = obj.Value[0];
+			} else {
+				((System.Collections.Generic.IDictionary<string, object>)routeValues)[obj.Key] = obj.Value.ToArray();
 			}
 		}
-	</select>
-	<ul class="pagination pagination-sm" style="display:inline">
-		<li>
-			<a asp-area="@Model.Area"
-			   asp-controller="@Model.Controller"
-			   asp-action="@Model.Action"
-			   asp-route-page="1"
-			   asp-route-itemsPerPage="@Model.ItemsPerPage"
-			   @{ if(!String.IsNullOrEmpty(Model.SortColumn)) { Html.Raw($@"asp-route-sortColumn=""{Model.SortColumn}"""); Html.Raw($@"asp-route-sortOrder=""{Model.SortOrder}"""); }}>«</a>
-		</li>
-		<li>
-			<a asp-area="@Model.Area"
-			   asp-controller="@Model.Controller"
-			   asp-action="@Model.Action"
-			   asp-route-page="@(Model.CurrentPage - 1 > 0 ? Model.CurrentPage - 1 : 1)"
-			   asp-route-itemsPerPage="@Model.ItemsPerPage"
-			   @{ if(!String.IsNullOrEmpty(Model.SortColumn)) { Html.Raw($@"asp-route-sortColumn=""{Model.SortColumn}"""); Html.Raw($@"asp-route-sortOrder=""{Model.SortOrder}"""); }}>‹</a>
-		</li>
-		@{
-			switch(Model.TotalPages) {
-				case 0:
-					break;
-				case 2:
-					<li>
-						@{
-							if(Model.CurrentPage == 1) {
-								<span>1</span>
-							} else {
-								<a asp-area="@Model.Area"
-								   asp-controller="@Model.Controller"
-								   asp-action="@Model.Action"
-								   asp-route-page="1"
-								   asp-route-itemsPerPage="@Model.ItemsPerPage"
-								   @{
-									   if(!String.IsNullOrEmpty(Model.SortColumn)) {
-										   Html.Raw($@"asp-route-sortColumn=""{Model.SortColumn}""");
-										   Html.Raw($@"asp-route-sortOrder=""{Model.SortOrder}"""); }}>1</a>
 	}
-						}
-					</li>
-					<li>
-						@{
-							if(Model.CurrentPage == 2) {
-								<span>2</span>
-							} else {
-								<a asp-area="@Model.Area"
-								   asp-controller="@Model.Controller"
-								   asp-action="@Model.Action"
-								   asp-route-page="2"
-								   asp-route-itemsPerPage="@Model.ItemsPerPage"
-								   @{ if(!String.IsNullOrEmpty(Model.SortColumn)) { Html.Raw($@"asp-route-sortColumn=""{Model.SortColumn}"""); Html.Raw($@"asp-route-sortOrder=""{Model.SortOrder}"""); }}>2</a>
+
+	if(!String.IsNullOrEmpty(area)) {
+		((System.Collections.Generic.IDictionary<string, object>)routeValues)["area"] = area;
 	}
-						}
-					</li>
-					break;
-				case 3:
-				case 4:
-				case 5:
-					for(int i = 1; i < Model.TotalPages; i++) {
-			<li>
+
+	foreach(var obj in viewOptions.Value.PerPageList) {
+		itemsPerPageList.Add(obj);
+	}
+
+	var itemsPerPage = 25;
+	Int32.TryParse(viewOptions.Value.PerPageDefault, out itemsPerPage);
+	if(!String.IsNullOrEmpty(Context.Request.Query["itemsPerPage"])) {
+		Int32.TryParse(Context.Request.Query["itemsPerPage"], out itemsPerPage);
+	}
+
+	var currentPage = 1;
+
+	if(!String.IsNullOrEmpty(Context.Request.Query["page"])) {
+		Int32.TryParse(Context.Request.Query["page"], out currentPage);
+	}
+
+	var totalItems = ViewBag.TotalItems;
+	var totalPages = 0;
+	if(itemsPerPage > 0 && totalItems > 0) {
+		totalPages = (int)Math.Ceiling((double)totalItems / (double)itemsPerPage);
+	}
+
+	if(currentPage > totalPages) {
+		currentPage = 1;
+		((System.Collections.Generic.IDictionary<string, object>)routeValues)["page"] = 1;
+	}
+}
+@{
+	if(totalItems > itemsPerPage) {
+		<div style="float:right">
+			<select style="width:auto;float:left;margin-right:15px;"
+					class="item-count-dropdown form-control"
+					onchange="javascript:window.location.href = $('.item-count-dropdown option:selected').attr('tag')">
 				@{
-					if(Model.CurrentPage == i) {
-						<span>@i</span>
-					} else {
-						<a asp-area="@Model.Area"
-						   asp-controller="@Model.Controller"
-						   asp-action="@Model.Action"
-						   asp-route-page="@i"
-						   asp-route-itemsPerPage="@Model.ItemsPerPage"
-						   @{ if(!String.IsNullOrEmpty(Model.SortColumn)) { Html.Raw($@"asp-route-sortColumn=""{Model.SortColumn}"""); Html.Raw($@"asp-route-sortOrder=""{Model.SortOrder}"""); }}>@i</a>
-	}
-				}
-			</li>
+					foreach(var item in itemsPerPageList) {
+						((System.Collections.Generic.IDictionary<string, object>)routeValues)["page"] = 1;
+						((System.Collections.Generic.IDictionary<string, object>)routeValues)["itemsPerPage"] = item.Value;
+						if(Convert.ToInt32(item.Value) == itemsPerPage) {
+							<option value="@item.Value"
+									tag="@Url.Action($"{action}", $"{controller}", routeValues)"
+									selected>
+								@item.Text
+							</option>
+						} else {
+							<option value="@item.Value"
+									tag="@Url.Action($"{action}", $"{controller}", routeValues)">
+								@item.Text
+							</option>
+						}
 					}
-					break;
-				default:
-					if(Model.CurrentPage < 4) {
-						for(int i = 1; i < 6; i++) {
+				}
+			</select>
+			<ul class="pagination pagination-sm" style="display:inline">
 				<li>
 					@{
-						if(Model.CurrentPage == i) {
-							<span>@i</span>
-						} else {
-							<a asp-area="@Model.Area"
-							   asp-controller="@Model.Controller"
-							   asp-action="@Model.Action"
-							   asp-route-page="@i"
-							   asp-route-itemsPerPage="@Model.ItemsPerPage"
-							   @{ if(!String.IsNullOrEmpty(Model.SortColumn)) { Html.Raw($@"asp-route-sortColumn=""{Model.SortColumn}"""); Html.Raw($@"asp-route-sortOrder=""{Model.SortOrder}"""); }}>@i</a>
-	}
+				((System.Collections.Generic.IDictionary<string, object>)routeValues)["page"] = 1;
+				((System.Collections.Generic.IDictionary<string, object>)routeValues)["itemsPerPage"] = itemsPerPage;
 					}
+					<a href="@Url.Action($"{action}", $"{controller}", routeValues)">«</a>
 				</li>
-						}
-					} else {
-						var endPage = Model.CurrentPage + 2 < Model.TotalPages ? Model.CurrentPage + 3 : Model.TotalPages + 1;
-						for(int i = endPage - 5; i < endPage; i++) {
-			<li>
-				@{					if(Model.CurrentPage == i) {
-						<span>@i</span>			} else {
-						<a asp-area="@Model.Area"
-						   asp-controller="@Model.Controller"
-						   asp-action="@Model.Action"
-						   asp-route-page="@i"
-						   asp-route-itemsPerPage="@Model.ItemsPerPage"
-						   @{ if(!String.IsNullOrEmpty(Model.SortColumn)) { Html.Raw($@"asp-route-sortColumn=""{Model.SortColumn}"""); Html.Raw($@"asp-route-sortOrder=""{Model.SortOrder}"""); }}>@i</a>
-	}
-				}
-			</li>
-						}
+				<li>
+					@{
+				((System.Collections.Generic.IDictionary<string, object>)routeValues)["page"] = currentPage - 1 > 0 ? currentPage - 1 : 1;
 					}
-					break;
-			}
-		}
-		<li>
-			<a asp-area="@Model.Area"
-			   asp-controller="@Model.Controller"
-			   asp-action="@Model.Action"
-			   asp-route-page="@(Model.CurrentPage + 1 <= Model.TotalPages ? Model.CurrentPage + 1 : Model.TotalPages)"
-			   asp-route-itemsPerPage="@Model.ItemsPerPage"
-			   @{ if(!String.IsNullOrEmpty(Model.SortColumn)) { Html.Raw($@"asp-route-sortColumn=""{Model.SortColumn}"""); Html.Raw($@"asp-route-sortOrder=""{Model.SortOrder}"""); }}>›</a>
-		</li>
-		<li>
-			<a asp-area="@Model.Area"
-			   asp-controller="@Model.Controller"
-			   asp-action="@Model.Action"
-			   asp-route-page="@Model.TotalPages"
-			   asp-route-itemsPerPage="@Model.ItemsPerPage"
-			   @{ if(!String.IsNullOrEmpty(Model.SortColumn)) { Html.Raw($@"asp-route-sortColumn=""{Model.SortColumn}"""); Html.Raw($@"asp-route-sortOrder=""{Model.SortOrder}"""); }}>»</a>
-		</li>
-	</ul>
-</div>
+					<a href="@Url.Action($"{action}", $"{controller}", routeValues)">‹</a>
+				</li>
+				@{
+					switch(totalPages) {
+						case 0:
+							break;
+						case 2:
+							<li>
+								@{
+									((System.Collections.Generic.IDictionary<string, object>)routeValues)["page"] = 1;
+									if(currentPage == 1) {
+										<span>1</span>
+									} else {
+										<a href="@Url.Action($"{action}", $"{controller}", routeValues)">1</a>
+									}
+								}
+							</li>
+							<li>
+								@{
+							((System.Collections.Generic.IDictionary<string, object>)routeValues)["page"] = 2;
+									if(currentPage == 2) {
+										<span>2</span>
+									} else {
+										<a href="@Url.Action($"{action}", $"{controller}", routeValues)">2</a>
+									}
+								}
+							</li>
+										break;
+									case 3:
+									case 4:
+									case 5:
+										for(int i = 1; i < totalPages; i++) {
+											<li>
+												@{
+													((System.Collections.Generic.IDictionary<string, object>)routeValues)["page"] = i;
+													if(currentPage == i) {
+														<span>@i</span>
+													} else {
+														<a href="@Url.Action($"{action}", $"{controller}", routeValues)">@i</a>
+													}
+												}
+											</li>
+														}
+														break;
+													default:
+														if(currentPage < 4) {
+															for(int i = 1; i < 6; i++) {
+																<li>
+																	@{					((System.Collections.Generic.IDictionary<string, object>)routeValues)["page"] = i;
+																		if(currentPage == i) {
+																			<span>@i</span>				} else {
+																			<a href="@Url.Action($"{action}", $"{controller}", routeValues)">@i</a>				}
+																	}
+																</li>					}
+																		} else {
+																			var endPage = currentPage + 2 < totalPages ? currentPage + 3 : totalPages + 1;
+																			for(int i = endPage - 5; i < endPage; i++) {
+																				<li>
+																					@{							((System.Collections.Generic.IDictionary<string, object>)routeValues)["page"] = i;
+																						if(currentPage == i) {
+																							<span>@i</span>				} else {
+																							<a href="@Url.Action($"{action}", $"{controller}", routeValues)">@i</a>				}
+																					}
+																				</li>						}
+																							}
+																							break;
+																						}
+				}
+				<li>
+					@{
+				((System.Collections.Generic.IDictionary<string, object>)routeValues)["page"] = currentPage + 1 <= totalPages ? currentPage + 1 : totalPages;
+					}
+					<a href="@Url.Action($"{action}", $"{controller}", routeValues)">›</a>
+				</li>
+				<li>
+					@{
+				((System.Collections.Generic.IDictionary<string, object>)routeValues)["page"] = totalPages;
+					}
+					<a href="@Url.Action($"{action}", $"{controller}", routeValues)">»</a>
+				</li>
+			</ul>
+		</div>
+	}
+}

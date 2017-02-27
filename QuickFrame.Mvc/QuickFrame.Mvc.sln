@@ -16,6 +16,7 @@ Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
+		Staging|Any CPU = Staging|Any CPU
 		Testing|Any CPU = Testing|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
@@ -23,6 +24,8 @@ Global
 		{4A788E03-B383-4AAA-BE26-74F4CF2B41DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4A788E03-B383-4AAA-BE26-74F4CF2B41DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4A788E03-B383-4AAA-BE26-74F4CF2B41DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A788E03-B383-4AAA-BE26-74F4CF2B41DB}.Staging|Any CPU.ActiveCfg = Testing|Any CPU
+		{4A788E03-B383-4AAA-BE26-74F4CF2B41DB}.Staging|Any CPU.Build.0 = Testing|Any CPU
 		{4A788E03-B383-4AAA-BE26-74F4CF2B41DB}.Testing|Any CPU.ActiveCfg = Testing|Any CPU
 		{4A788E03-B383-4AAA-BE26-74F4CF2B41DB}.Testing|Any CPU.Build.0 = Testing|Any CPU
 	EndGlobalSection

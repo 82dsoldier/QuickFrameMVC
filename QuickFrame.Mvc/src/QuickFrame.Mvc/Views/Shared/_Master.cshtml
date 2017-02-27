@@ -10,30 +10,31 @@
 			<title>@ViewBag.AppName</title>
 			}
 	}
-	<environment names="Development">
+	@RenderSection("css", false)
+	@*<environment names="Development">
 		<link rel="stylesheet" href="~/css/site-bundle.css" />
 		<link rel="stylesheet" href="~/css/Site.css" />
 	</environment>
-	<environment names="Release">
+	<environment names="Release,Production">
 		<link rel="stylesheet" href="~/css/site-bundle.min.css" />
 		<link rel="stylesheet" href="~/css/Site.min.css" />
 	</environment>
 	<environment names="Testing">
 		<link rel="stylesheet" href="~/css/site-bundle.css" />
 		<link rel="stylesheet" href="~/css/Site.css" />
-	</environment>
+	</environment>*@
 </head>
 <body>
 	@RenderBody()
-	<environment names="Development">
+	@*<environment names="Development">
 		<script src="~/js/jquery-bundle.js"></script>
 	</environment>
-	<environment names="Release">
+	<environment names="Release,Production">
 		<script src="~/js/jquery-bundle.min.js"></script>
 	</environment>
 	<environment names="Testing">
 		<script src="~/js/jquery-bundle.js"></script>
-	</environment>
+	</environment>*@
 	@RenderSection("scripts", false)
 </body>
 </html>

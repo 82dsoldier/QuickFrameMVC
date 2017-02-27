@@ -6,6 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using QuickFrame.Mvc.Configuration;
 using QuickFrame.Mvc.ExceptionHandling;
+using System;
+using System.Data.SqlClient;
 using System.Reflection;
 
 namespace QuickFrame.Mvc {
@@ -19,7 +21,7 @@ namespace QuickFrame.Mvc {
 
 			services.Configure<ViewOptions>(viewOptions => {
 				viewOptions.PerPageDefault = configuration["ViewOptions:PerPageDefault"];
-
+				viewOptions.SortOrder = (SortOrder)Enum.Parse(typeof(SortOrder), configuration["ViewOptions:SortOrder"] ?? "Ascending");
 				foreach(var child in configuration.GetSection("ViewOptions:PerPageList").GetChildren()) {
 					viewOptions.PerPageList.Add(new SelectListItem {
 						Value = child.Key,

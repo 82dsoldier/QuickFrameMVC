@@ -1,9 +1,37 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using QuickFrame.Data.Interfaces.Dtos;
 using QuickFrame.Data.Interfaces.Services;
+using QuickFrame.Mvc.Configuration;
 using QuickFrame.Security;
 
 namespace QuickFrame.Mvc.Controllers {
+
+	/// <summary>
+	/// A controller base class for entities with a composite key.
+	/// </summary>
+	/// <typeparam name="TEntity">The type of entity used by the controller.</typeparam>
+	/// <typeparam name="TFirst">The type of the first key in the entity.</typeparam>
+	/// <typeparam name="TSecond">The type of the second key in the entity.</typeparam>
+	/// <typeparam name="TIndex">The class to use as a model for the index page.</typeparam>
+	/// <typeparam name="TEdit">The class to use as a model for the create/edit page.</typeparam>
+	public class QfCompositeController<TEntity, TFirst, TSecond, TIndex>
+		: QfControllerBase<TEntity, TIndex>
+		where TEntity : class
+		where TIndex : class, IDataTransferObjectCore {
+
+		/// <summary>
+		/// The constructor for the QfCompositeController class.
+		/// </summary>
+		/// <param name="dataService">The data service used to return data to the views contained within this class.</param>
+		/// <param name="securityManager">The <see cref="QuickFrame.Security.QuickFrameSecurityManager"/>  used to apply security to functions within this class.</param>
+		public QfCompositeController(IDataServiceComposite<TEntity, TFirst, TSecond> dataService, QuickFrameSecurityManager securityManager)
+			: base(dataService, securityManager) {
+		}
+		public QfCompositeController(IDataServiceComposite<TEntity, TFirst, TSecond> dataService, QuickFrameSecurityManager securityManager, IOptions<ViewOptions> viewOptions)
+			: base(dataService, securityManager, viewOptions) {
+		}
+	}
 
 	/// <summary>
 	/// A controller base class for entities with a composite key.
@@ -17,8 +45,9 @@ namespace QuickFrame.Mvc.Controllers {
 		: QfControllerBase<TEntity, TIndex>
 		where TEntity : class
 		where TIndex : class, IDataTransferObjectCore
-		where TEdit : class, IDataTransferObjectCore {
+		where TEdit : class, IDataTransferObjectCore, new() {
 		protected string EditPage = "EditOrCreate";
+		protected string CreatePage = "CreateOrEdit";
 
 		/// <summary>
 		/// The constructor for the QfCompositeController class.
@@ -28,7 +57,25 @@ namespace QuickFrame.Mvc.Controllers {
 		public QfCompositeController(IDataServiceComposite<TEntity, TFirst, TSecond> dataService, QuickFrameSecurityManager securityManager)
 			: base(dataService, securityManager) {
 		}
+		public QfCompositeController(IDataServiceComposite<TEntity, TFirst, TSecond> dataService, QuickFrameSecurityManager securityManager, IOptions<ViewOptions> viewOptions)
+			: base(dataService, securityManager, viewOptions) {
+		}
 
+		/// <summary>
+		/// Provides the default create view loaded with an empty model.
+		/// </summary>
+		/// <param name="closeOnSubmit">True to close the create view when data is successfully submitted and saved to the database.</param>
+		/// <returns>An IActionResult representing the view used to create a new entity.</returns>
+		[HttpGet]
+		public IActionResult Create(bool closeOnSubmit = true) => Authorize(() => CreateCore(closeOnSubmit));
+
+		/// <summary>
+		/// Upon submission, saves the newly created model to the database.
+		/// </summary>
+		/// <param name="model">The model to save.</param>
+		/// <returns>An IActionResult representing the view used to create a new entity or an IActionResult that will close the current fancybox depending on the value of closeOnSubmit.</returns>
+		[HttpPost]
+		public IActionResult Create(TEdit model) => Authorize(() => CreateCore(model));
 		/// <summary>
 		/// The delete function
 		/// </summary>
@@ -56,6 +103,33 @@ namespace QuickFrame.Mvc.Controllers {
 		[HttpPost]
 		public IActionResult Edit(TEdit model) => EditCore(model);
 
+		/// <summary>
+		/// The core create functionality.
+		/// </summary>
+		/// <param name="closeOnSubmit">True to close the create view when data is successfully submitted and saved to the database.</param>
+		/// <returns>An IActionResult representing the view used to create a new entity.</returns>
+		/// <remarks>If overriding the create functionality, override this function rather than <see cref="QfControllerCore{TEntity, TIdType, TIndex, TEdit}.Create(bool)"/>.</remarks>
+		public virtual IActionResult CreateCore(bool closeOnSubmit) {
+			HttpContext.Session.SetBoolean(CurrentAction, closeOnSubmit);
+			return View(CreatePage, new TEdit());
+		}
+
+		/// <summary>
+		/// The core create funcionality
+		/// </summary>
+		/// <param name="model">The model to save.</param>
+		/// <returns>An IActionResult representing the view used to create a new entity or an IActionResult that will close the current fancybox depending on the value of closeOnSubmit.</returns>
+		/// <remarks>If overriding the create functionality, override this function rather than <see cref="QfControllerCore{TEntity, TIdType, TIndex, TEdit}.Create(TEdit)"/>.</remarks>
+		protected virtual IActionResult CreateCore<TModel>(TModel model) where TModel : IDataTransferObjectCore {
+			if(ModelState.IsValid) {
+				_dataService.Create(model);
+				var closeOnSubmit = (bool)HttpContext.Session.GetBoolean(CurrentAction, true);
+				HttpContext.Session.Remove(CurrentAction);
+				if(closeOnSubmit)
+					return View("CloseCurrentView");
+			}
+			return View(CreatePage, model);
+		}
 		/// <summary>
 		/// The core edit functionality.
 		/// </summary>
@@ -106,11 +180,11 @@ namespace QuickFrame.Mvc.Controllers {
 	/// <typeparam name="TIndex">The class to use as a model for the index page.</typeparam>
 	/// <typeparam name="TEdit">The class to use as a model for the create/edit page.</typeparam>
 	public class QfCompositeController<TEntity, TFirst, TSecond, TThird, TIndex, TEdit>
-	: QfControllerBase<TEntity, TIndex>
-	where TEntity : class
-	where TIndex : class, IDataTransferObjectCore
-	where TEdit : class, IDataTransferObjectCore {
-		protected string EditPage = "EditOrCreate";
+			: QfControllerBase<TEntity, TIndex>
+			where TEntity : class
+			where TIndex : class, IDataTransferObjectCore
+			where TEdit : class, IDataTransferObjectCore {
+				protected string EditPage = "EditOrCreate";
 
 		/// <summary>
 		/// The constructor for the QfCompositeController class.
@@ -119,6 +193,15 @@ namespace QuickFrame.Mvc.Controllers {
 		/// <param name="securityManager">The <see cref="QuickFrame.Security.QuickFrameSecurityManager"/>  used to apply security to functions within this class.</param>
 		public QfCompositeController(IDataServiceComposite<TEntity, TFirst, TSecond, TThird> dataService, QuickFrameSecurityManager securityManager)
 			: base(dataService, securityManager) {
+		}
+
+		/// <summary>
+		/// The constructor for the QfCompositeController class.
+		/// </summary>
+		/// <param name="dataService">The data service used to return data to the views contained within this class.</param>
+		/// <param name="securityManager">The <see cref="QuickFrame.Security.QuickFrameSecurityManager"/>  used to apply security to functions within this class.</param>
+		public QfCompositeController(IDataServiceComposite<TEntity, TFirst, TSecond, TThird> dataService, QuickFrameSecurityManager securityManager, IOptions<ViewOptions> viewOptions)
+			: base(dataService, securityManager, viewOptions) {
 		}
 
 		/// <summary>

@@ -1,5 +1,5 @@
 {
-  "version": "2.0.0-beta-1-r9",
+  "version": "1.0.0-beta1-build0028",
   "authors": [ "Drew Burchett" ],
   "packOptions": {
     "language": "en-US",
@@ -15,7 +15,7 @@
     "summary": "An Active Directory addon to the core security library for the QuickFrame MVC Framework."
   },
   "dependencies": {
-    "QuickFrame.Security": "2.0.0-beta-1-r6"
+    "QuickFrame.Security": "1.0.0-beta1-build0030"
   },
   "frameworks": {
     "net452": {
@@ -26,5 +26,10 @@
   },
   "configurations": {
     "Staging": {}
+  },
+  "scripts": {
+    "postcompile": [
+      "dotnet pack --no-build --configuration %compile:Configuration%"
+    ]
   }
 }

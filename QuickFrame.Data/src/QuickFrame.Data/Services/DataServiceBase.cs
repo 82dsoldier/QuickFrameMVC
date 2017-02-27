@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
+using System;
 
 #if NETSTANDARD1_6
 using Microsoft.EntityFrameworkCore;
@@ -42,6 +43,7 @@ namespace QuickFrame.Data.Services {
 		/// <param name="model">The model to be created.</param>
 		public virtual void Create(TEntity model) {
 			_dbContext.Set<TEntity>().Add(model);
+			_dbContext.Entry(model).State = EntityState.Added;
 			_dbContext.SaveChanges();
 		}
 
@@ -61,39 +63,209 @@ namespace QuickFrame.Data.Services {
 		/// <param name="searchTerm">The term used to search the searchColumn.</param>
 		/// <param name="includeDeleted">True to include entities that have been deleted.</param>
 		/// <returns>An integer indicating the number of records in the table.</returns>
-		public virtual int GetCount(string searchColumn = "", string searchTerm = "", bool includeDeleted = false) {
+		public virtual int GetCount(string searchColumn = "", string searchTerm = "", bool? isDeleted = false) {
 			var query = _dbContext.Set<TEntity>().AsQueryable();
 			if(!string.IsNullOrEmpty(searchTerm))
 				query = _dbContext.Set<TEntity>().Where($"{searchColumn}.Contains(@0)", searchTerm);
+			if(isDeleted != null)
+				if(typeof(IDataModelDeletable).IsAssignableFrom(typeof(TEntity)))
+					query = query.IsDeleted((bool)isDeleted);
+			return query.Count();
+		}
+
+		public virtual int GetCount(string searchColumn, int searchTerm, bool? isDeleted = false) {
+			var query = _dbContext.Set<TEntity>().Where($"{searchColumn} == @0", searchTerm);
+			if(isDeleted != null)
+				query = query.IsDeleted((bool)isDeleted);
 			return query.Count();
 		}
 
 		/// <summary>
 		/// Gets a list of items from the database table.
 		/// </summary>
-		/// <param name="searchTerm">The term for which to search.</param>
+		/// <param name="includeDeleted">Set to true to include records marked as deleted</param>
+		/// <returns>An enumerable list of objects matching the specified criteria.</returns>
+		public virtual IEnumerable<TEntity> GetList(bool? isDeleted = false) =>
+			GetList(0, 0, string.Empty, SortOrder.Ascending, string.Empty, string.Empty, isDeleted);
+
+		/// <summary>
+		/// Gets a list of items from the database table.
+		/// </summary>
+		/// <typeparam name="TResult">The type of object to return.</typeparam>
+		/// <param name="includeDeleted">Set to true to include records marked as deleted</param>
+		/// <returns>An enumerable list of objects matching the specified criteria.</returns>
+		public virtual IEnumerable<TResult> GetList<TResult>(bool? isDeleted = false)
+			=> Mapper.Map<IEnumerable<TEntity>, IEnumerable<TResult>>(GetList(0, 0, string.Empty, SortOrder.Ascending, string.Empty, string.Empty, isDeleted));
+
+		/// <summary>
+		/// Gets a list of items from the database table.
+		/// </summary>
+		/// <param name="page">The page on which to start.</param>
+		/// <param name="itemsPerPage">The number of items to return.</param>
+		/// <param name="includeDeleted">Set to true to include records marked as deleted</param>
+		/// <returns>An enumerable list of objects matching the specified criteria.</returns>
+		public virtual IEnumerable<TEntity> GetList(int page, int itemsPerPage, bool? isDeleted = false) =>
+			GetList(page, itemsPerPage, string.Empty, SortOrder.Ascending, string.Empty, string.Empty, isDeleted);
+
+		/// <summary>
+		/// Gets a list of items from the database table.
+		/// </summary>
+		/// <typeparam name="TResult">The type of object to return.</typeparam>
+		/// <param name="page">The page on which to start.</param>
+		/// <param name="itemsPerPage">The number of items to return.</param>
+		/// <param name="includeDeleted">Set to true to include records marked as deleted</param>
+		/// <returns>An enumerable list of objects matching the specified criteria.</returns>
+		public virtual IEnumerable<TResult> GetList<TResult>(int page, int itemsPerPage, bool? isDeleted = false)
+			=> Mapper.Map<IEnumerable<TEntity>, IEnumerable<TResult>>(GetList(page, itemsPerPage, string.Empty, SortOrder.Ascending, string.Empty, string.Empty, isDeleted));
+
+		/// <summary>
+		/// Gets a list of items from the database table.
+		/// </summary>
+		/// <param name="searchTerm">The term, if any, for which to search.</param>
+		/// <param name="searchColumn">The column, if any, to search.</param>
+		/// <param name="includeDeleted">Set to true to include records marked as deleted</param>
+		/// <returns>An enumerable list of objects matching the specified criteria.</returns>
+		public virtual IEnumerable<TEntity> GetList(string searchTerm, string searchColumn, bool? isDeleted = false) =>
+			GetList(0, 0, string.Empty, SortOrder.Ascending, searchTerm, searchColumn, isDeleted);
+
+		/// <summary>
+		/// Gets a list of items from the database table.
+		/// </summary>
+		/// <param name="searchTerm">The value, if any, for which to search.</param>
+		/// <param name="searchColumn">The column, if any, to search.</param>
+		/// <param name="includeDeleted">Set to true to include records marked as deleted</param>
+		/// <returns>An enumerable list of objects matching the specified criteria.</returns>
+		public virtual IEnumerable<TEntity> GetList(int? searchTerm, string searchColumn, bool? isDeleted = false) =>
+			GetList(0, 0, string.Empty, SortOrder.Ascending, searchTerm, searchColumn, isDeleted);
+
+		/// <summary>
+		/// Gets a list of items from the database table.
+		/// </summary>
+		/// <typeparam name="TResult">The type of object to return.</typeparam>
+		/// <param name="searchTerm">The term, if any, for which to search.</param>
+		/// <param name="searchColumn">The column, if any, to search.</param>
+		/// <param name="includeDeleted">Set to true to include records marked as deleted</param>
+		/// <returns>An enumerable list of objects matching the specified criteria.</returns>
+		public virtual IEnumerable<TResult> GetList<TResult>(string searchTerm, string searchColumn, bool? isDeleted = false) 
+			=> Mapper.Map<IEnumerable<TEntity>, IEnumerable<TResult>>(GetList(0, 0, string.Empty, SortOrder.Ascending, searchTerm, searchColumn, isDeleted));
+
+		/// <summary>
+		/// Gets a list of items from the database table.
+		/// </summary>
+		/// <typeparam name="TResult">The type of object to return.</typeparam>
+		/// <param name="searchTerm">The value, if any, for which to search.</param>
+		/// <param name="searchColumn">The column, if any, to search.</param>
+		/// <param name="includeDeleted">Set to true to include records marked as deleted</param>
+		/// <returns>An enumerable list of objects matching the specified criteria.</returns>
+		public virtual IEnumerable<TResult> GetList<TResult>(int? searchTerm, string searchColumn, bool? isDeleted = false)
+			=> Mapper.Map<IEnumerable<TEntity>, IEnumerable<TResult>>(GetList(0, 0, string.Empty, SortOrder.Ascending, searchTerm, searchColumn, isDeleted));
+		
+		/// <summary>
+		/// Gets a list of items from the database table.
+		/// </summary>
+		/// <param name="sortColumn">The column on which to sort and search.</param>
+		/// <param name="sortOrder">The order to sort the items being returned.</param>
+		/// <param name="includeDeleted">Set to true to include records marked as deleted</param>
+		/// <returns>An enumerable list of objects matching the specified criteria.</returns>
+		public virtual IEnumerable<TEntity> GetList(string sortColumn, SortOrder sortOrder, bool? isDeleted = false) =>
+			GetList(0, 0, sortColumn, sortOrder, string.Empty, string.Empty, isDeleted);
+
+		/// <summary>
+		/// Gets a list of items from the database table.
+		/// </summary>
+		/// <typeparam name="TResult">The type of object to return.</typeparam>
+		/// <param name="sortColumn">The column on which to sort and search.</param>
+		/// <param name="sortOrder">The order to sort the items being returned.</param>
+		/// <param name="includeDeleted">Set to true to include records marked as deleted</param>
+		/// <returns>An enumerable list of objects matching the specified criteria.</returns>
+		public virtual IEnumerable<TResult> GetList<TResult>(string sortColumn, SortOrder sortOrder, bool? isDeleted = false)
+			=> Mapper.Map<IEnumerable<TEntity>, IEnumerable<TResult>>(GetList(0, 0, sortColumn, sortOrder, string.Empty, string.Empty, isDeleted));
+
+		/// <summary>
+		/// Gets a list of items from the database table.
+		/// </summary>
+		/// <param name="page">The page on which to start.</param>
+		/// <param name="itemsPerPage">The number of items to return.</param>
+		/// <param name="searchTerm">The term, if any, for which to search.</param>
+		/// <param name="searchColumn">The column, if any, to search.</param>
+		/// <param name="includeDeleted">Set to true to include records marked as deleted</param>
+		/// <returns>An enumerable list of objects matching the specified criteria.</returns>
+		public virtual IEnumerable<TEntity> GetList(int page, int itemsPerPage, string searchTerm, string searchColumn, bool? isDeleted = false) =>
+			GetList(page, itemsPerPage, string.Empty, SortOrder.Ascending, searchTerm, searchColumn, isDeleted);
+
+		/// <summary>
+		/// Gets a list of items from the database table.
+		/// </summary>
+		/// <param name="page">The page on which to start.</param>
+		/// <param name="itemsPerPage">The number of items to return.</param>
+		/// <param name="searchTerm">The value, if any, for which to search.</param>
+		/// <param name="searchColumn">The column, if any, to search.</param>
+		/// <param name="includeDeleted">Set to true to include records marked as deleted</param>
+		/// <returns>An enumerable list of objects matching the specified criteria.</returns>
+		public virtual IEnumerable<TEntity> GetList(int page, int itemsPerPage, int? searchTerm, string searchColumn, bool? isDeleted = false) 
+			=> GetList(page, itemsPerPage, string.Empty, SortOrder.Ascending, searchTerm, searchColumn, isDeleted);
+
+		/// <summary>
+		/// Gets a list of items from the database table.
+		/// </summary>
+		/// <typeparam name="TResult">The type of object to return.</typeparam>
+		/// <param name="page">The page on which to start.</param>
+		/// <param name="itemsPerPage">The number of items to return.</param>
+		/// <param name="searchTerm">The term, if any, for which to search.</param>
+		/// <param name="searchColumn">The column, if any, to search.</param>
+		/// <param name="includeDeleted">Set to true to include records marked as deleted</param>
+		/// <returns>An enumerable list of objects matching the specified criteria.</returns>
+		public virtual IEnumerable<TResult> GetList<TResult>(int page, int itemsPerPage, string searchTerm, string searchColumn, bool? isDeleted = false) 
+			=> Mapper.Map<IEnumerable<TEntity>, IEnumerable<TResult>>(GetList(page, itemsPerPage, string.Empty, SortOrder.Ascending, searchTerm, searchColumn, isDeleted));
+
+		/// <summary>
+		/// Gets a list of items from the database table.
+		/// </summary>
+		/// <typeparam name="TResult">The type of object to return.</typeparam>
+		/// <param name="page">The page on which to start.</param>
+		/// <param name="itemsPerPage">The number of items to return.</param>
+		/// <param name="searchTerm">The value, if any, for which to search.</param>
+		/// <param name="searchColumn">The column, if any, to search.</param>
+		/// <param name="includeDeleted">Set to true to include records marked as deleted</param>
+		/// <returns>An enumerable list of objects matching the specified criteria.</returns>
+		public virtual IEnumerable<TResult> GetList<TResult>(int page, int itemsPerPage, int? searchTerm, string searchColumn, bool? isDeleted = false)
+			=> Mapper.Map<IEnumerable<TEntity>, IEnumerable<TResult>>(GetList(page, itemsPerPage, string.Empty, SortOrder.Ascending, searchTerm, searchColumn, isDeleted));
+
+
+		/// <summary>
+		/// Gets a list of items from the database table.
+		/// </summary>
+		/// <typeparam name="TResult">The type of object to return.</typeparam>
 		/// <param name="page">The page on which to start.</param>
 		/// <param name="itemsPerPage">The number of items to return.</param>
 		/// <param name="sortColumn">The column on which to sort and search.</param>
 		/// <param name="sortOrder">The order to sort the items being returned.</param>
-		/// <param name="includeDeleted">True to include items marked as deleted.</param>
-		/// <returns>An IEnumerable of models from the table.</returns>
-		public virtual IEnumerable<TEntity> GetList(string searchTerm = "", int page = 1, int itemsPerPage = 25, string sortColumn = "Name", SortOrder sortOrder = SortOrder.Ascending, bool includeDeleted = false) {
-			var query = default(IQueryable<TEntity>);
+		/// <param name="includeDeleted">Set to true to include records marked as deleted</param>
+		/// <returns>An enumerable list of objects matching the specified criteria.</returns>
+		public virtual IEnumerable<TResult> GetList<TResult>(int page, int itemsPerPage, string sortColumn, SortOrder sortOrder, bool? isDeleted = false) 
+			=> Mapper.Map<IEnumerable<TEntity>, IEnumerable<TResult>>(GetList(page, itemsPerPage, sortColumn, sortOrder, isDeleted));
 
-			if(string.IsNullOrEmpty(searchTerm))
-				query = _dbContext.Set<TEntity>();
-			else
-				query = _dbContext.Set<TEntity>().Where($"{sortColumn}.Contains(@0)", searchTerm);
+		/// <summary>
+		/// Gets a list of items from the database table.
+		/// </summary>
+		/// <param name="page">The page on which to start.</param>
+		/// <param name="itemsPerPage">The number of items to return.</param>
+		/// <param name="sortColumn">The column on which to sort and search.</param>
+		/// <param name="sortOrder">The order to sort the items being returned.</param>
+		/// <param name="includeDeleted">Set to true to include records marked as deleted</param>
+		/// <returns>An enumerable list of objects matching the specified criteria.</returns>
+		public virtual IEnumerable<TEntity> GetList(int page, int itemsPerPage, string sortColumn, SortOrder sortOrder, bool? isDeleted = false) {
+			var query = _dbContext.Set<TEntity>().AsQueryable();
+
+			if(typeof(IDataModelDeletable).IsAssignableFrom(typeof(TEntity)))
+				if(isDeleted != null)
+					query = query.IsDeleted((bool)isDeleted);
 
 			if(!string.IsNullOrEmpty(sortColumn)) {
 				if(sortOrder == SortOrder.Descending)
 					query = query.OrderByDescending(sortColumn);
 				else
 					query = query.OrderBy(sortColumn);
-
-				if(!includeDeleted && typeof(IDataModelDeletable).IsAssignableFrom(typeof(TEntity)))
-					query = query.IsNotDeleted();
 
 				if(itemsPerPage > 0) {
 					if(page > 1)
@@ -108,6 +280,142 @@ namespace QuickFrame.Data.Services {
 		/// <summary>
 		/// Gets a list of items from the database table.
 		/// </summary>
+		/// <param name="page">The page on which to start.</param>
+		/// <param name="itemsPerPage">The number of items to return.</param>
+		/// <param name="sortColumn">The column on which to sort and search.</param>
+		/// <param name="sortOrder">The order to sort the items being returned.</param>
+		/// <param name="searchTerm">The term, if any, for which to search.</param>
+		/// <param name="searchColumn">The column, if any, to search.</param>
+		/// <param name="includeDeleted">Set to true to include records marked as deleted</param>
+		/// <returns>An enumerable list of objects matching the specified criteria.</returns>
+		public virtual IEnumerable<TEntity> GetList(int page, int itemsPerPage, string sortColumn, SortOrder sortOrder, string searchTerm, string searchColumn, bool? isDeleted = false) {
+			return GetList(page, itemsPerPage, sortColumn, sortOrder, searchTerm, searchColumn, isDeleted, true);
+		}
+
+		/// <summary>
+		/// Gets a list of items from the database table.
+		/// </summary>
+		/// <param name="page">The page on which to start.</param>
+		/// <param name="itemsPerPage">The number of items to return.</param>
+		/// <param name="sortColumn">The column on which to sort and search.</param>
+		/// <param name="sortOrder">The order to sort the items being returned.</param>
+		/// <param name="searchTerm">The term, if any, for which to search.</param>
+		/// <param name="searchColumn">The column, if any, to search.</param>
+		/// <param name="includeDeleted">Set to true to include records marked as deleted</param>
+		/// <returns>An enumerable list of objects matching the specified criteria.</returns>
+		public virtual IEnumerable<TEntity> GetList(int page, int itemsPerPage, string sortColumn, SortOrder sortOrder, string searchTerm, string searchColumn, bool? isDeleted = false, bool matchPartial = true) {
+			var query = GetList(page, itemsPerPage, sortColumn, sortOrder, isDeleted);
+
+			if(!string.IsNullOrEmpty(searchTerm)) {
+				if(string.IsNullOrEmpty(searchColumn))
+					searchColumn = "Name";
+				if(!searchColumn.Contains(",")) {
+					query = _dbContext.Set<TEntity>().Where($"{searchColumn}.Contains(@0)", searchTerm);
+				} else {
+					var columns = searchColumn.Split(',');
+					foreach(var column in columns) {
+						query = _dbContext.Set<TEntity>().Where($"{column}.Contains(@0)", searchTerm);
+					}
+				}
+			}
+
+			return query;
+		}
+		/// <summary>
+		/// Gets a list of items from the database table.
+		/// </summary>
+		/// <param name="page">The page on which to start.</param>
+		/// <param name="itemsPerPage">The number of items to return.</param>
+		/// <param name="sortColumn">The column on which to sort and search.</param>
+		/// <param name="sortOrder">The order to sort the items being returned.</param>
+		/// <param name="searchTerm">The value, if any, for which to search.</param>
+		/// <param name="searchColumn">The column, if any, to search.</param>
+		/// <param name="includeDeleted">Set to true to include records marked as deleted</param>
+		/// <returns>An enumerable list of objects matching the specified criteria.</returns>
+		public virtual IEnumerable<TEntity> GetList(int page, int itemsPerPage, string sortColumn, SortOrder sortOrder, int? searchTerm, string searchColumn, bool? isDeleted = false) {
+			var query = GetList(page, itemsPerPage, sortColumn, sortOrder, isDeleted);
+
+			if(string.IsNullOrEmpty(searchColumn))
+				searchColumn = "Id";
+			if(searchTerm == null)
+				query = _dbContext.Set<TEntity>().Where($"{searchColumn} == NULL", searchTerm);
+			else
+				query = _dbContext.Set<TEntity>().Where($"{searchColumn} == (@0)", searchTerm);
+
+			return query;
+		}
+
+		/// <summary>
+		/// Gets a list of items from the database table.
+		/// </summary>
+		/// <typeparam name="TResult">The type of object to return.</typeparam>
+		/// <param name="page">The page on which to start.</param>
+		/// <param name="itemsPerPage">The number of items to return.</param>
+		/// <param name="sortColumn">The column on which to sort and search.</param>
+		/// <param name="sortOrder">The order to sort the items being returned.</param>
+		/// <param name="searchTerm">The term, if any, for which to search.</param>
+		/// <param name="searchColumn">The column, if any, to search.</param>
+		/// <param name="includeDeleted">Set to true to include records marked as deleted</param>
+		/// <returns>An enumerable list of objects matching the specified criteria.</returns>
+		public virtual IEnumerable<TResult> GetList<TResult>(int page, int itemsPerPage, string sortColumn, SortOrder sortOrder, string searchTerm, string searchColumn, bool? isDeleted = false)
+			=> Mapper.Map<IEnumerable<TEntity>, IEnumerable<TResult>>(GetList(page, itemsPerPage, sortColumn, sortOrder, searchTerm, searchColumn, isDeleted));
+
+		/// <summary>
+		/// Gets a list of items from the database table.
+		/// </summary>
+		/// <typeparam name="TResult">The type of object to return.</typeparam>
+		/// <param name="page">The page on which to start.</param>
+		/// <param name="itemsPerPage">The number of items to return.</param>
+		/// <param name="sortColumn">The column on which to sort and search.</param>
+		/// <param name="sortOrder">The order to sort the items being returned.</param>
+		/// <param name="searchTerm">The value, if any, for which to search.</param>
+		/// <param name="searchColumn">The column, if any, to search.</param>
+		/// <param name="includeDeleted">Set to true to include records marked as deleted</param>
+		/// <returns>An enumerable list of objects matching the specified criteria.</returns>
+		public virtual IEnumerable<TResult> GetList<TResult>(int page, int itemsPerPage, string sortColumn, SortOrder sortOrder, int? searchTerm, string searchColumn, bool? isDeleted = false)
+			=> Mapper.Map<IEnumerable<TEntity>, IEnumerable<TResult>>(GetList(page, itemsPerPage, sortColumn, sortOrder, searchTerm, searchColumn, isDeleted));
+
+		/// <summary>
+		/// Gets a list of items from the database table.
+		/// </summary>
+		/// <param name="searchTerm">The term for which to search.</param>
+		/// <param name="page">The page on which to start.</param>
+		/// <param name="itemsPerPage">The number of items to return.</param>
+		/// <param name="sortColumn">The column on which to sort and search.</param>
+		/// <param name="sortOrder">The order to sort the items being returned.</param>
+		/// <param name="includeDeleted">True to include items marked as deleted.</param>
+		/// <returns>An enumerable list of objects matching the specified criteria.</returns>
+		[Obsolete("Use one of the new GetList overrides")]
+		public virtual IEnumerable<TEntity> GetList(string searchTerm = "", int page = 1, int itemsPerPage = 25, string sortColumn = "Name", SortOrder sortOrder = SortOrder.Ascending, bool includeDeleted = false) {
+			var query = default(IQueryable<TEntity>);
+
+			if(string.IsNullOrEmpty(searchTerm))
+				query = _dbContext.Set<TEntity>();
+			else
+				query = _dbContext.Set<TEntity>().Where($"{sortColumn}.Contains(@0)", searchTerm);
+
+			if(!includeDeleted && typeof(IDataModelDeletable).IsAssignableFrom(typeof(TEntity)))
+				query = query.IsNotDeleted();
+
+			if(!string.IsNullOrEmpty(sortColumn)) {
+				if(sortOrder == SortOrder.Descending)
+					query = query.OrderByDescending(sortColumn);
+				else
+					query = query.OrderBy(sortColumn);
+			}
+
+			if(itemsPerPage > 0) {
+				if(page > 1)
+					query = query.Skip((page - 1) * itemsPerPage);
+				query = query.Take(itemsPerPage);
+			}
+
+			return query.AsNoTracking();
+		}
+		
+		/// <summary>
+		/// Gets a list of items from the database table.
+		/// </summary>
 		/// <typeparam name="TResult">The type of entity to convert the models to before returning them.</typeparam>
 		/// <param name="searchTerm">The term for which to search.</param>
 		/// <param name="page">The page on which to start.</param>
@@ -116,6 +424,7 @@ namespace QuickFrame.Data.Services {
 		/// <param name="sortOrder">The order to sort the items being returned.</param>
 		/// <param name="includeDeleted">True to include items marked as deleted.</param>
 		/// <returns>An IEnumerable of type TResult</returns>
+		[Obsolete("Use one of the new GetList overrides")]
 		public virtual IEnumerable<TResult> GetList<TResult>(string searchTerm = "", int page = 1, int itemsPerPage = 25, string sortColumn = "Name", SortOrder sortOrder = SortOrder.Ascending, bool includeDeleted = false)
 			where TResult : IDataTransferObjectCore {
 			foreach(var obj in GetList(searchTerm, page, itemsPerPage, sortColumn, sortOrder))

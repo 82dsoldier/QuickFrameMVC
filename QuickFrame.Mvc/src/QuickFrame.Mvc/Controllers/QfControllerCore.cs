@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using QuickFrame.Data.Dtos;
 using QuickFrame.Data.Interfaces.Dtos;
 using QuickFrame.Data.Interfaces.Services;
+using QuickFrame.Mvc.Configuration;
 using QuickFrame.Security;
 using System.Data.SqlClient;
 
@@ -27,6 +29,10 @@ namespace QuickFrame.Mvc.Controllers {
 			: base(dataService, securityManager) {
 		}
 
+		public QfControllerCore(IDataServiceBase<TEntity> dataService, QuickFrameSecurityManager securityManager, IOptions<ViewOptions> viewOptions) 
+			:base (dataService, securityManager, viewOptions) {
+
+		}
 		/// <summary>
 		/// The default delete function
 		/// </summary>
@@ -42,6 +48,8 @@ namespace QuickFrame.Mvc.Controllers {
 		[HttpGet]
 		public IActionResult GetLookupTableData() => Authorize(() => GetLookupTableDataCore());
 
+		[HttpGet]
+		public IActionResult GetLookupTableDataEx(int? id, string columnName) => Authorize(() => GetLookupTableDataExCore(id, columnName));
 		/// <summary>
 		/// The core delete function
 		/// </summary>
@@ -59,7 +67,11 @@ namespace QuickFrame.Mvc.Controllers {
 		/// <returns>A list of <see cref="LookupTableDto{TSrc, TIdType}" objects wrapped in a JsonResult to be parsed by javascript in the page./> </returns>
 		/// <remarks>If overriding the GetLookupTableData functionality, override this function rather than <see cref="QfControllerCore{TEntity, TIdType, TIndex}.GetLookupTableData"/> </remarks>
 		protected virtual IActionResult GetLookupTableDataCore() {
-			return new JsonResult(_dataService.GetList<LookupTableDto<TEntity, TIdType>>(string.Empty, 0, 0, string.Empty, SortOrder.Ascending, false));
+			return new JsonResult(_dataService.GetList<LookupTableDtoCore<TIdType>>());
+		}
+
+		protected virtual IActionResult GetLookupTableDataExCore(int? id, string columnName) {
+			return new JsonResult(_dataService.GetList<LookupTableDto>(id, columnName));
 		}
 	}
 
@@ -74,7 +86,7 @@ namespace QuickFrame.Mvc.Controllers {
 		: QfControllerCore<TEntity, TIdType, TIndex>
 		where TEntity : class, new()
 		where TIndex : class, IDataTransferObjectCore
-		where TEdit : class, IDataTransferObjectCore {
+		where TEdit : class, IDataTransferObjectCore, new() {
 		protected string EditPage = "CreateOrEdit";
 		protected string CreatePage = "CreateOrEdit";
 
@@ -87,6 +99,10 @@ namespace QuickFrame.Mvc.Controllers {
 			: base(dataService, securityManager) {
 		}
 
+		public QfControllerCore(IDataServiceBase<TEntity> dataService, QuickFrameSecurityManager securityManager, IOptions<ViewOptions> viewOptions)
+			: base(dataService, securityManager, viewOptions) {
+
+		}
 		/// <summary>
 		/// Provides the default create view loaded with an empty model.
 		/// </summary>
@@ -127,8 +143,8 @@ namespace QuickFrame.Mvc.Controllers {
 		/// <returns>An IActionResult representing the view used to create a new entity.</returns>
 		/// <remarks>If overriding the create functionality, override this function rather than <see cref="QfControllerCore{TEntity, TIdType, TIndex, TEdit}.Create(bool)"/>.</remarks>
 		public virtual IActionResult CreateCore(bool closeOnSubmit) {
-			HttpContext.Session.SetBoolean("closeOnSubmit", closeOnSubmit);
-			return View(CreatePage);
+			HttpContext.Session.SetBoolean(CurrentAction, closeOnSubmit);
+			return View(CreatePage, new TEdit());
 		}
 
 		/// <summary>
@@ -140,8 +156,8 @@ namespace QuickFrame.Mvc.Controllers {
 		protected virtual IActionResult CreateCore<TModel>(TModel model) where TModel : IDataTransferObjectCore {
 			if(ModelState.IsValid) {
 				_dataService.Create(model);
-				var closeOnSubmit = (bool)HttpContext.Session.GetBoolean("closeOnSubmit", true);
-				HttpContext.Session.SetBoolean("closeOnSubmit", false);
+				var closeOnSubmit = (bool)HttpContext.Session.GetBoolean(CurrentAction, true);
+				HttpContext.Session.Remove(CurrentAction);
 				if(closeOnSubmit)
 					return View("CloseCurrentView");
 			}
@@ -156,7 +172,7 @@ namespace QuickFrame.Mvc.Controllers {
 		/// <returns>An IActionResult representing the view used to edit an entity.</returns>
 		/// <remarks>If overriding the edit functionality, override this function rahter than <see cref="QfControllerCore{TEntity, TIdType, TIndex, TEdit}.Create(bool)"/> </remarks>
 		protected virtual IActionResult EditCore(TIdType id, bool closeOnSubmit) {
-			HttpContext.Session.SetBoolean("closeOnSubmit", closeOnSubmit);
+			HttpContext.Session.SetBoolean(CurrentAction, closeOnSubmit);
 			return View(EditPage, (_dataService as IDataServiceCore<TEntity, TIdType>).Get<TEdit>(id));
 		}
 
@@ -169,8 +185,8 @@ namespace QuickFrame.Mvc.Controllers {
 		protected virtual IActionResult EditCore(TEdit model) {
 			if(ModelState.IsValid) {
 				_dataService.Save(model);
-				var closeOnSubmit = HttpContext.Session.GetBoolean("closeOnSubmit");
-				HttpContext.Session.SetBoolean("closeOnSubmit", false);
+				var closeOnSubmit = HttpContext.Session.GetBoolean(CurrentAction);
+				HttpContext.Session.Remove(CurrentAction);
 				if(closeOnSubmit == true)
 					return View("CloseCurrentView");
 			}

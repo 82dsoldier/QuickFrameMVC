@@ -1,5 +1,7 @@
-﻿using QuickFrame.Data.Interfaces.Dtos;
+﻿using Microsoft.Extensions.Options;
+using QuickFrame.Data.Interfaces.Dtos;
 using QuickFrame.Data.Interfaces.Services;
+using QuickFrame.Mvc.Configuration;
 using QuickFrame.Security;
 
 namespace QuickFrame.Mvc.Controllers {
@@ -22,6 +24,11 @@ namespace QuickFrame.Mvc.Controllers {
 		public QfController(IDataServiceCore<TEntity, int> dataService, QuickFrameSecurityManager securityManager)
 			: base(dataService, securityManager) {
 		}
+
+		public QfController(IDataServiceCore<TEntity, int> dataService, QuickFrameSecurityManager securityManager, IOptions<ViewOptions> viewOptions) 
+			:base (dataService, securityManager, viewOptions) {
+
+		}
 	}
 	/// <summary>
 	/// An alias for QfControllerInt.
@@ -33,7 +40,7 @@ namespace QuickFrame.Mvc.Controllers {
 		: QfControllerInt<TEntity, TIndex, TEdit>
 		where TEntity : class, new()
 		where TIndex : class, IDataTransferObject<int>
-		where TEdit : class, IDataTransferObject<int> {
+		where TEdit : class, IDataTransferObject<int>, new() {
 
 		/// <summary>
 		/// The constructor for the QfController class.
@@ -42,6 +49,11 @@ namespace QuickFrame.Mvc.Controllers {
 		/// <param name="securityManager">The <see cref="QuickFrame.Security.QuickFrameSecurityManager"/>  used to apply security to functions within this class.</param>
 		public QfController(IDataServiceCore<TEntity, int> dataService, QuickFrameSecurityManager securityManager)
 			: base(dataService, securityManager) {
+		}
+
+		public QfController(IDataServiceCore<TEntity, int> dataService, QuickFrameSecurityManager securityManager, IOptions<ViewOptions> viewOptions) 
+			:base (dataService, securityManager, viewOptions) {
+
 		}
 	}
 }

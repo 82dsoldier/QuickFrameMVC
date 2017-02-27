@@ -13,7 +13,7 @@
     "owners": [ "Drew Burchett" ],
     "summary": "Base QuickFrame file for using the QuickFrameMVC framework"
   },
-  "version": "2.0.0-beta-1-r5",
+  "version": "1.0-beta1-build0025",
   "frameworks": {
     "net452": {},
     "net46": {},

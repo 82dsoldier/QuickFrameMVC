@@ -8,7 +8,7 @@ namespace QuickFrame.Mvc.ViewComponents {
 	public class PagingComponent : ViewComponent {
 
 		public Task<IViewComponentResult> InvokeAsync(PagingComponentModel model) {
-			return Task.FromResult(View(model) as IViewComponentResult);
+			return Task.FromResult(View() as IViewComponentResult);
 		}
 	}
 }
